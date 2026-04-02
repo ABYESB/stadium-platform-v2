@@ -149,7 +149,7 @@
         }
     }
 
-  async function verifyOTP() {
+async function verifyOTP() {
     const btn = document.querySelector('#otpModal .btn-submit');
     const fullName = document.getElementById('fullName').value;
     const email = document.getElementById('email').value;
@@ -159,28 +159,16 @@
     btn.innerText = "جاري الحفظ...";
     btn.disabled = true;
 
-    // استخدام URLSearchParams لضمان وصول البيانات لجوجل بدون مشاكل CORS
-    const params = new URLSearchParams();
-    params.append('fullName', fullName);
-    params.append('email', email);
-    params.append('password', password);
-    params.append('stadiumName', stadiumName);
+    // تجميع البيانات في رابط واحد (GET Request)
+    const finalURL = `${scriptURL}?fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}`;
 
-    fetch(scriptURL, {
-        method: 'POST',
-        mode: 'no-cors', // ضروري لتجاوز قيود المتصفح
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params.toString()
+    fetch(finalURL, {
+        method: 'GET',
+        mode: 'no-cors'
     })
     .then(() => {
-        // توليد الـ slug للتحويل
-        const slug = stadiumName.toLowerCase()
-                        .replace(/ /g, "-")
-                        .replace(/[^\w-]+/g, "");
-        
-        alert("تم إرسال البيانات بنجاح! تفقد بريدك (بما في ذلك الـ Spam) للحصول على الرمز.");
+        const slug = stadiumName.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+        alert("تم إرسال البيانات! تفقد الجدول الآن.");
         window.location.href = "index.html?id=" + slug;
     })
     .catch(error => {
@@ -190,4 +178,3 @@
         btn.disabled = false;
     });
 }
-</script>
