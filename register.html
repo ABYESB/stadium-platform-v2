@@ -134,19 +134,18 @@
 <script>
    const scriptURL = 'https://script.google.com/macros/s/AKfycbyiGsoz8FqZIpuTPmL-7HH26C3acFz-AlA9H4j-t7pjqL4vzLbEhXdtLcsFYWDu_TUY/exec';
 
-    function showOTP() {
-        // التحقق من أن جميع الحقول ممتلئة قبل إظهار نافذة الرمز
-        const fullName = document.getElementById('fullName').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const stadiumName = document.getElementById('stadiumName').value;
+function showOTP() {
+    const fullName = document.getElementById('fullName').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const stadiumName = document.getElementById('stadiumName').value;
 
-        if (fullName && email && password && stadiumName) {
-            document.getElementById('otpModal').style.display = 'flex';
-        } else {
-            alert("يرجى ملء جميع الخانات أولاً");
-        }
+    if (fullName && email && password && stadiumName) {
+        document.getElementById('otpModal').style.display = 'flex';
+    } else {
+        alert("يرجى ملء جميع الخانات أولاً");
     }
+}
 
 async function verifyOTP() {
     const btn = document.querySelector('#otpModal .btn-submit');
@@ -158,7 +157,7 @@ async function verifyOTP() {
     btn.innerText = "جاري الحفظ...";
     btn.disabled = true;
 
-    // تجميع البيانات في رابط واحد (GET Request)
+    // تأكد من استخدام علامة ` في بداية ونهاية الرابط
     const finalURL = `${scriptURL}?fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}`;
 
     fetch(finalURL, {
@@ -167,7 +166,7 @@ async function verifyOTP() {
     })
     .then(() => {
         const slug = stadiumName.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
-        alert("تم إرسال البيانات! تفقد الجدول الآن.");
+        alert("تم إرسال البيانات بنجاح! تفقد الشيت الآن.");
         window.location.href = "index.html?id=" + slug;
     })
     .catch(error => {
