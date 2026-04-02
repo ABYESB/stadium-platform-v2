@@ -72,7 +72,6 @@
         .footer-links { margin-top: 1.5rem; font-size: 0.9rem; }
         .footer-links a { color: var(--primary-color); text-decoration: none; }
 
-        /* لنموذج التأكيد المنبثق (OTP) */
         #otpModal {
             display: none;
             position: fixed;
@@ -132,48 +131,49 @@
 </div>
 
 <script>
-   const scriptURL = 'https://script.google.com/macros/s/AKfycbyiGsoz8FqZIpuTPmL-7HH26C3acFz-AlA9H4j-t7pjqL4vzLbEhXdtLcsFYWDu_TUY/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyiGsoz8FqZIpuTPmL-7HH26C3acFz-AlA9H4j-t7pjqL4vzLbEhXdtLcsFYWDu_TUY/exec';
 
-function showOTP() {
-    const fullName = document.getElementById('fullName').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const stadiumName = document.getElementById('stadiumName').value;
+    function showOTP() {
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const stadiumName = document.getElementById('stadiumName').value;
 
-    if (fullName && email && password && stadiumName) {
-        document.getElementById('otpModal').style.display = 'flex';
-    } else {
-        alert("يرجى ملء جميع الخانات أولاً");
+        if (fullName && email && password && stadiumName) {
+            document.getElementById('otpModal').style.display = 'flex';
+        } else {
+            alert("يرجى ملء جميع الخانات أولاً");
+        }
     }
-}
 
-async function verifyOTP() {
-    const btn = document.querySelector('#otpModal .btn-submit');
-    const fullName = document.getElementById('fullName').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const stadiumName = document.getElementById('stadiumName').value;
+    async function verifyOTP() {
+        const btn = document.querySelector('#otpModal .btn-submit');
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const stadiumName = document.getElementById('stadiumName').value;
 
-    btn.innerText = "جاري الحفظ...";
-    btn.disabled = true;
+        btn.innerText = "جاري الحفظ...";
+        btn.disabled = true;
 
-    // تأكد من استخدام علامة ` في بداية ونهاية الرابط
-    const finalURL = `${scriptURL}?fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}`;
+        const finalURL = `${scriptURL}?fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}`;
 
-    fetch(finalURL, {
-        method: 'GET',
-        mode: 'no-cors'
-    })
-    .then(() => {
-        const slug = stadiumName.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
-        alert("تم إرسال البيانات بنجاح! تفقد الشيت الآن.");
-        window.location.href = "index.html?id=" + slug;
-    })
-    .catch(error => {
-        console.error('Error!', error);
-        alert("حدث خطأ في الاتصال.");
-        btn.innerText = "تأكيد ودخول";
-        btn.disabled = false;
-    });
-}
-<script>
+        fetch(finalURL, {
+            method: 'GET',
+            mode: 'no-cors'
+        })
+        .then(() => {
+            const slug = stadiumName.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+            alert("تم إرسال البيانات بنجاح! تفقد الشيت الآن.");
+            window.location.href = "index.html?id=" + slug;
+        })
+        .catch(error => {
+            console.error('Error!', error);
+            alert("حدث خطأ في الاتصال.");
+            btn.innerText = "تأكيد ودخول";
+            btn.disabled = false;
+        });
+    }
+</script>
+</body>
+</html>
