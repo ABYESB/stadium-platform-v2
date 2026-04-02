@@ -132,17 +132,60 @@
 </div>
 
 <script>
+    // الرابط الذي حصلت عليه من Google Apps Script
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyi0VFC8F7W_D5xEdjW51wcI2056uRvKH3FkowfOK53WvuHovK52V81dFGyfTu4u3fo/exec';
+
     function showOTP() {
-        // هنا مستقبلاً سنرسل الكود فعلياً للإيميل
-        document.getElementById('otpModal').style.display = 'flex';
+        // التحقق من أن جميع الحقول ممتلئة قبل إظهار نافذة الرمز
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const stadiumName = document.getElementById('stadiumName').value;
+
+        if (fullName && email && password && stadiumName) {
+            document.getElementById('otpModal').style.display = 'flex';
+        } else {
+            alert("يرجى ملء جميع الخانات أولاً");
+        }
     }
 
-    function verifyOTP() {
-        // مؤقتاً سيقوم بالتحويل المباشر للجدول
-        alert("تم تأكيد الحساب بنجاح!");
-        window.location.href = "index.html"; 
+    async function verifyOTP() {
+        const btn = document.querySelector('#otpModal .btn-submit');
+        btn.innerText = "جاري الحفظ...";
+        btn.disabled = true;
+
+        const formData = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            stadiumName: document.getElementById('stadiumName').value
+        };
+
+        // إرسال البيانات إلى جوجل شيت عبر الرابط الخاص بك
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // نستخدم no-cors لتجنب مشاكل المتصفح مع الطلبات الخارجية
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+        .then(() => {
+            // بما أننا استخدمنا no-cors، لا يمكننا قراءة الرد (JSON) مباشرة، 
+            // لذا سنقوم بتوليد الرابط يدوياً بناءً على اسم الملعب
+            const slug = formData.stadiumName.toLowerCase()
+                            .replace(/ /g, "-")
+                            .replace(/[^\w-]+/g, "");
+            
+            const stadiumUrl = "index.html?id=" + slug;
+            
+            alert("تم إنشاء حسابك بنجاح! سيتم توجيهك الآن لموقعك الخاص.");
+            window.location.href = stadiumUrl;
+        })
+        .catch(error => {
+            console.error('Error!', error.message);
+            alert("حدث خطأ أثناء الاتصال. حاول مرة أخرى.");
+            btn.innerText = "تأكيد ودخول";
+            btn.disabled = false;
+        });
     }
 </script>
-
-</body>
-</html>
