@@ -1,0 +1,544 @@
+
+/* 1. التنسيقات العامة والخلفية الأصلية */
+
+body {
+
+    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9)), 
+
+                url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+
+    background-size: cover;
+
+    background-attachment: fixed;
+
+    background-position: center;
+
+    color: #333;
+
+    font-family: 'Cairo', sans-serif;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+
+/* 2. الهيدر والشعار (توسيط كامل كما في الأصل) */
+
+.header-section, .header {
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    text-align: center !important;
+
+    width: 100%;
+
+    margin-bottom: 20px;
+
+}
+
+
+
+.main-logo, .header img {
+
+    display: block !important;
+
+    margin: 0 auto 15px auto !important;
+
+    max-width: 150px;
+
+    height: auto;
+
+}
+
+
+
+h2 {
+
+    color: #1e3a8a;
+
+    margin: 0;
+
+    font-size: 1.5em;
+
+    text-align: center;
+
+}
+
+
+
+/* 3. أزرار العمليات (Action Buttons) - تنظيم السطر الواحد */
+
+.action-buttons {
+
+    display: flex;
+
+    flex-direction: row;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 10px 5px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 25px;
+
+}
+
+
+
+/* توحيد تنسيق جميع الأزرار العلوي */
+
+.btn-membership, .btn-info, .btn-map, .btn-video {
+
+    padding: 12px 18px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    color: white;
+
+    font-weight: bold;
+
+    font-family: 'Cairo', sans-serif;
+
+    font-size: 0.9em;
+
+    transition: 0.3s;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 150px;
+
+    text-align: center;
+
+}
+
+
+
+/* ألوان الأزرار الأصلية */
+
+.btn-membership { background-color: #047857; } /* أخضر للانخراط */
+
+.btn-info { background-color: #d97706; }       /* برتقالي للقوانين */
+
+.btn-map { background-color: #2563eb; }        /* أزرق للموقع */
+
+.btn-video { background-color: #7c3aed; }      /* بنفسجي للفيديو */
+
+
+
+.btn-membership:hover, .btn-info:hover, .btn-map:hover, .btn-video:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+
+    opacity: 0.9;
+
+}
+
+
+
+/* 4. النوافذ المنبثقة (إصلاح مشكلة الظهور الدائم) */
+
+.modal, .custom-modal { 
+
+    display: none; 
+
+    position: fixed; 
+
+    z-index: 9999; 
+
+    left: 0; top: 0; 
+
+    width: 100%; height: 100%; 
+
+    background: rgba(0,0,0,0.6); 
+
+    overflow: auto;
+
+}
+
+
+
+.modal-content, .custom-modal-content {
+
+    background-color: #fefefe;
+
+    margin: 10% auto;
+
+    width: 90%;
+
+    max-width: 500px;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    position: relative;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+
+    animation: modal-anim 0.4s ease-out;
+
+}
+
+
+
+@keyframes modal-anim {
+
+    from {transform: translateY(-50px); opacity: 0;}
+
+    to {transform: translateY(0); opacity: 1;}
+
+}
+
+
+
+.close, .custom-close { position: absolute; left: 20px; top: 10px; font-size: 28px; cursor: pointer; color: #333; z-index: 10; }
+
+
+
+/* 5. الجدول والتنقل */
+
+.week-navigation { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0; background: #e0e7ff; padding: 10px; border-radius: 10px; }
+
+#dateDisplay { font-weight: bold; color: #1e3a8a; }
+
+
+
+table { width: 100%; border-collapse: collapse; font-size: 0.85em; background: white; }
+
+th, td { border: 1px solid #ddd; padding: 10px 5px; text-align: center; }
+
+th { background-color: #1e3a8a; color: white; }
+
+.slot { cursor: pointer; transition: 0.2s; background: #f9f9f9; }
+
+.selected { background-color: #22c55e !important; color: white; }
+
+
+
+/* 6. قسم المعرض والسلايدر (تصميم ثابت ومتكيف) */
+
+.field-gallery-container {
+
+    max-width: 600px; /* مقاس صغير وثابت يناسب الحاسوب والهاتف */
+
+    margin: 20px auto !important;
+
+    padding: 10px;
+
+    background: #fff;
+
+    border-radius: 15px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+}
+
+
+
+.swiper-container {
+
+    width: 100%;
+
+    aspect-ratio: 16 / 9; /* نسبة عرض ثابتة تمنع المساحات البيضاء */
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    position: relative;
+
+    background: #000; /* خلفية سوداء احتياطية */
+
+}
+
+
+
+.swiper-slide {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 100%;
+
+}
+
+
+
+.swiper-slide img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover; /* يملأ الحاوية بالكامل ويقص الزوائد برقي */
+
+    display: block;
+
+}
+
+
+
+/* النص فوق الصورة بشكل أنيق */
+
+.slide-caption {
+
+    position: absolute;
+
+    bottom: 0;
+
+    left: 0;
+
+    right: 0;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    color: #fff;
+
+    padding: 8px;
+
+    font-size: 0.9rem;
+
+    text-align: center;
+
+    margin: 0;
+
+}
+
+
+
+/* إخفاء أزرار التالي والسابق تماماً */
+
+.swiper-button-next, 
+
+.swiper-button-prev {
+
+    display: none !important;
+
+}
+
+
+
+/* تنسيق النقاط السفلى فقط */
+
+.swiper-pagination-bullet {
+
+    background: #1e3a8a;
+
+    opacity: 0.5;
+
+}
+
+.swiper-pagination-bullet-active {
+
+    background: #ffd700 !important;
+
+    opacity: 1;
+
+}
+
+
+
+/* لتأكيد التوسيط في الهواتف */
+
+@media (max-width: 600px) {
+
+    .swiper-slide img { height: 250px; } /* تصغير الارتفاع قليلاً للهواتف */
+
+}
+
+
+
+.swiper-pagination { position: absolute !important; bottom: 5px !important; z-index: 20; }
+
+.swiper-button-next, .swiper-button-prev { color: #ffd700; top: 50% !important; z-index: 20; }
+
+
+
+/* 7. التذييل (Footer) والأزرار السفلية */
+
+.footer-section { margin-top: 30px; padding: 20px; background-color: #f8fafc; border-radius: 10px; border-top: 3px solid #1e3a8a; text-align: center; }
+
+
+
+.footer-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; padding: 20px 10px; border-top: 1px solid #ddd; margin-top: 20px; }
+
+.footer-btn { 
+
+    text-decoration: none; padding: 10px 18px; border-radius: 25px; font-size: 14px; font-weight: bold; color: white; border: none; 
+
+    cursor: pointer; transition: 0.3s ease; display: flex; align-items: center; gap: 8px; 
+
+}
+
+
+
+.email-btn { background-color: #ea4335; }
+
+.facebook-btn { background-color: #1877f2; }
+
+.support-btn { background-color: #f39c12; }
+
+.admin-btn { background-color: #4b5563; }
+
+
+
+/* 8. زر تثبيت التطبيق PWA (المضاف حديثاً) */
+
+#installContainer { display: none; text-align: center; margin: 15px; width: 100%; }
+
+#btnInstall { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+
+
+
+
+
+/* تنسيق أيقونة الواتساب الطافية */
+
+.whatsapp-float {
+
+    position: fixed;
+
+    width: 60px;
+
+    height: 60px;
+
+    bottom: 30px; /* المسافة من الأسفل */
+
+    right: 30px;  /* المسافة من اليمين */
+
+    background-color: #25d366; /* لون واتساب الرسمي */
+
+    color: #FFF;
+
+    border-radius: 50px;
+
+    text-align: center;
+
+    font-size: 35px;
+
+    box-shadow: 2px 5px 15px rgba(0,0,0,0.3);
+
+    z-index: 9999; /* لضمان ظهورها فوق كل شيء */
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-decoration: none;
+
+    transition: all 0.3s ease;
+
+}
+
+
+
+/* تأثير عند تمرير الماوس */
+
+.whatsapp-float:hover {
+
+    transform: scale(1.1);
+
+    background-color: #128c7e;
+
+    color: #fff;
+
+}
+
+
+
+/* نص توضيحي صغير */
+
+.tooltip-text {
+
+    visibility: hidden;
+
+    width: 120px;
+
+    background-color: #333;
+
+    color: #fff;
+
+    text-align: center;
+
+    border-radius: 6px;
+
+    padding: 5px;
+
+    position: absolute;
+
+    z-index: 1;
+
+    right: 125%; 
+
+    font-size: 14px;
+
+    opacity: 0;
+
+    transition: opacity 0.3s;
+
+    pointer-events: none;
+
+}
+
+
+
+.whatsapp-float:hover .tooltip-text {
+
+    visibility: visible;
+
+    opacity: 1;
+
+}
+
+
+
+/* ضبط المقاس للهواتف */
+
+@media screen and (max-width: 768px) {
+
+    .whatsapp-float {
+
+        width: 50px;
+
+        height: 50px;
+
+        bottom: 20px;
+
+        right: 20px;
+
+        font-size: 30px;
+
+    }
+
+}

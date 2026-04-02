@@ -1,0 +1,227 @@
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NG32N2WN');</script>
+<!-- End Google Tag Manager -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جمعية شباب بوعسل للتربية والرياضة</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="logo-512.png">
+    <meta name="theme-color" content="#1e3a8a">
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered'))
+            .catch(err => console.log('Service Worker Failed', err));
+        });
+      }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link rel="stylesheet" href="style.css?v=1.16">
+
+   <script src="script.js?v=1.16" defer></script>
+</head>
+<body>
+    <div id="installContainer" style="display: none; text-align: center; margin: 15px;">
+        <button id="btnInstall" class="btn-membership" style="background-color: #1e3a8a; width: auto; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer;">
+            📲 تثبيت تطبيق ABYES
+        </button>
+    </div>
+
+<div class="app-container">
+    <div class="header-section">
+        <a href="https://ibb.co/wN3qyMKN">
+            <img src="https://i.ibb.co/wN3qyMKN/Untitled-Project.png" alt="Untitled-Project" border="0">
+        </a>
+        <h2>جمعية شباب بوعسل للتربية والرياضة</h2>
+    </div>
+
+    
+    <div class="action-buttons">
+        <button onclick="toggleMembership()" class="btn-membership">📝 الانخراط في الجمعية</button>
+        <button onclick="toggleRules()" class="btn-info">📜 قوانين الملعب</button>
+        <button onclick="showMap()" class="btn-map">📍 موقع الملعب</button>
+        <button onclick="requestVideo()" class="btn-video">📹 طلب تسجيل المباراة</button>
+    </div>
+
+    <div id="rulesModal" class="modal">
+        <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none; max-width: 500px;">
+            <div style="background-color: #1e3a8a; color: white; padding: 15px; position: relative; text-align: center;">
+                <span class="close" onclick="toggleRules()" style="color: white; font-size: 28px; cursor: pointer; position: absolute; right: 20px; top: 10px;">&times;</span>
+                <h3 style="margin: 0; font-family: 'Cairo', sans-serif;">📜 قوانين ملعب بوعسل</h3>
+            </div>
+            <div style="padding: 25px; text-align: right; direction: rtl; font-family: 'Cairo', sans-serif; background: white;">
+                <ul style="list-style: none; padding: 0; margin: 0; line-height: 2;">
+                    <li style="font-weight: bold; color: #22c55e; font-size: 1.25em; border-bottom: 2px dashed #eee; margin-bottom: 15px; padding-bottom: 10px;">💰 ثمن الساعة: 60 درهماً</li>
+                    <li>⚽ 6 لاعبين كحد أقصى وأدنى لكل فريق.</li>
+                    <li>🤝 يمنع السب والشتم أو السلوك غير الرياضي.</li>
+                    <li>💵 الدفع قبل بدء المباراة لدى المسؤول.</li>
+                    <li>🧹 الحفاظ على نظافة الملعب والمرافق.</li>
+                    <li>🕒 يمنع حجز أكثر من ساعتين متتاليتين.</li>
+                </ul>
+                <button onclick="toggleRules()" style="width: 100%; margin-top: 20px; padding: 12px; background: #1e3a8a; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">حسناً، فهمت</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="membershipModal" class="modal">
+        <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none; max-width: 550px; display: flex; flex-direction: column; max-height: 90vh;">
+            <div style="background-color: #047857; color: white; padding: 15px; position: relative; text-align: center; flex-shrink: 0;">
+                <span class="close" onclick="toggleMembership()" style="color: white; font-size: 28px; cursor: pointer; position: absolute; right: 20px; top: 10px;">&times;</span>
+                <h3 style="margin: 0; font-family: 'Cairo', sans-serif;">📝 طلب الانخراط السنوي</h3>
+            </div>
+            <div style="padding: 20px 20px 40px 20px; text-align: right; direction: rtl; font-family: 'Cairo', sans-serif; background: white; overflow-y: auto; flex-grow: 1;">
+                <h4 style="color: #047857; border-bottom: 2px solid #eee; padding-bottom: 5px;">📋 وثائق الانخراط:</h4>
+                <ul style="line-height: 1.8; color: #444; list-style-type: none; padding: 0;">
+                    <li>🔹 صورتان شمسيتان.</li>
+                    <li>🔹 نسخة من البطاقة الوطنية أو عقد الازدياد.</li>
+                    <li>🔹 التزام (لأقل من 18 سنة) يُوقع من ولي الأمر.</li>
+                    <li>💰 واجب الانخراط السنوي: <b>100 درهم</b>.</li>
+                </ul>
+                <h4 style="color: #047857; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 15px;">🌟 المميزات:</h4>
+                <p style="font-size: 0.95em; color: #555;">المشاركة في كافة أنشطة الجمعية التربوية، الرياضية والبيئية، وتدريبات أسبوعية بالملعب.</p>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px dashed #ccc;">
+                <label><b>الاسم الكامل:</b></label>
+                <input type="text" id="memberName" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+                <label><b>العمر:</b></label>
+                <input type="number" id="memberAge" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+                <button onclick="submitMembership()" style="width: 100%; padding: 15px; background: #047857; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; margin-bottom: 30px;">إرسال للواتساب</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="week-navigation">
+        <button onclick="changeWeek(-1)">⬅️ الأسبوع السابق</button>
+        <div id="dateDisplay">الشهر والسنة</div>
+        <button onclick="changeWeek(1)">الأسبوع القادم ➡️</button>
+    </div>
+
+    <table id="bookingTable">
+    <thead>
+        <tr id="headerRow">
+            <th>الساعة</th>
+            </tr>
+    </thead>
+    
+    <tbody id="tableBody">
+        </tbody>
+
+    <tfoot id="footerRowContainer">
+        <tr id="footerRow">
+            <th class="bg-gray-100 p-2 border">الساعة</th>
+            </tr>
+    </tfoot>
+</table>
+
+  <div class="field-gallery-container">
+    <h3 class="gallery-title">ألبوم صور ملعب شباب بوعسل</h3>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="https://i.ibb.co/4Ztk04jK/Whats-App-Image-2026-03-19-at-10-52-57-PM.jpg" alt="بطولات"><p class="slide-caption">إقامة بطولات كروية</p></div>
+            <div class="swiper-slide"><img src="https://i.ibb.co/7dqHb6XV/image.jpg" alt="مقابلات ليلية"><p class="slide-caption">مقابلات ليلية</p></div>
+            <div class="swiper-slide"><img src="https://i.ibb.co/JjD6WCtj/Whats-App-Image-2026-03-05-at-9-22-50-PM.jpg" alt="تجهيزات"><p class="slide-caption">تجهيزات الملعب</p></div>
+            <div class="swiper-slide"><img src="https://i.ibb.co/JFs7TB7W/IMG-20250723-WA0033.jpg" alt="عشب"><p class="slide-caption">جودة العشب الصناعي</p></div>
+            <div class="swiper-slide"><img src="https://i.ibb.co/k2nbwPYQ/IMG-20250723-WA0036.jpg" alt="منطقة اللعب"><p class="slide-caption">جاهزية تامة للمباريات</p></div>
+
+            <div class="swiper-slide">
+                <img src="https://i.ibb.co/YTbkdk54/Whats-App-Image-2026-03-05-at-9-23-21-PM.jpg" alt="ملعب بوعسل">
+                <p class="slide-caption">إضاءة ليلية ممتازة</p>
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://i.ibb.co/RGbjSMqL/Whats-App-Image-2026-03-05-at-11-05-21-PM.jpg" alt="مقابلات">
+                <p class="slide-caption">أجواء حماسية</p>
+            </div>
+            
+            <div class="swiper-slide">
+             <img src="https://i.ibb.co/5Wgg6GJH/4.png" alt="4" border="0"></a>" alt="3" border="0"></a>" alt="أخلاق">
+                <p class="slide-caption">الرياضة أخلاق</p>
+            </div>
+
+            <div class="swiper-slide">
+              <img src="https://i.ibb.co/xqvjmphT/5.png" alt="5" border="0"></a>" alt="1" border="0"></a>" alt="مرحبا بكم">
+                <p class="slide-caption">مرحباً بكم في ملعب بوعسل</p>
+            </div> 
+        </div>
+
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+
+   <div id="bookingModal" class="modal">
+    <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none; max-width: 500px;">
+        <div style="background-color: #1e3a8a; color: white; padding: 15px; position: relative;">
+            <span class="close" onclick="closeBookingModal()" style="color: white; font-size: 28px; cursor: pointer; position: absolute; right: 20px; top: 10px;">×</span>
+            <h3 style="margin: 0; text-align: center; font-family: 'Cairo', sans-serif;">تأكيد حجز ملعب بوعسل</h3>
+        </div>
+        <div style="padding: 20px; text-align: right; font-family: 'Cairo', sans-serif; background: white;">
+            <p id="selectedDetails" style="background: #f0f7ff; padding: 10px; border-radius: 8px; color: #1e3a8a; font-weight: bold; border-right: 5px solid #2563eb;"></p>
+
+            <div id="extraSlotContainer" style="display:none; margin: 15px 0; padding: 12px; background-color: #f0fdf4; border: 1px dashed #22c55e; border-radius: 10px; text-align: center;">
+                <p style="margin: 0 0 10px 0; color: #166534; font-weight: bold; font-size: 0.9rem;">💡هل ترغب في حجز ساعتين متتاليتين بدلاً من ساعة واحدة؟ </p>
+                <button type="button" onclick="addNextSlot()" style="background-color: #22c55e; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: 'Cairo', sans-serif;">
+                    نعم، أضفها للحجز
+                </button>
+            </div>
+
+            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; font-size: 0.85em; color: #856404; margin-bottom: 15px; border: 1px solid #ffeeba; line-height: 1.6;">
+                ⚠️ <strong>نظام الحماية:</strong> يتم تسجيل رقم الهاتف وعنوان الـ IP. في حال الحجز وعدم الحضور، سيتم <strong>حظر رقمك</strong> نهائياً.
+            </div>
+
+            <label style="display: block; margin-top: 10px; font-weight: bold;">الاسم الكامل:</label>
+            <input type="text" id="userName" placeholder="مثال: محمد العلوي" style="width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+            
+            <label style="display: block; margin-top: 15px; font-weight: bold;">رقم الهاتف (واتساب):</label>
+            <input type="tel" id="userPhone" placeholder="06XXXXXXXX" style="width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+            
+            <label style="display: flex; align-items: center; gap: 10px; margin-top: 20px; cursor: pointer; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+                <input type="checkbox" id="confirmCheckbox" onchange="toggleSubmitButton()" style="width: 20px; height: 20px;">
+                <span style="font-size: 0.9em; font-weight: bold; color: #333;">أنا أتحمل مسؤولية هذا الحجز وأتعهد بالحضور.</span>
+            </label>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button id="finalConfirmBtn" onclick="submitFinalBooking()" disabled style="flex: 2; background-color: #22c55e; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; opacity: 0.5;">تأكيد وإرسال لواتساب</button>
+                <button onclick="closeBookingModal()" style="flex: 1; background-color: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="footer-buttons-container">
+        <button onclick="openEmail()" class="footer-btn email-btn"><i class="fas fa-envelope"></i> تواصل معنا</button>
+        <a href="https://web.facebook.com/" target="_blank" class="footer-btn facebook-btn"><i class="fab fa-facebook-f"></i> الفيسبوك</a>
+        <button onclick="showDonationInfo()" class="footer-btn support-btn"><i class="fas fa-hand-holding-heart"></i> دعم الجمعية</button>
+        <button onclick="openAdminPanel()" class="footer-btn admin-btn"><i class="fas fa-user-shield"></i> مسؤول الموقع</button>
+    </div>
+
+    <hr>
+    <p class="copyright">© 2026 جميع الحقوق محفوظة لجمعية شباب بوعسل للتربية والرياضة</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+<a href="https://wa.me/2126079399716?text=السلام%20عليكم،%20أريد%20الاستفسار%20عن%20حجز%20في%20ملعب%20بوعسل" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+    <span class="tooltip-text">المشرف</span>
+</a>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</body>
+</html>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
