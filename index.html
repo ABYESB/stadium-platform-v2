@@ -16,6 +16,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="icon" type="image/png" href="logo-512.png">
     <meta name="theme-color" content="#1e3a8a">
 
+   <script>
+    // الحصول على المعرف من الرابط (مثلاً ?id=stadium1)
+    const urlParams = new URLSearchParams(window.location.search);
+    const stadiumId = urlParams.get('id');
+
+    // إذا دخل المستخدم للرابط الأساسي بدون ID، وجهه لصفحة التسجيل
+    if (!stadiumId) {
+        window.location.href = "register.html";
+    }
+</script> 
+    
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
