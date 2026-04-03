@@ -131,48 +131,72 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyiGsoz8FqZIpuTPmL-7HH26C3acFz-AlA9H4j-t7pjqL4vzLbEhXdtLcsFYWDu_TUY/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyUiqm_ggjFnyCJgEBJVFM615ju4PgyPLCiWvjVAPnmykzvLx6x6WbwFEEfHmUn4U79/exec';
 
-    function showOTP() {
+  
+    let generatedOTP = ""; // لتخزين الرمز مؤقتاً
+
+    async function showOTP() {
         const fullName = document.getElementById('fullName').value;
         const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
         const stadiumName = document.getElementById('stadiumName').value;
 
-        if (fullName && email && password && stadiumName) {
-            document.getElementById('otpModal').style.display = 'flex';
-        } else {
-            alert("يرجى ملء جميع الخانات أولاً");
+        if (!fullName || !email || !stadiumName) {
+            alert("يرجى ملء جميع الخانات");
+            return;
+        }
+
+        const btn = document.querySelector('.btn-submit');
+        btn.innerText = "جاري إرسال الرمز...";
+        btn.disabled = true;
+
+        // الخطوة 1: طلب الرمز من جوجل سكريبت دون حفظ البيانات
+        try {
+            const response = await fetch(`${scriptURL}?action=sendOTP&email=${encodeURIComponent(email)}`);
+            const result = await response.text();
+            
+            if (result === "Error") {
+                alert("فشل إرسال الإيميل. تأكد من صحة البريد.");
+            } else {
+                generatedOTP = result.trim(); // حفظ الرمز للمقارنة لاحقاً
+                document.getElementById('otpModal').style.display = 'flex';
+            }
+        } catch (e) {
+            alert("خطأ في الاتصال بالسيرفر.");
+        } finally {
+            btn.innerText = "متابعة لإنشاء الحساب";
+            btn.disabled = false;
         }
     }
 
     async function verifyOTP() {
+        const userOTP = document.getElementById('otpCode').value;
         const btn = document.querySelector('#otpModal .btn-submit');
+
+        // المقارنة: هل الرمز الذي أدخله المستخدم هو نفس الذي ولده السكريبت؟
+        if (userOTP !== generatedOTP) {
+            alert("الرمز غير صحيح، حاول مجدداً.");
+            return;
+        }
+
+        btn.innerText = "جاري الحفظ النهائي...";
+        btn.disabled = true;
+
+        // الخطوة 2: إذا كان الرمز صحيحاً، نرسل أمر الحفظ للشيت
         const fullName = document.getElementById('fullName').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const stadiumName = document.getElementById('stadiumName').value;
 
-        btn.innerText = "جاري الحفظ...";
-        btn.disabled = true;
+        const finalURL = `${scriptURL}?action=saveData&fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}&otp=${userOTP}`;
 
-        const finalURL = `${scriptURL}?fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}`;
-
-        fetch(finalURL, {
-            method: 'GET',
-            mode: 'no-cors'
-        })
+        fetch(finalURL, { method: 'GET', mode: 'no-cors' })
         .then(() => {
             const slug = stadiumName.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
-            alert("تم إرسال البيانات بنجاح! تفقد الشيت الآن.");
+            alert("تم تفعيل حسابك بنجاح!");
             window.location.href = "index.html?id=" + slug;
         })
-        .catch(error => {
-            console.error('Error!', error);
-            alert("حدث خطأ في الاتصال.");
-            btn.innerText = "تأكيد ودخول";
-            btn.disabled = false;
-        });
+        .catch(() => alert("حدث خطأ أثناء الحفظ."));
     }
 </script>
 </body>
