@@ -196,6 +196,7 @@
         const resultText = await response.text();
 
         if (resultText.includes("Success:")) {
+            document.getElementById('otpModal').style.display = 'none';
             const finalSlug = resultText.split(":")[1]; // استخراج المعرف العشوائي مثل st-xxxx
             const userLink = "https://abyesb.github.io/stadium-platform-v2/booking.html?id=" + finalSlug;
 
