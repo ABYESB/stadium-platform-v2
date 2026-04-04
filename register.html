@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إنشاء حساب - منصة ملاعب</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -169,35 +170,78 @@
         }
     }
 
-    async function verifyOTP() {
-        const userOTP = document.getElementById('otpCode').value;
-        const btn = document.querySelector('#otpModal .btn-submit');
+   async function verifyOTP() {
+    const userOTP = document.getElementById('otpCode').value;
+    const btn = document.querySelector('#otpModal .btn-submit');
 
-        // المقارنة: هل الرمز الذي أدخله المستخدم هو نفس الذي ولده السكريبت؟
-        if (userOTP !== generatedOTP) {
-            alert("الرمز غير صحيح، حاول مجدداً.");
-            return;
-        }
-
-        btn.innerText = "جاري الحفظ النهائي...";
-        btn.disabled = true;
-
-        // الخطوة 2: إذا كان الرمز صحيحاً، نرسل أمر الحفظ للشيت
-        const fullName = document.getElementById('fullName').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const stadiumName = document.getElementById('stadiumName').value;
-
-        const finalURL = `${scriptURL}?action=saveData&fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}&otp=${userOTP}`;
-
-        fetch(finalURL, { method: 'GET', mode: 'no-cors' })
-        .then(() => {
-            const slug = stadiumName.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
-            alert("تم تفعيل حسابك بنجاح!");
-            window.location.href = "index.html?id=" + slug;
-        })
-        .catch(() => alert("حدث خطأ أثناء الحفظ."));
+    if (userOTP !== generatedOTP) {
+        alert("الرمز غير صحيح، حاول مجدداً.");
+        return;
     }
+
+    btn.innerText = "جاري الحفظ النهائي...";
+    btn.disabled = true;
+
+    const fullName = document.getElementById('fullName').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const stadiumName = document.getElementById('stadiumName').value;
+
+    // الرابط النهائي لإرسال البيانات
+    const finalURL = `${scriptURL}?action=saveData&fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}&otp=${userOTP}`;
+
+    try {
+        // نستخدم fetch بدون no-cors لنتمكن من قراءة الـ slug العشوائي الراجع من جوجل
+        const response = await fetch(finalURL);
+        const resultText = await response.text();
+
+        if (resultText.includes("Success:")) {
+            const finalSlug = resultText.split(":")[1]; // استخراج المعرف العشوائي مثل st-xxxx
+            const userLink = "https://abyesb.github.io/stadium-platform-v2/booking.html?id=" + finalSlug;
+
+            // استبدال محتوى الصفحة بواجهة النجاح الجميلة
+            document.querySelector('.register-container').innerHTML = `
+                <div style="padding: 10px;">
+                    <h2 style="color: var(--secondary-color);">تم إنشاء الحساب بنجاح!</h2>
+                    <p>أهلاً بك <b>${fullName}</b> في منصتنا.</p>
+                    <hr style="border: 0.5px solid #eee; margin: 20px 0;">
+                    
+                    <p style="font-size: 0.9rem; color: #64748b;">رابط صفحة الحجز الخاصة بملعبك:</p>
+                    <div style="background: #f1f5f9; padding: 10px; border-radius: 8px; word-break: break-all; font-size: 0.85rem; margin-bottom: 10px;">
+                        ${userLink}
+                    </div>
+                    
+                    <button onclick="navigator.clipboard.writeText('${userLink}'); alert('تم نسخ الرابط!')" 
+                            style="background: #64748b; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 20px;">
+                        نسخ الرابط
+                    </button>
+
+                    <div id="qrcode" style="display: flex; justify-content: center; margin-bottom: 15px;"></div>
+                    <p class="hint">صور الشاشة أو احفظ رمز QR لوضعه في مدخل الملعب</p>
+
+                    <button onclick="window.location.href='dashboard.html?id=${finalSlug}'" 
+                            class="btn-submit" style="margin-top: 20px;">
+                        الدخول للوحة التحكم
+                    </button>
+                </div>
+            `;
+
+            // توليد رمز QR فوراً
+            new QRCode(document.getElementById("qrcode"), {
+                text: userLink,
+                width: 160,
+                height: 160
+            });
+
+        } else {
+            alert("حدث خطأ أثناء الحفظ في السيرفر.");
+            btn.disabled = false;
+        }
+    } catch (e) {
+        alert("خطأ في الاتصال. تأكد من تحديث النشر (Deployment) في Google Script.");
+        btn.disabled = false;
+    }
+}
 </script>
 </body>
 </html>
