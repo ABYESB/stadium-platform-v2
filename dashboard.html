@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعدادات الملعب - لوحة التحكم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #2563eb; --bg: #f1f5f9; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        h2 { color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .section { margin-bottom: 20px; text-align: right; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-save { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
 
+<div class="container">
+    <h2>⚙️ إعدادات ملعبك</h2>
+    
+    <form id="settingsForm">
+        <div class="section">
+            <label>اسم الملعب التجاري</label>
+            <input type="text" id="stadiumName" placeholder="مثلاً: ملعب نجوم بوعسل">
+        </div>
+
+        <div class="section">
+            <label>الجمعية أو الجهة المشرفة</label>
+            <input type="text" id="organization" placeholder="اسم الجمعية المسؤولة">
+        </div>
+
+        <div class="section">
+            <label>ثمن الحجز بالساعة (للفرد)</label>
+            <div class="grid">
+                <input type="number" id="priceDay" placeholder="نهاراً (درهم)">
+                <input type="number" id="priceNight" placeholder="ليلاً - مع الأضواء (درهم)">
+            </div>
+        </div>
+
+        <div class="section">
+            <label>رقم هاتف المشرف (لاستقبال الحجوزات)</label>
+            <input type="tel" id="managerPhone" placeholder="06xxxxxxxx">
+        </div>
+
+        <div class="section">
+            <label>موقع الملعب (وصف أو رابط الخريطة)</label>
+            <input type="text" id="location" placeholder="اكتب العنوان أو ضع رابط Google Maps">
+        </div>
+
+        <div class="section">
+            <label>روابط التواصل الاجتماعي</label>
+            <div class="grid">
+                <input type="text" id="fbLink" placeholder="فيسبوك">
+                <input type="text" id="instaLink" placeholder="إنستغرام">
+            </div>
+        </div>
+
+        <button type="button" class="btn-save" onclick="saveSettings()">حفظ التغييرات ونشر الصفحة</button>
+    </form>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('id'); // المعرف الفريد للمستخدم
+
+    function saveSettings() {
+        // هنا سنقوم بإرسال هذه البيانات إلى Google Apps Script
+        // لتحديث السطر الخاص بهذا الـ slug في الشيت
+        alert("جاري حفظ الإعدادات لـ: " + slug);
+    }
+</script>
+
+</body>
+</html>
