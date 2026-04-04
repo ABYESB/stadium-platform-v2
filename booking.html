@@ -1,1 +1,124 @@
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NG32N2WN');</script>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">ملعب القرب - حجز</title>
 
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="logo-512.png">
+    <meta name="theme-color" content="#1e3a8a">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="style.css?v=1.21">
+
+    <script src="script.js?v=1.21" defer></script>
+</head>
+<body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <div class="app-container">
+        <div class="header-section">
+            <img src="https://i.ibb.co/wN3qyMKN/Untitled-Project.png" alt="Logo">
+            <h2 id="displayStadiumName">ملعب القرب</h2>
+            <p id="displayOrg" style="color: #64748b; font-size: 0.9rem;"></p>
+        </div>
+
+        <div class="action-buttons">
+            <button onclick="toggleRules()" class="btn-info">📜 قوانين الملعب</button>
+            <button id="btnLocation" class="btn-map">📍 موقع الملعب</button>
+        </div>
+
+        <div id="rulesModal" class="modal">
+            <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none; max-width: 500px;">
+                <div style="background-color: #1e3a8a; color: white; padding: 15px; position: relative; text-align: center;">
+                    <span class="close" onclick="toggleRules()" style="color: white; font-size: 28px; cursor: pointer; position: absolute; right: 20px; top: 10px;">&times;</span>
+                    <h3 id="rulesTitle" style="margin: 0; font-family: 'Cairo', sans-serif;">📜 قوانين الملعب</h3>
+                </div>
+                <div style="padding: 25px; text-align: right; direction: rtl; font-family: 'Cairo', sans-serif; background: white;">
+                    <ul style="list-style: none; padding: 0; margin: 0; line-height: 2;">
+                        <li style="font-weight: bold; color: #22c55e; font-size: 1.25em; border-bottom: 2px dashed #eee; margin-bottom: 15px; padding-bottom: 10px;">
+                            💰 ثمن الساعة: <span id="displayPriceDay">--</span> درهماً
+                        </li>
+                        <li id="nightPriceRow" style="display:none; color: #f59e0b;">💡 ثمن الليل (بعد الغروب): <span id="displayPriceNight">--</span> درهماً</li>
+                        <li>⚽ يمنع السب والشتم أو السلوك غير الرياضي.</li>
+                        <li>🧹 الحفاظ على نظافة الملعب والمرافق.</li>
+                    </ul>
+                    <button onclick="toggleRules()" style="width: 100%; margin-top: 20px; padding: 12px; background: #1e3a8a; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">حسناً، فهمت</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="week-navigation">
+            <button onclick="changeWeek(-1)">⬅️ السابق</button>
+            <div id="dateDisplay">الشهر والسنة</div>
+            <button onclick="changeWeek(1)">القادم ➡️</button>
+        </div>
+
+        <table id="bookingTable">
+            <thead><tr id="headerRow"><th>الساعة</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <div class="footer-buttons-container">
+            <a id="emailLink" href="#" class="footer-btn email-btn"><i class="fas fa-envelope"></i> تواصل معنا</a>
+            <a id="fbLink" href="#" target="_blank" class="footer-btn facebook-btn"><i class="fab fa-facebook-f"></i> الفيسبوك</a>
+            <button onclick="openAdminPanel()" class="footer-btn admin-btn"><i class="fas fa-user-shield"></i> المسؤول</button>
+        </div>
+
+        <p class="copyright">© 2026 جميع الحقوق محفوظة </p>
+    </div>
+
+    <a id="whatsappFloat" href="#" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        <span class="tooltip-text">المشرف</span>
+    </a>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyin4mI5dLJgB1g-tyoA89Y7cI9SNCWKCXhZifUGg3YFJA7cFj0_qWSwORcDnKPVzyF/exec';
+        const urlParams = new URLSearchParams(window.location.search);
+        const stadiumId = urlParams.get('id');
+
+        async function fetchStadiumData() {
+            if (!stadiumId) return;
+
+            try {
+                const response = await fetch(`${scriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+                const data = await response.json();
+
+                if (data !== "NotFound") {
+                    // تحديث النصوص
+                    document.title = "حجز " + data.stadium_name;
+                    document.getElementById('displayStadiumName').innerText = data.stadium_name;
+                    document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
+                    document.getElementById('rulesTitle').innerText = "📜 قوانين " + data.stadium_name;
+                    document.getElementById('displayPriceDay').innerText = data.price_day;
+                    
+                    if(data.price_night) {
+                        document.getElementById('nightPriceRow').style.display = "block";
+                        document.getElementById('displayPriceNight').innerText = data.price_night;
+                    }
+
+                    // تحديث الروابط
+                    if(data.location) {
+                        document.getElementById('btnMap').onclick = () => window.open(data.location, '_blank');
+                    }
+                    
+                    document.getElementById('whatsappFloat').href = "https://wa.me/212" + data.phone.substring(1);
+                    document.getElementById('fbLink').href = data.fb || "#";
+                    document.getElementById('emailLink').href = "mailto:" + data.email;
+                }
+            } catch (e) { console.error("Error fetching data:", e); }
+        }
+
+        window.onload = fetchStadiumData;
+    </script>
+</body>
+</html>
