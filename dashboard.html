@@ -128,20 +128,23 @@
             const response = await fetch(finalUpdateURL);
             const result = await response.text();
 
-            if (result === "Update Success") {
-                alert("✅ تم حفظ الإعدادات بنجاح! صفحة الحجز الخاصة بك جاهزة الآن.");
-                // اختياري: توجيهه لمشاهدة صفحة الحجز الخاصة به
-                // window.location.href = `booking.html?id=${slug}`;
-            } else {
-                alert("❌ حدث خطأ: " + result);
-            }
-        } catch (e) {
-            alert("❌ خطأ في الاتصال بالسيرفر.");
-        } finally {
-            btn.innerText = "حفظ التغييرات ونشر الصفحة";
-            btn.disabled = false;
+         if (result === "Update Success") {
+            alert("✅ تم حفظ الإعدادات بنجاح! سيتم توجيهك الآن لمشاهدة صفحة الحجز الخاصة بملعبك.");
+            
+            // تفعيل التوجيه التلقائي لصفحة الحجز مع إرسال المعرف (slug)
+            window.location.href = "booking.html?id=" + slug;
+            
+        } else {
+            alert("❌ حدث خطأ في قاعدة البيانات: " + result);
         }
+    } catch (e) {
+        console.error(e);
+        alert("❌ خطأ في الاتصال بالسيرفر، تأكد من أن رابط السكريبت صحيح.");
+    } finally {
+        btn.innerText = "حفظ التغييرات ونشر الصفحة";
+        btn.disabled = false;
     }
+}
 </script>
 
 </body>
