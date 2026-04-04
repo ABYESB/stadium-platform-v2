@@ -64,13 +64,83 @@
 </div>
 
 <script>
+  // 1. إعداد المتغيرات الأساسية
+    const scriptURL = 'ضع_هنا_رابط_الاسكريبت_الجديد'; // استبدل هذا بالرابط الذي حصلت عليه بعد آخر Deployment
     const urlParams = new URLSearchParams(window.location.search);
-    const slug = urlParams.get('id'); // المعرف الفريد للمستخدم
+    const slug = urlParams.get('id');
 
-    function saveSettings() {
-        // هنا سنقوم بإرسال هذه البيانات إلى Google Apps Script
-        // لتحديث السطر الخاص بهذا الـ slug في الشيت
-        alert("جاري حفظ الإعدادات لـ: " + slug);
+    // 2. دالة لجلب البيانات الحالية فور فتح الصفحة
+    async function loadCurrentData() {
+        if (!slug) {
+            alert("خطأ: لم يتم العثور على معرف الملعب.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${scriptURL}?action=getStadiumDetails&id=${slug}`);
+            const data = await response.json();
+
+            if (data !== "NotFound") {
+                // تعبئة الخانات بالبيانات الموجودة مسبقاً في الشيت
+                document.getElementById('stadiumName').value = data.stadium_name || "";
+                document.getElementById('organization').value = data.org || "";
+                document.getElementById('priceDay').value = data.price_day || "";
+                document.getElementById('priceNight').value = data.price_night || "";
+                document.getElementById('managerPhone').value = data.phone || "";
+                document.getElementById('location').value = data.location || "";
+                document.getElementById('fbLink').value = data.fb || "";
+                document.getElementById('instaLink').value = data.insta || "";
+            }
+        } catch (e) {
+            console.log("لا توجد بيانات سابقة أو حدث خطأ في الجلب.");
+        }
+    }
+
+    // تشغيل الجلب التلقائي عند فتح الصفحة
+    loadCurrentData();
+
+    // 3. دالة حفظ البيانات الجديدة
+    async function saveSettings() {
+        const btn = document.querySelector('.btn-save');
+        
+        // تجميع البيانات من الخانات
+        const stadiumName = document.getElementById('stadiumName').value;
+        const org = document.getElementById('organization').value;
+        const pDay = document.getElementById('priceDay').value;
+        const pNight = document.getElementById('priceNight').value;
+        const phone = document.getElementById('managerPhone').value;
+        const loc = document.getElementById('location').value;
+        const fb = document.getElementById('fbLink').value;
+        const insta = document.getElementById('instaLink').value;
+
+        if (!stadiumName || !phone) {
+            alert("يرجى كتابة اسم الملعب ورقم الهاتف على الأقل.");
+            return;
+        }
+
+        btn.innerText = "جاري الحفظ والتحميل...";
+        btn.disabled = true;
+
+        // بناء الرابط الخاص بالأمر updateSettings
+        const finalUpdateURL = `${scriptURL}?action=updateSettings&slug=${slug}&stadiumName=${encodeURIComponent(stadiumName)}&org=${encodeURIComponent(org)}&pDay=${pDay}&pNight=${pNight}&phone=${phone}&loc=${encodeURIComponent(loc)}&fb=${encodeURIComponent(fb)}&insta=${encodeURIComponent(insta)}`;
+
+        try {
+            const response = await fetch(finalUpdateURL);
+            const result = await response.text();
+
+            if (result === "Update Success") {
+                alert("✅ تم حفظ الإعدادات بنجاح! صفحة الحجز الخاصة بك جاهزة الآن.");
+                // اختياري: توجيهه لمشاهدة صفحة الحجز الخاصة به
+                // window.location.href = `booking.html?id=${slug}`;
+            } else {
+                alert("❌ حدث خطأ: " + result);
+            }
+        } catch (e) {
+            alert("❌ خطأ في الاتصال بالسيرفر.");
+        } finally {
+            btn.innerText = "حفظ التغييرات ونشر الصفحة";
+            btn.disabled = false;
+        }
     }
 </script>
 
