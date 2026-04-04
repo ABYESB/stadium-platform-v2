@@ -1,6 +1,17 @@
 // --- 1. الإعدادات والروابط الأساسية ---
-const scriptURL = '';
-let selectedSlots = []; 
+
+// استخراج معرف الملعب (ID) من رابط الصفحة (مثلاً: id=st-v6at7ogy)
+const urlParams = new URLSearchParams(window.location.search);
+const stadiumId = urlParams.get('id'); 
+
+// رابط السكريبت الأساسي (Web App URL) الذي حصلت عليه من Google Apps Script
+// ملاحظة: تأكد من وضع رابط الـ exec الخاص بك هنا
+const baseScriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
+// بناء الرابط النهائي الذي يطلب بيانات هذا الملعب تحديداً
+const scriptURL = stadiumId ? `${baseScriptURL}?st_id=${stadiumId}` : baseScriptURL;
+
+let selectedSlots = [];
 
 // دالة ذكية تجلب تاريخ "الاثنين" للأسبوع الحالي مهما كان اليوم
 // يجب أن تكون هذه السطور في أعلى الملف لتراها كل الدوال
