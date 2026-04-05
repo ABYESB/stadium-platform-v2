@@ -113,6 +113,12 @@ function initTable() {
     
     loadExistingBookings(); // استدعاء الحجوزات لتلوين الجدول بالأحمر
 }
+function getFormattedDate(date) {
+    let day = String(date.getDate()).padStart(2, '0');
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
 
 // 4. الدوال المساعدة (يجب وجودها ليعمل الجدول)
 function getMonday(d) {
