@@ -12,24 +12,45 @@ async function loadStadiumDynamicDetails() {
     try {
         const response = await fetch(`${baseScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
+        
         if (data !== "NotFound") {
+            // 1. تحديث العناوين والنصوص الأساسية
             document.title = "حجز " + data.stadium_name;
             document.getElementById('displayStadiumName').innerText = data.stadium_name;
             document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
+            
+            // 2. تحديث الشعار (Logo) ديناميكياً
+            const logoImg = document.getElementById('displayLogo');
+            if (logoImg && data.logo_url) {
+                logoImg.src = data.logo_url; // نفترض أن الحقل في قاعدة البيانات اسمه logo_url
+            }
+
+            // 3. تحديث اسم الملعب داخل نافذة الحجز (Modal)
+            const modalStadiumName = document.getElementById('modalStadiumName');
+            if (modalStadiumName) {
+                modalStadiumName.innerText = data.stadium_name;
+            }
+
+            // 4. تحديث الأسعار
             document.getElementById('displayPriceDay').innerText = data.price_day;
             if(data.price_night) {
-                document.getElementById('nightPriceRow').style.display = "block";
+                const nightRow = document.getElementById('nightPriceRow');
+                if(nightRow) nightRow.style.display = "block";
                 document.getElementById('displayPriceNight').innerText = data.price_night;
             }
+
+            // 5. تخزين البيانات في متغيرات عامة لاستخدامها في الواتساب
             window.stadiumPhone = data.phone;
             window.stadiumName = data.stadium_name;
-            // إصلاح خطأ الزر
+            
+            // 6. إصلاح رابط الموقع الجغرافي
             const locBtn = document.getElementById('btnLocation');
             if(locBtn) locBtn.onclick = () => window.open(data.location, '_blank');
         }
-    } catch (error) { console.error("Error loading details:", error); }
+    } catch (error) { 
+        console.error("Error loading details:", error); 
+    }
 }
-
 // 3. بناء الجدول (دالة محسنة)
 
 function initTable() {
