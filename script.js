@@ -178,3 +178,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // (باقي الدوال الإضافية مثل handleSlotSelection و closeBookingModal تبقى كما هي لديك مع التأكد من استدعاء الدوال الجديدة)
+// دالة فتح وإغلاق القوانين
+function toggleRules() {
+    const modal = document.getElementById('rulesModal');
+    modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+}
+
+// دالة تغيير الأسابيع
+function changeWeek(direction) {
+    currentStartDate.setDate(currentStartDate.getDate() + (direction * 7));
+    initTable(); // إعادة بناء الجدول بالتاريخ الجديد
+}
