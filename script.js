@@ -31,36 +31,87 @@ async function loadStadiumDynamicDetails() {
 }
 
 // 3. بناء الجدول (دالة محسنة)
+
 function initTable() {
     const tableBody = document.getElementById('tableBody');
     const headerRow = document.getElementById('headerRow');
+    const footerRow = document.getElementById('footerRow'); // ميزة السطر السفلي
     const dateDisplay = document.getElementById('dateDisplay');
+    
     if (!tableBody || !headerRow) return;
 
     tableBody.innerHTML = '';
     headerRow.innerHTML = '<th>الساعة</th>';
+    if (footerRow) footerRow.innerHTML = '<th>الساعة</th>';
+    
     const daysArr = ["الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"];
     
+    // عرض الشهر والسنة في الأعلى
+    let displayDate = new Date(currentStartDate.getTime());
+    dateDisplay.innerText = displayDate.toLocaleDateString('ar-MA', { month: 'long', year: 'numeric' });
+
+    let currentWeekDates = [];
     for (let i = 0; i < 7; i++) {
-        let d = new Date(currentStartDate);
-        d.setDate(d.getDate() + i);
-        headerRow.innerHTML += `<th>${daysArr[i]}<br><small>${d.getDate()}/${d.getMonth()+1}</small></th>`;
+        let d = new Date(currentStartDate.getTime());
+        d.setDate(d.getDate() + i); 
+        
+        // دالة تنسيق التاريخ يجب أن تكون موجودة في ملفك (getFormattedDate)
+        let fullDate = getFormattedDate(d);
+        currentWeekDates.push({name: daysArr[i], date: fullDate, rawDate: d}); 
+        
+        let cellContent = `${daysArr[i]}<br><small>${d.getDate()}</small>`;
+        headerRow.innerHTML += `<th>${cellContent}</th>`;
+        if (footerRow) footerRow.innerHTML += `<th>${cellContent}</th>`;
     }
 
-    dateDisplay.innerText = currentStartDate.toLocaleDateString('ar-MA', { month: 'long', year: 'numeric' });
+    const now = new Date(); // الوقت الحالي للمقارنة الدقيقة
 
     for (let hour = 8; hour <= 23; hour++) {
-        let row = `<tr><td class="time-cell">${hour}:00</td>`;
+        let hLabel24 = `${hour}:00`; 
+
+        // تحويل الوقت لنظام 12 ساعة (ص/م) بشكل احترافي
+        let currentH = hour > 12 ? hour - 12 : hour;
+        let nextH = (hour + 1) > 12 ? (hour + 1) - 12 : (hour + 1);
+        
+        if (hour === 12) currentH = 12;
+        if ((hour + 1) === 12) nextH = 12;
+        if (hour === 0) currentH = 12;
+
+        let suffix = (hour >= 12) ? "م" : "ص";
+        let hLabelRange = `${currentH} إلى ${nextH} ${suffix}`; 
+
+        // بناء عمود الوقت الجانبي بتنسيق مميز
+        let row = `<tr><td style="background:#f8fafc; font-weight:bold; white-space: nowrap; font-size: 0.85rem; padding: 5px; border: 1px solid #ddd;">${hLabelRange}</td>`;
+        
         for (let day = 0; day < 7; day++) {
-            let d = new Date(currentStartDate);
-            d.setDate(d.getDate() + day);
-            let dateStr = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-            row += `<td class="slot" data-date="${dateStr}" data-hour="${hour}:00" onclick="handleSlotSelection(this)">متاح</td>`;
+            // إنشاء وقت الخانة بدقة للمقارنة
+            let slotTime = new Date(currentWeekDates[day].rawDate.getTime());
+            slotTime.setHours(hour, 0, 0, 0);
+
+            if (slotTime < now) {
+                // الحالة 1: ساعة مرت (رمادي)
+                row += `<td class="slot past" 
+                            data-date="${currentWeekDates[day].date.trim()}" 
+                            data-hour="${hLabel24}" 
+                            style="background-color: #f1f5f9; color: #cbd5e1; cursor: not-allowed; pointer-events: none; font-size: 0.8rem; border: 1px solid #ddd;">منتهي</td>`;
+            } else if (daysArr[day] === "الأحد" && hour >= 8 && hour < 12) {
+                // الحالة 2: حجز إداري ثابت (الأحد صباحاً مثلاً)
+                row += `<td class="slot booked" style="background-color: #ef4444; color: white; pointer-events: none; border: 1px solid #ddd;">محجوز</td>`;
+            } else {
+                // الحالة 3: متاح للحجز
+                row += `<td class="slot" 
+                            style="background-color: #ffffff; cursor: pointer; border: 1px solid #ddd;"
+                            data-date="${currentWeekDates[day].date.trim()}" 
+                            data-day="${currentWeekDates[day].name}" 
+                            data-hour="${hLabel24}" 
+                            onclick="handleSlotSelection(this)">متاح</td>`;
+            }
         }
         row += `</tr>`;
         tableBody.innerHTML += row;
     }
-    loadExistingBookings();
+    
+    loadExistingBookings(); // استدعاء الحجوزات لتلوين الجدول بالأحمر
 }
 
 // 4. الدوال المساعدة (يجب وجودها ليعمل الجدول)
