@@ -70,12 +70,128 @@ function getMonday(d) {
     return new Date(d.setDate(diff));
 }
 
-function handleSlotSelection(cell) {
-    // هذه الدالة تفتح الـ Modal الخاص بالحجز
-    const date = cell.getAttribute('data-date');
-    const hour = cell.getAttribute('data-hour');
-    alert(`لقد اخترت موعد: ${date} الساعة: ${hour}\nسيتم فتح نافذة التأكيد قريباً.`);
-    // هنا يمكنك إضافة كود فتح الـ Modal (bookingModal)
+function handleSlotSelection(element) {
+    // 1. منع اختيار المربعات المحجوزة أو المنتهية
+    if (element.innerText === "محجوز" || element.classList.contains("booked") || element.classList.contains("past")) return; 
+
+    const isAlreadySelected = element.classList.contains('selected');
+
+    if (!isAlreadySelected) {
+        // حماية: منع حجز أكثر من ساعتين
+        if (selectedSlots.length >= 2) {
+            alert("⚠️ عذراً، لا يمكن حجز أكثر من ساعتين متتاليتين.");
+            return;
+        }
+        // حماية: التأكد أن الساعات متتالية وفي نفس اليوم
+        if (selectedSlots.length === 1) {
+            const firstSlot = selectedSlots[0];
+            const firstHour = parseInt(firstSlot.hour.split(':')[0]);
+            const currentHour = parseInt(element.getAttribute('data-hour').split(':')[0]);
+            const currentDate = element.getAttribute('data-date');
+
+            if (Math.abs(currentHour - firstHour) !== 1 || currentDate !== firstSlot.date) {
+                alert("⚠️ عذراً، يجب اختيار ساعات متتالية وفي نفس اليوم.");
+                return;
+            }
+        }
+    }
+
+    // تفعيل/إلغاء اختيار المربع
+    element.classList.toggle('selected');
+    const date = element.getAttribute('data-date');
+    const hour = element.getAttribute('data-hour');
+    const dayName = element.getAttribute('data-day'); 
+
+    if (element.classList.contains('selected')) {
+        selectedSlots.push({ hour, date, element, dayName }); 
+        document.getElementById('bookingModal').style.display = "block";
+    } else {
+        selectedSlots = selectedSlots.filter(s => s.element !== element);
+        if (selectedSlots.length === 0) {
+            document.getElementById('bookingModal').style.display = "none";
+        }
+    }
+    updateModalDetails(); // تحديث النصوص داخل النافذة
+}
+function updateModalDetails() {
+    const detailsText = document.getElementById('selectedDetails');
+    if (!detailsText || selectedSlots.length === 0) return;
+
+    // ترتيب الساعات المختارة تصاعدياً
+    const sortedSlots = [...selectedSlots].sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
+    const date = sortedSlots[0].date;
+    const hours = sortedSlots.map(s => s.hour).join(" و ");
+
+    detailsText.innerText = `الموعد: يوم ${date} | الساعة: ${hours}`;
+}
+
+async function submitFinalBooking() {
+    const name = document.getElementById('userName').value;
+    const phone = document.getElementById('userPhone').value;
+    
+    if (!name || !phone) return alert("يرجى إدخال الاسم ورقم الهاتف.");
+
+    // إظهار رسالة انتظار
+    const btn = document.getElementById('finalConfirmBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "جاري الحجز... ⏳";
+    btn.disabled = true;
+
+    try {
+        // إرسال كل ساعة مختارة كسطر منفصل في قاعدة البيانات
+        for (const slot of selectedSlots) {
+            await fetch(baseScriptURL, {
+                method: 'POST',
+                mode: 'no-cors', // لتجنب مشاكل التصريح بين السيرفرات
+                body: JSON.stringify({
+                    st_id: stadiumId,
+                    hour: slot.hour,
+                    date: slot.date,
+                    name: name,
+                    phone: phone
+                })
+            });
+        }
+
+        alert("✅ تم الحجز بنجاح!");
+        closeBookingModal();
+        initTable(); // إعادة تحديث الجدول لإظهار المربعات باللون الأحمر
+    } catch (error) {
+        console.error("Error:", error);
+        alert("❌ حدث خطأ أثناء الحجز، يرجى المحاولة لاحقاً.");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+function closeBookingModal() {
+    const modal = document.getElementById('bookingModal');
+    if (modal) modal.style.display = "none";
+
+    // تنظيف الحقول
+    document.getElementById('userName').value = "";
+    document.getElementById('userPhone').value = "";
+    const checkbox = document.getElementById('confirmCheckbox');
+    if (checkbox) checkbox.checked = false;
+
+    // إزالة تحديد المربعات الخضراء
+    selectedSlots.forEach(s => {
+        if (s.element) s.element.classList.remove('selected');
+    });
+    selectedSlots = [];
+    
+    // تحديث حالة زر التأكيد (ليصبح معطلاً مرة أخرى)
+    if (typeof toggleSubmitButton === "function") toggleSubmitButton();
+}
+
+function toggleSubmitButton() {
+    const checkbox = document.getElementById('confirmCheckbox');
+    const btn = document.getElementById('finalConfirmBtn');
+    if (checkbox && btn) {
+        btn.disabled = !checkbox.checked;
+        btn.style.opacity = checkbox.checked ? "1" : "0.5";
+    }
 }
 
 function toggleRules() {
@@ -112,3 +228,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadStadiumDynamicDetails();
     initTable();
 });
+window.onclick = function(event) {
+    const bookingModal = document.getElementById('bookingModal');
+    const rulesModal = document.getElementById('rulesModal');
+    if (event.target == bookingModal) closeBookingModal();
+    if (event.target == rulesModal) toggleRules();
+}
