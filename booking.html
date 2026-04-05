@@ -29,6 +29,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <img src="https://i.ibb.co/wN3qyMKN/Untitled-Project.png" alt="Logo">
             <h2 id="displayStadiumName">ملعب القرب</h2>
             <p id="displayOrg" style="color: #64748b; font-size: 0.9rem;"></p>
+         
+    </div>
+</div>
         </div>
 
         <div class="action-buttons">
@@ -81,8 +84,35 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <span class="tooltip-text">المشرف</span>
     </a>
 
-    <script>
-    <script src="script.js?v=1.25" defer></script>
-    </script>
+    <div id="bookingModal" class="modal">
+    <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none; max-width: 450px;">
+        <div style="background-color: #22c55e; color: white; padding: 15px; text-align: center; position: relative;">
+            <span class="close" onclick="closeBookingModal()" style="color: white; font-size: 28px; cursor: pointer; position: absolute; right: 20px; top: 10px;">&times;</span>
+            <h3 style="margin: 0; font-family: 'Cairo', sans-serif;">✅ تأكيد الحجز</h3>
+        </div>
+        
+        <div style="padding: 20px; background: white; direction: rtl; font-family: 'Cairo', sans-serif;">
+            <p id="selectedDetails" style="background: #f0fdf4; padding: 10px; border-radius: 8px; color: #166534; font-weight: bold; text-align: center;"></p>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">الاسم الكامل:</label>
+                <input type="text" id="userName" placeholder="أدخل اسمك" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">رقم الهاتف:</label>
+                <input type="tel" id="userPhone" placeholder="06XXXXXXXX" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+
+            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fef3c7;">
+                <input type="checkbox" id="confirmCheckbox" onchange="toggleSubmitButton()">
+                <label for="confirmCheckbox" style="font-size: 0.85rem; color: #92400e; cursor: pointer;">أوافق على قوانين الملعب وأتعهد بالحضور في الوقت.</label>
+            </div>
+
+            <button id="finalConfirmBtn" onclick="submitFinalBooking()" disabled style="width: 100%; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; opacity: 0.5;">تأكيد الحجز النهائي ⚽</button>
+            <button onclick="closeBookingModal()" style="width: 100%; margin-top: 10px; padding: 10px; background: #f1f5f9; color: #64748b; border: none; border-radius: 8px; cursor: pointer;">إلغاء</button>
+        </div>
+     </div>
+ </div>
 </body>
 </html>
