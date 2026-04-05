@@ -5,7 +5,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
 
 // رابط السكريبت الأساسي (تأكد من وضع رابط الـ exec الخاص بك هنا)
-const baseScriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+const baseScriptURL = 'https://script.google.com/macros/s/AKfycbwukrwucGuzTvWCQWNcXZebNQW-bIL1LyGZrPgaU6cBat6h5hF6aTN2jNOaJs7n16Uf/exec';
 
 // بناء الرابط النهائي الذي يطلب بيانات هذا الملعب تحديداً
 const scriptURL = stadiumId ? `${baseScriptURL}?st_id=${stadiumId}` : baseScriptURL;
