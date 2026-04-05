@@ -65,16 +65,28 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <button onclick="changeWeek(1)">القادم ➡️</button>
         </div>
 
-        <table id="bookingTable">
-            <thead><tr id="headerRow"><th>الساعة</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+     <table id="bookingTable">
+    <thead>
+        <tr id="headerRow">
+            <th>الساعة</th>
+        </tr>
+    </thead>
+    
+    <tbody id="tableBody">
+        </tbody>
 
-        <div class="footer-buttons-container">
-            <a id="emailLink" href="#" class="footer-btn email-btn"><i class="fas fa-envelope"></i> تواصل معنا</a>
-            <a id="fbLink" href="#" target="_blank" class="footer-btn facebook-btn"><i class="fab fa-facebook-f"></i> الفيسبوك</a>
-            <button onclick="openAdminPanel()" class="footer-btn admin-btn"><i class="fas fa-user-shield"></i> المسؤول</button>
-        </div>
+    <tfoot>
+        <tr id="footerRow">
+            <th>الساعة</th>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="footer-buttons-container">
+    <a id="emailLink" href="#" class="footer-btn email-btn"><i class="fas fa-envelope"></i> تواصل معنا</a>
+    <a id="fbLink" href="#" target="_blank" class="footer-btn facebook-btn"><i class="fab fa-facebook-f"></i> الفيسبوك</a>
+    <button onclick="openAdminPanel()" class="footer-btn admin-btn"><i class="fas fa-user-shield"></i> المسؤول</button>
+</div>
 
         <p class="copyright">© 2026 جميع الحقوق محفوظة </p>
     </div>
