@@ -162,13 +162,33 @@ function handleSlotSelection(element) {
     if (element.classList.contains('selected')) {
         selectedSlots.push({ hour, date, element, dayName }); 
         document.getElementById('bookingModal').style.display = "block";
+        
+        // --- منطق ذكاء زر الساعة الإضافية ---
+        const extraBtn = document.getElementById('extraSlotContainer');
+        if (selectedSlots.length === 1) {
+            // حساب الساعة التالية (مثلاً 18:00 تصبح 19)
+            let nextH = (parseInt(hour.split(':')[0]) + 1) + ":00";
+            // البحث عن المربع الموالي في الجدول
+            let nextSlot = document.querySelector(`[data-date="${date}"][data-hour="${nextH}"]`);
+            
+            // شرط الإظهار: يجب أن توجد ساعة تالية، وأن لا تكون محجوزة، ولا في الماضي
+            if (nextSlot && !nextSlot.classList.contains('booked') && !nextSlot.classList.contains('past')) {
+                extraBtn.style.display = "block";
+            } else {
+                extraBtn.style.display = "none";
+            }
+        } else {
+            // إذا اختار المستخدم ساعتين فعلياً، نخفي الزر
+            extraBtn.style.display = "none";
+        }
+        // ----------------------------------
     } else {
         selectedSlots = selectedSlots.filter(s => s.element !== element);
         if (selectedSlots.length === 0) {
             document.getElementById('bookingModal').style.display = "none";
         }
     }
-    updateModalDetails(); // تحديث النصوص داخل النافذة
+    updateModalDetails(); 
 }
 function updateModalDetails() {
     const detailsText = document.getElementById('selectedDetails');
@@ -290,4 +310,17 @@ window.onclick = function(event) {
     const rulesModal = document.getElementById('rulesModal');
     if (event.target == bookingModal) closeBookingModal();
     if (event.target == rulesModal) toggleRules();
+}
+
+function addNextSlot() {
+    if (selectedSlots.length >= 1) {
+        const lastSlot = selectedSlots[0];
+        let nextH = (parseInt(lastSlot.hour.split(':')[0]) + 1) + ":00";
+        let nextSlotElement = document.querySelector(`[data-date="${lastSlot.date}"][data-hour="${nextH}"]`);
+        
+        if (nextSlotElement) {
+            handleSlotSelection(nextSlotElement); // اختر الساعة التالية برمجياً
+            updateModalDetails();
+        }
+    }
 }
