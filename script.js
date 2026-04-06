@@ -16,7 +16,8 @@ let currentStartDate = getMonday(new Date());
 async function loadStadiumDynamicDetails() {
     if (!stadiumId) return;
     try {
-        const response = await fetch(`${baseScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+        // التعديل هنا: استخدام settingsScriptURL بدلاً من baseScriptURL
+        const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
         
         if (data !== "NotFound") {
@@ -236,7 +237,8 @@ async function submitFinalBooking() {
     try {
         // إرسال كل ساعة مختارة كسطر منفصل في قاعدة البيانات
         for (const slot of selectedSlots) {
-            await fetch(baseScriptURL, {
+            // التعديل هنا: استخدام bookingScriptURL بدلاً من baseScriptURL
+            await fetch(bookingScriptURL, {
                 method: 'POST',
                 mode: 'no-cors', 
                 body: JSON.stringify({
@@ -303,8 +305,8 @@ function changeWeek(direction) {
 
 function loadExistingBookings() {
     const script = document.createElement('script');
-    // أضف id=${stadiumId} في رابط الطلب
-    script.src = `${baseScriptURL}?action=getBookings&id=${stadiumId}&callback=handleData&t=${new Date().getTime()}`;
+    // التعديل: استخدام bookingScriptURL بدلاً من baseScriptURL لضمان جلب البيانات من شيت الحجوزات
+    script.src = `${bookingScriptURL}?action=getBookings&id=${stadiumId}&callback=handleData&t=${new Date().getTime()}`;
     document.body.appendChild(script);
 }
 
