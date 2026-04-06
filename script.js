@@ -1,7 +1,13 @@
-// 1. الإعدادات والروابط
+// --- 1. الإعدادات والروابط الأساسية ---
+
+// الرابط الأول: المسؤول عن جلب (اسم الملعب، اللوغو، الأسعار، الموقع)
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbw5_oz0u29qlE4_aystBMuiiy0PyjclPT6ikKxdjogvBdKpQWBTHBmYQtyvEv5-L_TF/exec';
+
+// الرابط الثاني: المسؤول عن (جلب الحجوزات القديمة، تلوين المربعات بالأحمر، تسجيل حجز جديد)
+const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbzZhw5liHJux1LrdgCXYCxSTx4qc8FzEEvXhIMAX9J8S53FpVeLuFqBTeOXYFMwWEeM/exec';
+
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
-const baseScriptURL = 'https://script.google.com/macros/s/AKfycbxzD4SDl_g1Sd56wpe2iv1-NHiogHQw9a56mAm3XUPXyFJpz4yoAKZ0Ky5WFa8Zg4vO/exec';
 
 let selectedSlots = [];
 let currentStartDate = getMonday(new Date());
