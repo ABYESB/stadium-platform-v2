@@ -232,11 +232,12 @@ async function submitFinalBooking() {
         for (const slot of selectedSlots) {
             await fetch(baseScriptURL, {
                 method: 'POST',
-                mode: 'no-cors', // لتجنب مشاكل التصريح بين السيرفرات
+                mode: 'no-cors', 
                 body: JSON.stringify({
-                    st_id: stadiumId,
-                    hour: slot.hour,
+                    stadiumId: stadiumId, // تم تغيير st_id إلى stadiumId ليتوافق مع السكريبت الجديد
+                    dayName: slot.dayName, // إضافة اسم اليوم لملء العمود B في الشيت
                     date: slot.date,
+                    hour: slot.hour,
                     name: name,
                     phone: phone
                 })
@@ -296,19 +297,25 @@ function changeWeek(direction) {
 
 function loadExistingBookings() {
     const script = document.createElement('script');
-    script.src = `${baseScriptURL}?action=getBookings&st_id=${stadiumId}&callback=handleData&t=${new Date().getTime()}`;
+    // أضف id=${stadiumId} في رابط الطلب
+    script.src = `${baseScriptURL}?action=getBookings&id=${stadiumId}&callback=handleData&t=${new Date().getTime()}`;
     document.body.appendChild(script);
 }
 
 function handleData(bookings) {
     if (!Array.isArray(bookings)) return;
+    
     bookings.forEach(b => {
+        // نبحث عن المربع الذي يطابق التاريخ والساعة القادمين من الشيت
         const slot = document.querySelector(`[data-date="${b.date}"][data-hour="${b.hour}"]`);
+        
         if (slot) {
             slot.innerText = "محجوز";
-            slot.classList.add("booked");
-            slot.style.backgroundColor = "#ef4444";
-            slot.style.pointerEvents = "none";
+            slot.classList.add("booked"); // أضف كلاس للتصميم
+            slot.style.backgroundColor = "#ef4444"; // لون أحمر
+            slot.style.color = "white";
+            slot.style.pointerEvents = "none"; // منع الضغط عليه
+            slot.onclick = null; // إزالة وظيفة الضغط تماماً
         }
     });
 }
