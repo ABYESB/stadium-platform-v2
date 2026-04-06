@@ -1,7 +1,7 @@
 // 1. الإعدادات والروابط
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
-const baseScriptURL = 'https://script.google.com/macros/s/AKfycbwukrwucGuzTvWCQWNcXZebNQW-bIL1LyGZrPgaU6cBat6h5hF6aTN2jNOaJs7n16Uf/exec';
+const baseScriptURL = 'https://script.google.com/macros/s/AKfycbxzD4SDl_g1Sd56wpe2iv1-NHiogHQw9a56mAm3XUPXyFJpz4yoAKZ0Ky5WFa8Zg4vO/exec';
 
 let selectedSlots = [];
 let currentStartDate = getMonday(new Date());
