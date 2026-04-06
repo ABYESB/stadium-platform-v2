@@ -1,7 +1,7 @@
 // --- 1. الإعدادات والروابط الأساسية ---
 
 // الرابط الأول: المسؤول عن جلب (اسم الملعب، اللوغو، الأسعار، الموقع)
-const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbw5_oz0u29qlE4_aystBMuiiy0PyjclPT6ikKxdjogvBdKpQWBTHBmYQtyvEv5-L_TF/exec';
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbyZHTQKtqxSgGeZ7VgRwDranp1V5MvaIcaxgg5VuK0AP46cRug6To9AApmnIfwzJCWf/exec';
 
 // الرابط الثاني: المسؤول عن (جلب الحجوزات القديمة، تلوين المربعات بالأحمر، تسجيل حجز جديد)
 const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbzZhw5liHJux1LrdgCXYCxSTx4qc8FzEEvXhIMAX9J8S53FpVeLuFqBTeOXYFMwWEeM/exec';
