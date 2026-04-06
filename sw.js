@@ -1,4 +1,4 @@
-const cacheName = 'bouassel-v1.27'; // ارفع النسخة لـ 1.3 لضمان التغيير
+const cacheName = 'bouassel-v1.28'; // ارفع النسخة لـ 1.3 لضمان التغيير
 const assets = [
   '/bouassel/',
   '/bouassel/index.html',
