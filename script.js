@@ -470,3 +470,36 @@ async function scheduleNotification(bookingDate, bookingHour) {
     // --- 3. جدولة تنبيه قبل ساعة واحدة ---
     setReminder(1, `عجل يا بطل! تبقى ساعة واحدة فقط على انطلاق المباراة. ننتظرك في الملعب!`, 'reminder-1h');
 }
+let deferredPrompt;
+const installBanner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installApp');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // منع المتصفح من إظهار النافذة الافتراضية الباهتة
+    e.preventDefault();
+    // حفظ الحدث لاستخدامه عند الضغط على الزر
+    deferredPrompt = e;
+    // إظهار الشريط للمستخدم
+    installBanner.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        // إظهار نافذة التثبيت الرسمية
+        deferredPrompt.prompt();
+        // انتظار قرار المستخدم
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+        }
+        deferredPrompt = null;
+        installBanner.style.display = 'none';
+    }
+});
+
+// إخفاء الشريط إذا تم تثبيت التطبيق بالفعل
+window.addEventListener('appinstalled', () => {
+    installBanner.style.display = 'none';
+    deferredPrompt = null;
+    console.log('PWA was installed');
+});
