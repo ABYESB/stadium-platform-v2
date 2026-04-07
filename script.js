@@ -68,7 +68,6 @@ function initTable() {
     
     if (!tableBody || !headerRow) return;
 
-    tableBody.innerHTML = '';
     // تفريغ السطر العلوي والسفلي تمهيداً لملئهما
     headerRow.innerHTML = '<th>الساعة</th>';
     if (footerRow) footerRow.innerHTML = '<th>الساعة</th>';
@@ -94,6 +93,7 @@ function initTable() {
     }
 
     const now = new Date();
+    let allRowsHtml = ''; // متغير جديد لتجميع كل الصفوف بدلاً من مسح الجدول فوراً
 
     for (let hour = 8; hour <= 23; hour++) {
         let hLabel24 = `${hour}:00`; 
@@ -128,8 +128,11 @@ function initTable() {
             }
         }
         row += `</tr>`;
-        tableBody.innerHTML += row;
+        allRowsHtml += row; // تجميع الصفوف هنا
     }
+    
+    // التحديث الفعلي للجدول يتم مرة واحدة فقط في النهاية لمنع الوميض الأبيض
+    tableBody.innerHTML = allRowsHtml;
     
     loadExistingBookings(); 
 }
@@ -235,26 +238,46 @@ async function submitFinalBooking() {
     btn.disabled = true;
 
     try {
-        // إرسال كل ساعة مختارة كسطر منفصل في قاعدة البيانات
-        for (const slot of selectedSlots) {
-            // التعديل هنا: استخدام bookingScriptURL بدلاً من baseScriptURL
-            await fetch(bookingScriptURL, {
+        // --- التغيير الأول: إرسال الطلبات بالتوازي لسرعة فائقة ---
+        const bookingPromises = selectedSlots.map(slot => 
+            fetch(bookingScriptURL, {
                 method: 'POST',
                 mode: 'no-cors', 
                 body: JSON.stringify({
-                    stadiumId: stadiumId, // تم تغيير st_id إلى stadiumId ليتوافق مع السكريبت الجديد
-                    dayName: slot.dayName, // إضافة اسم اليوم لملء العمود B في الشيت
+                    stadiumId: stadiumId,
+                    dayName: slot.dayName,
                     date: slot.date,
                     hour: slot.hour,
                     name: name,
                     phone: phone
                 })
-            });
-        }
+            })
+        );
+
+        // انتظار انتهاء جميع الطلبات معاً
+        await Promise.all(bookingPromises);
+
+        // --- التغيير الثاني: تلوين المربعات فوراً يدوياً (يمنع اختفاء الحجوزات) ---
+        selectedSlots.forEach(slot => {
+            if (slot.element) {
+                slot.element.classList.remove('selected');
+                slot.element.classList.add('booked');
+                slot.element.innerText = "محجوز";
+                slot.element.style.backgroundColor = "#ef4444"; // اللون الأحمر
+                slot.element.style.color = "white";
+                slot.element.style.pointerEvents = "none";
+                slot.element.onclick = null;
+            }
+        });
 
         alert("✅ تم الحجز بنجاح!");
+        
+        // إغلاق النافذة وتنظيف المختار
         closeBookingModal();
-        initTable(); // إعادة تحديث الجدول لإظهار المربعات باللون الأحمر
+        
+        // تحديث البيانات في الخلفية بدون مسح الجدول
+        loadExistingBookings();
+
     } catch (error) {
         console.error("Error:", error);
         alert("❌ حدث خطأ أثناء الحجز، يرجى المحاولة لاحقاً.");
@@ -274,13 +297,16 @@ function closeBookingModal() {
     const checkbox = document.getElementById('confirmCheckbox');
     if (checkbox) checkbox.checked = false;
 
-    // إزالة تحديد المربعات الخضراء
+    // إزالة تحديد المربعات الخضراء (فقط التي لم يتم حجزها)
     selectedSlots.forEach(s => {
-        if (s.element) s.element.classList.remove('selected');
+        if (s.element && !s.element.classList.contains('booked')) {
+            s.element.classList.remove('selected');
+        }
     });
+    
     selectedSlots = [];
     
-    // تحديث حالة زر التأكيد (ليصبح معطلاً مرة أخرى)
+    // تحديث حالة زر التأكيد
     if (typeof toggleSubmitButton === "function") toggleSubmitButton();
 }
 
@@ -304,9 +330,24 @@ function changeWeek(direction) {
 }
 
 function loadExistingBookings() {
+    // 1. البحث عن أي سكريبت جلب بيانات قديم تم إنشاؤه سابقاً
+    const oldScript = document.getElementById('dataFetchScript');
+    
+    // 2. إذا وجد سكريبت قديم، قم بحذفه فوراً لتنظيف الذاكرة
+    if (oldScript) {
+        oldScript.remove();
+    }
+
+    // 3. إنشاء عنصر سكريبت جديد
     const script = document.createElement('script');
-    // التعديل: استخدام bookingScriptURL بدلاً من baseScriptURL لضمان جلب البيانات من شيت الحجوزات
+    
+    // 4. إعطاؤه معرف (ID) ثابت لكي نستطيع حذفه في المرة القادمة
+    script.id = 'dataFetchScript'; 
+    
+    // 5. ربط المصدر بالرابط الخاص بك مع إضافة بصمة زمنية لمنع التخزين المؤقت (Cache)
     script.src = `${bookingScriptURL}?action=getBookings&id=${stadiumId}&callback=handleData&t=${new Date().getTime()}`;
+    
+    // 6. إضافة السكريبت إلى الصفحة لبدء جلب البيانات
     document.body.appendChild(script);
 }
 
