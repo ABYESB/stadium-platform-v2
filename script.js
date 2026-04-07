@@ -453,8 +453,8 @@ async function scheduleNotification(bookingDate, bookingHour) {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("⚽ ملعب ", {
                         body: message,
-                        icon: "logo-512.png",
-                        badge: "logo-512.png",
+                        icon: "logo_no_background.png",
+                        badge: "logo_no_background.png",
                         vibrate: [200, 100, 200],
                         tag: tag,
                         requireInteraction: true // يبقى الإشعار ظاهراً حتى يغلقه المستخدم
