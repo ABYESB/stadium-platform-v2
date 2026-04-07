@@ -150,7 +150,7 @@ function getMonday(d) {
     return new Date(d.setDate(diff));
 }
 
-async function handleSlotSelection(element) {
+function handleSlotSelection(element) {
     // 1. منع اختيار المربعات المحجوزة أو المنتهية
     if (element.innerText === "محجوز" || element.classList.contains("booked") || element.classList.contains("past")) return; 
 
@@ -160,41 +160,6 @@ async function handleSlotSelection(element) {
     const dayName = element.getAttribute('data-day');
 
     if (!isAlreadySelected) {
-        // --- الفحص الاستباقي الفوري للساعة الحالية والتالية ---
-        const originalText = element.innerText;
-        element.innerText = "جاري التأكد..";
-        
-        try {
-            const checkRes = await fetch(`${bookingScriptURL}?action=getBookings&id=${stadiumId}&t=${new Date().getTime()}`);
-            const latestBookings = await checkRes.json();
-            
-            // فحص الساعة الحالية
-            const isHourTaken = latestBookings.some(b => b.date === date && b.hour === hour);
-            if (isHourTaken) {
-                element.innerText = "محجوز";
-                element.classList.add("booked");
-                element.style.backgroundColor = "#ef4444";
-                alert("⚠️ عذراً، هذه الساعة حُجزت للتو!");
-                return;
-            }
-
-            // فحص الساعة التالية (لتأمين زر الساعة الإضافية)
-            let nextH = (parseInt(hour.split(':')[0]) + 1) + ":00";
-            const isNextHourTaken = latestBookings.some(b => b.date === date && b.hour === nextH);
-            if (isNextHourTaken) {
-                let nextSlot = document.querySelector(`[data-date="${date}"][data-hour="${nextH}"]`);
-                if (nextSlot) {
-                    nextSlot.innerText = "محجوز";
-                    nextSlot.classList.add("booked");
-                    nextSlot.style.backgroundColor = "#ef4444";
-                }
-            }
-        } catch (e) {
-            console.log("Check failed, bypass...");
-        } finally {
-            if (element.innerText === "جاري التأكد..") element.innerText = originalText;
-        }
-
         // حماية: منع حجز أكثر من ساعتين
         if (selectedSlots.length >= 2) {
             alert("⚠️ عذراً، لا يمكن حجز أكثر من ساعتين متتاليتين.");
@@ -213,20 +178,20 @@ async function handleSlotSelection(element) {
         }
     }
 
-    // تفعيل/إلغاء اختيار المربع
+    // تفعيل/إلغاء اختيار المربع (تغيير بصري فوري وسلس)
     element.classList.toggle('selected');
 
     if (element.classList.contains('selected')) {
         selectedSlots.push({ hour, date, element, dayName }); 
         document.getElementById('bookingModal').style.display = "block";
         
-        // --- منطق ذكاء زر الساعة الإضافية ---
+        // --- منطق ذكاء زر الساعة الإضافية بناءً على حالة الجدول الحالية ---
         const extraBtn = document.getElementById('extraSlotContainer');
         if (selectedSlots.length === 1) {
             let nextH = (parseInt(hour.split(':')[0]) + 1) + ":00";
             let nextSlot = document.querySelector(`[data-date="${date}"][data-hour="${nextH}"]`);
             
-            // شرط الإظهار المحدث: يجب أن لا تكون محجوزة (بعد الفحص الجديد)
+            // يظهر الزر فقط إذا كانت الساعة التالية متاحة حالياً في الجدول
             if (nextSlot && !nextSlot.classList.contains('booked') && !nextSlot.classList.contains('past')) {
                 extraBtn.style.display = "block";
             } else {
@@ -264,15 +229,15 @@ async function submitFinalBooking() {
     // إظهار رسالة انتظار
     const btn = document.getElementById('finalConfirmBtn');
     const originalText = btn.innerText;
-    btn.innerText = "جاري الحجز... ⏳";
+    btn.innerText = "جاري التأكد والحجز... ⏳";
     btn.disabled = true;
 
     try {
-        // --- التغيير الأول: إرسال الطلبات بالتوازي لسرعة فائقة ---
-        const bookingPromises = selectedSlots.map(slot => 
-            fetch(bookingScriptURL, {
+        // نستخدم حلقة تكرار لمعالجة الساعات واحدة تلو الأخرى للتأكد من خلوها في الشيت
+        for (const slot of selectedSlots) {
+            // ملاحظة: أزلنا mode: 'no-cors' لنتمكن من قراءة رد الشيت (هل الساعة محجوزة أم لا)
+            const response = await fetch(bookingScriptURL, {
                 method: 'POST',
-                mode: 'no-cors', 
                 body: JSON.stringify({
                     stadiumId: stadiumId,
                     dayName: slot.dayName,
@@ -281,13 +246,20 @@ async function submitFinalBooking() {
                     name: name,
                     phone: phone
                 })
-            })
-        );
+            });
 
-        // انتظار انتهاء جميع الطلبات معاً
-        await Promise.all(bookingPromises);
+            const result = await response.json();
 
-        // --- التغيير الثاني: تلوين المربعات فوراً يدوياً (يمنع اختفاء الحجوزات) ---
+            // إذا كان الرد من الشيت يخبرنا بأن الساعة محجوزة بالفعل
+            if (result.result === "error") {
+                alert("⚠️ " + result.message); // سيعرض رسالة: عذراً، تم حجز هذا الوقت!
+                initTable(); // تحديث الجدول فوراً لإظهار الحجوزات الحقيقية
+                closeBookingModal();
+                return; // التوقف فوراً ومنع إكمال العملية
+            }
+        }
+
+        // --- إذا وصلنا هنا، يعني أن جميع الساعات تم حجزها بنجاح في الشيت ---
         selectedSlots.forEach(slot => {
             if (slot.element) {
                 slot.element.classList.remove('selected');
@@ -309,8 +281,12 @@ async function submitFinalBooking() {
         loadExistingBookings();
 
     } catch (error) {
+        // في حالة وجود قيود CORS من جوجل، سيتم الحجز في الشيت لكن المتصفح قد يظهر خطأ
+        // لذا نقوم بتحديث الجدول للتأكد من الحالة النهائية
         console.error("Error:", error);
-        alert("❌ حدث خطأ أثناء الحجز، يرجى المحاولة لاحقاً.");
+        alert("تنبيه: يرجى التحقق من الجدول للتأكد من حالة الحجز النهائية.");
+        initTable();
+        closeBookingModal();
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;
