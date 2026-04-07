@@ -150,13 +150,51 @@ function getMonday(d) {
     return new Date(d.setDate(diff));
 }
 
-function handleSlotSelection(element) {
+async function handleSlotSelection(element) {
     // 1. منع اختيار المربعات المحجوزة أو المنتهية
     if (element.innerText === "محجوز" || element.classList.contains("booked") || element.classList.contains("past")) return; 
 
     const isAlreadySelected = element.classList.contains('selected');
+    const date = element.getAttribute('data-date');
+    const hour = element.getAttribute('data-hour');
+    const dayName = element.getAttribute('data-day');
 
     if (!isAlreadySelected) {
+        // --- الفحص الاستباقي الفوري للساعة الحالية والتالية ---
+        const originalText = element.innerText;
+        element.innerText = "جاري التأكد..";
+        
+        try {
+            const checkRes = await fetch(`${bookingScriptURL}?action=getBookings&id=${stadiumId}&t=${new Date().getTime()}`);
+            const latestBookings = await checkRes.json();
+            
+            // فحص الساعة الحالية
+            const isHourTaken = latestBookings.some(b => b.date === date && b.hour === hour);
+            if (isHourTaken) {
+                element.innerText = "محجوز";
+                element.classList.add("booked");
+                element.style.backgroundColor = "#ef4444";
+                alert("⚠️ عذراً، هذه الساعة حُجزت للتو!");
+                return;
+            }
+
+            // فحص الساعة التالية (لتأمين زر الساعة الإضافية)
+            let nextH = (parseInt(hour.split(':')[0]) + 1) + ":00";
+            const isNextHourTaken = latestBookings.some(b => b.date === date && b.hour === nextH);
+            if (isNextHourTaken) {
+                let nextSlot = document.querySelector(`[data-date="${date}"][data-hour="${nextH}"]`);
+                if (nextSlot) {
+                    nextSlot.innerText = "محجوز";
+                    nextSlot.classList.add("booked");
+                    nextSlot.style.backgroundColor = "#ef4444";
+                }
+            }
+        } catch (e) {
+            console.log("Check failed, bypass...");
+        } finally {
+            if (element.innerText === "جاري التأكد..") element.innerText = originalText;
+        }
+
         // حماية: منع حجز أكثر من ساعتين
         if (selectedSlots.length >= 2) {
             alert("⚠️ عذراً، لا يمكن حجز أكثر من ساعتين متتاليتين.");
@@ -166,10 +204,9 @@ function handleSlotSelection(element) {
         if (selectedSlots.length === 1) {
             const firstSlot = selectedSlots[0];
             const firstHour = parseInt(firstSlot.hour.split(':')[0]);
-            const currentHour = parseInt(element.getAttribute('data-hour').split(':')[0]);
-            const currentDate = element.getAttribute('data-date');
+            const currentHour = parseInt(hour.split(':')[0]);
 
-            if (Math.abs(currentHour - firstHour) !== 1 || currentDate !== firstSlot.date) {
+            if (Math.abs(currentHour - firstHour) !== 1 || date !== firstSlot.date) {
                 alert("⚠️ عذراً، يجب اختيار ساعات متتالية وفي نفس اليوم.");
                 return;
             }
@@ -178,9 +215,6 @@ function handleSlotSelection(element) {
 
     // تفعيل/إلغاء اختيار المربع
     element.classList.toggle('selected');
-    const date = element.getAttribute('data-date');
-    const hour = element.getAttribute('data-hour');
-    const dayName = element.getAttribute('data-day'); 
 
     if (element.classList.contains('selected')) {
         selectedSlots.push({ hour, date, element, dayName }); 
@@ -189,22 +223,18 @@ function handleSlotSelection(element) {
         // --- منطق ذكاء زر الساعة الإضافية ---
         const extraBtn = document.getElementById('extraSlotContainer');
         if (selectedSlots.length === 1) {
-            // حساب الساعة التالية (مثلاً 18:00 تصبح 19)
             let nextH = (parseInt(hour.split(':')[0]) + 1) + ":00";
-            // البحث عن المربع الموالي في الجدول
             let nextSlot = document.querySelector(`[data-date="${date}"][data-hour="${nextH}"]`);
             
-            // شرط الإظهار: يجب أن توجد ساعة تالية، وأن لا تكون محجوزة، ولا في الماضي
+            // شرط الإظهار المحدث: يجب أن لا تكون محجوزة (بعد الفحص الجديد)
             if (nextSlot && !nextSlot.classList.contains('booked') && !nextSlot.classList.contains('past')) {
                 extraBtn.style.display = "block";
             } else {
                 extraBtn.style.display = "none";
             }
         } else {
-            // إذا اختار المستخدم ساعتين فعلياً، نخفي الزر
             extraBtn.style.display = "none";
         }
-        // ----------------------------------
     } else {
         selectedSlots = selectedSlots.filter(s => s.element !== element);
         if (selectedSlots.length === 0) {
