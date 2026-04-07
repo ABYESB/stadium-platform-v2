@@ -423,3 +423,13 @@ function addNextSlot() {
         }
     }
 }
+// --- تحديث الجدول تلقائياً كل 15 ثانية ---
+setInterval(() => {
+    // نقوم بالتحديث فقط إذا كان المستخدم لا يملأ حالياً بيانات الحجز
+    // وذلك لتجنب أي تداخل أثناء قيامه بالاختيار
+    const modal = document.getElementById('bookingModal');
+    if (modal && modal.style.display !== "block") {
+        console.log("جاري تحديث الحجوزات تلقائياً...");
+        loadExistingBookings();
+    }
+}, 15000); // 15000 ميلي ثانية تعني 15 ثانية
