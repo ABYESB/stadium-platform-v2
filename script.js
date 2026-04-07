@@ -269,6 +269,9 @@ async function submitFinalBooking() {
                 slot.element.style.color = "white";
                 slot.element.style.pointerEvents = "none";
                 slot.element.onclick = null;
+
+                // تفعيل جدولة التنبيهات للساعة المحجوزة
+                scheduleNotification(slot.date, slot.hour);
             }
         });
 
@@ -292,7 +295,6 @@ async function submitFinalBooking() {
         btn.disabled = false;
     }
 }
-
 function closeBookingModal() {
     const modal = document.getElementById('bookingModal');
     if (modal) modal.style.display = "none";
@@ -409,3 +411,62 @@ setInterval(() => {
         loadExistingBookings();
     }
 }, 15000); // 15000 ميلي ثانية تعني 15 ثانية
+
+async function scheduleNotification(bookingDate, bookingHour) {
+    if (!("Notification" in window)) {
+        console.log("هذا المتصفح لا يدعم التنبيهات.");
+        return;
+    }
+
+    // طلب الإذن من المستخدم (يظهر مرة واحدة فقط)
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
+
+    // --- تحويل بيانات الحجز إلى كائن وقت حقيقي ---
+    // التاريخ يأتي بتنسيق DD/MM/YYYY والساعة HH:00
+    const [day, month, year] = bookingDate.split('/');
+    const [hour] = bookingHour.split(':');
+    // ملاحظة: الشهور في JS تبدأ من 0 (يناير = 0)
+    const playTime = new Date(year, month - 1, day, parseInt(hour), 0, 0);
+    const now = new Date();
+
+    // --- 1. التنبيه الفوري (مباشرة بعد الضغط على زر الحجز) ---
+    navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification("✅ تم الحجز بنجاح", {
+            body: `موعدك في  يوم ${bookingDate} الساعة ${bookingHour}. ننتظرك!`,
+            icon: "logo-512.png",
+            badge: "logo-512.png",
+            vibrate: [100, 50, 100],
+            tag: 'booking-confirmed' // يمنع تكرار الإشعار إذا ضغط مرتين
+        });
+    });
+
+    // --- دالة برمجية لجدولة التنبيهات المستقبلية ---
+    const setReminder = (hoursBefore, message, tag) => {
+        const notifyTime = new Date(playTime.getTime() - (hoursBefore * 60 * 60 * 1000));
+        
+        // نبرمج التنبيه فقط إذا كان وقته لم يفت بعد
+        if (notifyTime > now) {
+            const delay = notifyTime.getTime() - now.getTime();
+            
+            setTimeout(() => {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification("⚽ ملعب ", {
+                        body: message,
+                        icon: "logo-512.png",
+                        badge: "logo-512.png",
+                        vibrate: [200, 100, 200],
+                        tag: tag,
+                        requireInteraction: true // يبقى الإشعار ظاهراً حتى يغلقه المستخدم
+                    });
+                });
+            }, delay);
+        }
+    };
+
+    // --- 2. جدولة تنبيه قبل 5 ساعات ---
+    setReminder(5, `تذكير: تبقى 5 ساعات على موعد مباراتك اليوم (${bookingHour}). هل الفريق جاهز؟`, 'reminder-5h');
+
+    // --- 3. جدولة تنبيه قبل ساعة واحدة ---
+    setReminder(1, `عجل يا بطل! تبقى ساعة واحدة فقط على انطلاق المباراة. ننتظرك في الملعب!`, 'reminder-1h');
+}
