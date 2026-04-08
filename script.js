@@ -25,18 +25,18 @@ async function loadStadiumDynamicDetails() {
             document.getElementById('displayStadiumName').innerText = data.stadium_name;
             document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
             
-            // 2. تحديث الشعار (Logo) مع صورة افتراضية إذا فشل الرابط
+            // 2. حل مشكلة اللوغو: يظهر لوغو المنصة إذا كان الحقل فارغاً في الشيت
             const logoImg = document.getElementById('displayLogo');
             if (logoImg) {
-                logoImg.src = data.logo_url || "https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg";
+                // استبدل الرابط أدناه برابط لوغو منصتك الرسمي
+                const platformLogo = "https://i.ibb.co/xqvjmphT/5.png"; 
+                logoImg.src = (data.logo_url && data.logo_url.trim() !== "") ? data.logo_url : platformLogo;
             }
 
-            // 3. اسم الملعب في المودال
+            // 3. تحديث الأسعار والمودال (زر القوانين يشتغل جيداً)
             if (document.getElementById('modalStadiumName')) {
                 document.getElementById('modalStadiumName').innerText = data.stadium_name;
             }
-
-            // 4. الأسعار
             document.getElementById('displayPriceDay').innerText = data.price_day;
             const nightRow = document.getElementById('nightPriceRow');
             if(data.price_night && nightRow) {
@@ -44,30 +44,35 @@ async function loadStadiumDynamicDetails() {
                 document.getElementById('displayPriceNight').innerText = data.price_night;
             }
 
-            // 5. الواتساب (يعمل جيداً كما ذكرت)
+            // 4. الواتساب (يشتغل جيداً)
             window.stadiumPhone = data.phone;
-            window.stadiumName = data.stadium_name;
             const whatsappFloat = document.getElementById('whatsappFloat');
             if (whatsappFloat && data.phone) {
                 let cleanPhone = data.phone.toString().replace(/\s+/g, '');
                 if (cleanPhone.startsWith('0')) cleanPhone = '212' + cleanPhone.substring(1);
-                const msg = encodeURIComponent(`السلام عليكم، استفسار عن ${data.stadium_name}`);
+                const msg = encodeURIComponent(`السلام عليكم، استفسار عن حجز ${data.stadium_name}`);
                 whatsappFloat.href = `https://wa.me/${cleanPhone}?text=${msg}`;
             }
             
-            // 6. إصلاح زر الموقع (Location) ليعمل عند الضغط
+            // 5. حل مشكلة زر الموقع: منع الـ 404 وضمان الفتح الصحيح
             const locBtn = document.getElementById('btnLocation');
             if(locBtn) {
-                if (data.location && data.location.trim() !== "") {
-                    locBtn.style.display = "inline-flex"; // إظهار الزر إذا وجد الرابط
-                    locBtn.onclick = () => window.open(data.location, '_blank');
+                if (data.location && data.location.trim() !== "" && data.location.startsWith('http')) {
+                    locBtn.style.opacity = "1";
+                    locBtn.onclick = (e) => {
+                        e.preventDefault();
+                        window.open(data.location, '_blank');
+                    };
                 } else {
-                    locBtn.style.opacity = "0.5"; // جعل الزر باهت إذا كان الرابط مفقوداً
-                    locBtn.onclick = () => alert("موقع الملعب غير متوفر حالياً");
+                    locBtn.style.opacity = "0.5";
+                    locBtn.onclick = (e) => {
+                        e.preventDefault();
+                        alert("عذراً، موقع الملعب غير متوفر حالياً.");
+                    };
                 }
             }
 
-            // 7. إصلاح الروابط الاجتماعية الفارغة (تجنب فتح صفحة 404)
+            // 6. حل مشكلة الروابط الاجتماعية (إخفاء الزر إذا كان فارغاً لمنع التكرار)
             const handleSocialLink = (id, link) => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -75,40 +80,36 @@ async function loadStadiumDynamicDetails() {
                         el.href = link;
                         el.style.display = "inline-flex";
                     } else {
-                        el.style.display = "none"; // إخفاء الزر تماماً إذا لم يوجد رابط في الشيت
+                        el.style.display = "none"; // إخفاء الزر تماماً
                     }
                 }
             };
             handleSocialLink('fbLink', data.fb);
             handleSocialLink('igLink', data.insta);
 
-            // 8. الإيميل الثابت
-            if (document.getElementById('emailLink')) document.getElementById('emailLink').href = "mailto:3dworkben@gmail.com";
+            // 7. حل مشكلة زر الإيميل: التأكد من تفعيل الرابط
+            const emailBtn = document.getElementById('emailLink');
+            if (emailBtn) {
+                emailBtn.href = "mailto:3dworkben@gmail.com";
+                emailBtn.onclick = () => {
+                    window.location.href = "mailto:3dworkben@gmail.com";
+                };
+            }
 
-            // 9. إصلاح السلايدر (Slider) مع معالجة الصور المفقودة
+            // 8. السلايدر (يشتغل جيداً)
             const swiperWrapper = document.querySelector('.swiper-wrapper');
             if (swiperWrapper) {
-                // تصفية الروابط والتأكد أنها تبدأ بـ http (رابط حقيقي)
                 let images = [data.img1, data.img2, data.img3].filter(img => img && img.startsWith('http'));
-                
-                // إذا لم توجد صور في الشيت، نستخدم الصور الافتراضية للملاعب
                 if (images.length === 0) {
-                    images = [
-                        "https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg",
-                        "https://i.ibb.co/L8xM4jM/soccer-goal-net.jpg"
-                    ];
+                    images = ["https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg"];
                 }
-
                 swiperWrapper.innerHTML = ''; 
                 images.forEach(imgUrl => {
                     swiperWrapper.innerHTML += `
                         <div class="swiper-slide">
-                            <img src="${imgUrl}" alt="صورة الملعب" 
-                                 onerror="this.src='https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg'"
-                                 style="width:100%; height:100%; object-fit:cover;">
+                            <img src="${imgUrl}" onerror="this.src='https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg'" style="width:100%; height:100%; object-fit:cover;">
                         </div>`;
                 });
-                
                 if (typeof swiper !== 'undefined') swiper.update();
             }
         }
