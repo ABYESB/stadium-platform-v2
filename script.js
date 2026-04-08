@@ -142,7 +142,11 @@ if (swiperWrapper) {
         },
     });
 }
-
+} // نهاية شرط if (data !== "NotFound")
+    } catch (error) { 
+        console.error("Error loading details:", error); 
+    }
+} // نهاية الدالة بالكامل
 // 3. بناء الجدول (دالة محسنة)
 
 function initTable() {
