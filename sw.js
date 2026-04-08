@@ -1,10 +1,10 @@
-const cacheName = 'bouassel-v1.37'; // ارفع النسخة لـ 1.3 لضمان التغيير
+const cacheName = 'bouassel-v1.38'; // ارفع النسخة لـ 1.3 لضمان التغيير
 const assets = [
   '/bouassel/',
   '/bouassel/index.html',
   '/bouassel/style.css',
   '/bouassel/script.js',
-  '/bouassel/logo-512.png'
+  '/bouassel/logo_no_background.png'
 ];
 
 // 1. التثبيت وتحميل الملفات الجديدة
