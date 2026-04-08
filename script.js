@@ -16,7 +16,6 @@ let currentStartDate = getMonday(new Date());
 async function loadStadiumDynamicDetails() {
     if (!stadiumId) return;
     try {
-        // التعديل هنا: استخدام settingsScriptURL بدلاً من baseScriptURL
         const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
         
@@ -26,17 +25,13 @@ async function loadStadiumDynamicDetails() {
             document.getElementById('displayStadiumName').innerText = data.stadium_name;
             document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
             
-            // 2. تحديث الشعار (Logo) ديناميكياً
+            // 2. تحديث الشعار (Logo)
             const logoImg = document.getElementById('displayLogo');
-            if (logoImg && data.logo_url) {
-                logoImg.src = data.logo_url; // نفترض أن الحقل في قاعدة البيانات اسمه logo_url
-            }
+            if (logoImg && data.logo_url) logoImg.src = data.logo_url;
 
-            // 3. تحديث اسم الملعب داخل نافذة الحجز (Modal)
+            // 3. تحديث اسم الملعب في المودال
             const modalStadiumName = document.getElementById('modalStadiumName');
-            if (modalStadiumName) {
-                modalStadiumName.innerText = data.stadium_name;
-            }
+            if (modalStadiumName) modalStadiumName.innerText = data.stadium_name;
 
             // 4. تحديث الأسعار
             document.getElementById('displayPriceDay').innerText = data.price_day;
@@ -46,13 +41,44 @@ async function loadStadiumDynamicDetails() {
                 document.getElementById('displayPriceNight').innerText = data.price_night;
             }
 
-            // 5. تخزين البيانات في متغيرات عامة لاستخدامها في الواتساب
+            // 5. الواتساب العائم
             window.stadiumPhone = data.phone;
             window.stadiumName = data.stadium_name;
+            const whatsappFloat = document.getElementById('whatsappFloat');
+            if (whatsappFloat && data.phone) {
+                let cleanPhone = data.phone.toString().replace(/\s+/g, '');
+                if (cleanPhone.startsWith('0')) cleanPhone = '212' + cleanPhone.substring(1);
+                const msg = encodeURIComponent(`السلام عليكم، استفسار عن ${data.stadium_name}`);
+                whatsappFloat.href = `https://wa.me/${cleanPhone}?text=${msg}`;
+            }
             
-            // 6. إصلاح رابط الموقع الجغرافي
+            // 6. الموقع الجغرافي
             const locBtn = document.getElementById('btnLocation');
-            if(locBtn) locBtn.onclick = () => window.open(data.location, '_blank');
+            if(locBtn && data.location) locBtn.onclick = () => window.open(data.location, '_blank');
+
+            // 7. الروابط الاجتماعية
+            if (document.getElementById('fbLink') && data.fb) document.getElementById('fbLink').href = data.fb;
+            if (document.getElementById('igLink') && data.insta) document.getElementById('igLink').href = data.insta;
+
+            // 8. الإيميل الثابت
+            if (document.getElementById('emailLink')) document.getElementById('emailLink').href = "mailto:3dworkben@gmail.com";
+
+            // --- 9. تحديث صور السلايدر (التعديل الجديد) ---
+            const swiperWrapper = document.querySelector('.swiper-wrapper'); // تأكد من هذا الكلاس في ملف HTML
+            if (swiperWrapper) {
+                const images = [data.img1, data.img2, data.img3].filter(img => img); // جلب الروابط غير الفارغة
+                if (images.length > 0) {
+                    swiperWrapper.innerHTML = ''; // مسح الصور الافتراضية
+                    images.forEach(imgUrl => {
+                        swiperWrapper.innerHTML += `
+                            <div class="swiper-slide">
+                                <img src="${imgUrl}" alt="صورة الملعب" style="width:100%; height:100%; object-fit:cover;">
+                            </div>`;
+                    });
+                    // إذا كنت تستخدم Swiper، أعد تشغيله ليتعرف على الصور الجديدة
+                    if (typeof swiper !== 'undefined') swiper.update();
+                }
+            }
         }
     } catch (error) { 
         console.error("Error loading details:", error); 
@@ -503,37 +529,3 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     console.log('PWA was installed');
 });
-// وظيفة تحديث الروابط الديناميكية من بيانات الملعب
-function updateStadiumLinks(stadiumData) {
-    if (!stadiumData) return;
-
-    // 1. تحديث رابط الموقع (Google Maps)
-    const btnLocation = document.getElementById('btnLocation');
-    if (btnLocation && stadiumData.locationUrl) {
-        btnLocation.href = stadiumData.locationUrl;
-    }
-
-    // 2. تحديث رابط الفيسبوك
-    const fbLink = document.getElementById('fbLink');
-    if (fbLink && stadiumData.facebookUrl) {
-        fbLink.href = stadiumData.facebookUrl;
-    }
-
-    // 3. تحديث رابط الإيميل
-    const emailLink = document.getElementById('emailLink');
-    if (emailLink && stadiumData.email) {
-        emailLink.href = `mailto:${stadiumData.email}`;
-    }
-
-    // 4. تحديث رابط الواتساب العائم (المشرف)
-    const whatsappFloat = document.getElementById('whatsappFloat');
-    if (whatsappFloat && stadiumData.phone) {
-        // تنظيف رقم الهاتف من المساحات
-        let cleanPhone = stadiumData.phone.replace(/\s+/g, '');
-        // إضافة رمز الدولة إذا لم يوجد (مثلاً المغرب 212)
-        if (cleanPhone.startsWith('0')) cleanPhone = '212' + cleanPhone.substring(1);
-        
-        const message = encodeURIComponent(`السلام عليكم، أريد الاستفسار عن حجز في ملعب ${stadiumData.name}`);
-        whatsappFloat.href = `https://wa.me/${cleanPhone}?text=${message}`;
-    }
-}
