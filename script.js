@@ -96,48 +96,52 @@ async function loadStadiumDynamicDetails() {
                 };
             }
 
-       // 9. إصلاح السلايدر: عرض الصور الافتراضية إذا كان الشيت فارغاً أو الروابط معطلة
-            const swiperWrapper = document.querySelector('.swiper-wrapper');
-            if (swiperWrapper) {
-                // تجميع الروابط والتأكد من أنها روابط حقيقية ونظيفة من المسافات
-                let images = [];
-                if (data.img1 && data.img1.trim().startsWith('http')) images.push(data.img1.trim());
-                if (data.img2 && data.img2.trim().startsWith('http')) images.push(data.img2.trim());
-                if (data.img3 && data.img3.trim().startsWith('http')) images.push(data.img3.trim());
+ // 9. إصلاح السلايدر: عرض الصور وتفعيل الحركة
+const swiperWrapper = document.querySelector('.swiper-wrapper');
+if (swiperWrapper) {
+    let images = [];
+    if (data.img1 && data.img1.trim().startsWith('http')) images.push(data.img1.trim());
+    if (data.img2 && data.img2.trim().startsWith('http')) images.push(data.img2.trim());
+    if (data.img3 && data.img3.trim().startsWith('http')) images.push(data.img3.trim());
 
-                // القائمة الافتراضية للصور (في حال كان الشيت فارغاً)
-                const defaultImages = [
-                    "https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg",
-                    "https://i.ibb.co/L8xM4jM/soccer-goal-net.jpg",
-                    "https://i.ibb.co/SdfV1X2/football-players.jpg"
-                ];
+    const defaultImages = [
+        "https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg",
+        "https://i.ibb.co/L8xM4jM/soccer-goal-net.jpg",
+        "https://i.ibb.co/SdfV1X2/football-players.jpg"
+    ];
 
-                // اختيار الصور التي سيتم عرضها (الحقيقية أو الافتراضية)
-                const imagesToDisplay = images.length > 0 ? images : defaultImages;
+    const imagesToDisplay = images.length > 0 ? images : defaultImages;
 
-                swiperWrapper.innerHTML = ''; // مسح المحتوى القديم
-                imagesToDisplay.forEach((imgUrl, index) => {
-                    swiperWrapper.innerHTML += `
-                        <div class="swiper-slide">
-                            <img src="${imgUrl}" 
-                                 alt="صورة الملعب ${index + 1}" 
-                                 onerror="this.src='${defaultImages[0]}'"
-                                 style="width:100%; height:100%; object-fit:cover; display:block;">
-                            <p class="slide-caption">مرحباً بكم في ${data.stadium_name || 'ملعبنا'}</p>
-                        </div>`;
-                });
+    swiperWrapper.innerHTML = ''; 
+    imagesToDisplay.forEach((imgUrl, index) => {
+        swiperWrapper.innerHTML += `
+            <div class="swiper-slide">
+                <img src="${imgUrl}" 
+                     onerror="this.src='${defaultImages[0]}'"
+                     style="width:100%; height:100%; object-fit:cover; display:block;">
+            </div>`;
+    });
 
-                // تحديث مكتبة Swiper لتعمل بالصور الجديدة
-                if (typeof swiper !== 'undefined' && swiper !== null) {
-                    swiper.update();
-                    swiper.slideTo(0); 
-                }
-            }
-        } // إغلاق شرط if (data !== "NotFound")
-    } catch (error) { 
-        console.error("Error loading details:", error); 
-    }
-} // إغلاق الدالة loadStadiumDynamicDetails
+    // --- الجزء الأهم لإصلاح الحركة ---
+    // إذا كان السلايدر مفعلاً مسبقاً، نقوم بتدميره لإعادة بنائه بالصور الجديدة
+    if (window.mySwiper) window.mySwiper.destroy(true, true);
+
+    window.mySwiper = new Swiper('.swiper-container', {
+        loop: true,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+    });
+}
 
 // 3. بناء الجدول (دالة محسنة)
 
@@ -584,10 +588,4 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     console.log('PWA was installed');
 });
-// تأكد من وجود هذا السطر في نهاية ملف booking.html أو script.js
-const swiper = new Swiper('.swiper-container', {
-    loop: true,
-    pagination: { el: '.swiper-pagination', clickable: true },
-    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-    autoplay: { delay: 3000 }
-});
+
