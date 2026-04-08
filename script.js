@@ -20,28 +20,31 @@ async function loadStadiumDynamicDetails() {
         const data = await response.json();
         
         if (data !== "NotFound") {
-            // 1. تحديث العناوين والنصوص الأساسية
+            // 1. النصوص الأساسية
             document.title = "حجز " + data.stadium_name;
             document.getElementById('displayStadiumName').innerText = data.stadium_name;
             document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
             
-            // 2. تحديث الشعار (Logo)
+            // 2. تحديث الشعار (Logo) مع صورة افتراضية إذا فشل الرابط
             const logoImg = document.getElementById('displayLogo');
-            if (logoImg && data.logo_url) logoImg.src = data.logo_url;
+            if (logoImg) {
+                logoImg.src = data.logo_url || "https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg";
+            }
 
-            // 3. تحديث اسم الملعب في المودال
-            const modalStadiumName = document.getElementById('modalStadiumName');
-            if (modalStadiumName) modalStadiumName.innerText = data.stadium_name;
+            // 3. اسم الملعب في المودال
+            if (document.getElementById('modalStadiumName')) {
+                document.getElementById('modalStadiumName').innerText = data.stadium_name;
+            }
 
-            // 4. تحديث الأسعار
+            // 4. الأسعار
             document.getElementById('displayPriceDay').innerText = data.price_day;
-            if(data.price_night) {
-                const nightRow = document.getElementById('nightPriceRow');
-                if(nightRow) nightRow.style.display = "block";
+            const nightRow = document.getElementById('nightPriceRow');
+            if(data.price_night && nightRow) {
+                nightRow.style.display = "block";
                 document.getElementById('displayPriceNight').innerText = data.price_night;
             }
 
-            // 5. الواتساب العائم
+            // 5. الواتساب (يعمل جيداً كما ذكرت)
             window.stadiumPhone = data.phone;
             window.stadiumName = data.stadium_name;
             const whatsappFloat = document.getElementById('whatsappFloat');
@@ -52,32 +55,61 @@ async function loadStadiumDynamicDetails() {
                 whatsappFloat.href = `https://wa.me/${cleanPhone}?text=${msg}`;
             }
             
-            // 6. الموقع الجغرافي
+            // 6. إصلاح زر الموقع (Location) ليعمل عند الضغط
             const locBtn = document.getElementById('btnLocation');
-            if(locBtn && data.location) locBtn.onclick = () => window.open(data.location, '_blank');
+            if(locBtn) {
+                if (data.location && data.location.trim() !== "") {
+                    locBtn.style.display = "inline-flex"; // إظهار الزر إذا وجد الرابط
+                    locBtn.onclick = () => window.open(data.location, '_blank');
+                } else {
+                    locBtn.style.opacity = "0.5"; // جعل الزر باهت إذا كان الرابط مفقوداً
+                    locBtn.onclick = () => alert("موقع الملعب غير متوفر حالياً");
+                }
+            }
 
-            // 7. الروابط الاجتماعية
-            if (document.getElementById('fbLink') && data.fb) document.getElementById('fbLink').href = data.fb;
-            if (document.getElementById('igLink') && data.insta) document.getElementById('igLink').href = data.insta;
+            // 7. إصلاح الروابط الاجتماعية الفارغة (تجنب فتح صفحة 404)
+            const handleSocialLink = (id, link) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (link && link.trim() !== "" && link !== "#") {
+                        el.href = link;
+                        el.style.display = "inline-flex";
+                    } else {
+                        el.style.display = "none"; // إخفاء الزر تماماً إذا لم يوجد رابط في الشيت
+                    }
+                }
+            };
+            handleSocialLink('fbLink', data.fb);
+            handleSocialLink('igLink', data.insta);
 
             // 8. الإيميل الثابت
             if (document.getElementById('emailLink')) document.getElementById('emailLink').href = "mailto:3dworkben@gmail.com";
 
-            // --- 9. تحديث صور السلايدر (التعديل الجديد) ---
-            const swiperWrapper = document.querySelector('.swiper-wrapper'); // تأكد من هذا الكلاس في ملف HTML
+            // 9. إصلاح السلايدر (Slider) مع معالجة الصور المفقودة
+            const swiperWrapper = document.querySelector('.swiper-wrapper');
             if (swiperWrapper) {
-                const images = [data.img1, data.img2, data.img3].filter(img => img); // جلب الروابط غير الفارغة
-                if (images.length > 0) {
-                    swiperWrapper.innerHTML = ''; // مسح الصور الافتراضية
-                    images.forEach(imgUrl => {
-                        swiperWrapper.innerHTML += `
-                            <div class="swiper-slide">
-                                <img src="${imgUrl}" alt="صورة الملعب" style="width:100%; height:100%; object-fit:cover;">
-                            </div>`;
-                    });
-                    // إذا كنت تستخدم Swiper، أعد تشغيله ليتعرف على الصور الجديدة
-                    if (typeof swiper !== 'undefined') swiper.update();
+                // تصفية الروابط والتأكد أنها تبدأ بـ http (رابط حقيقي)
+                let images = [data.img1, data.img2, data.img3].filter(img => img && img.startsWith('http'));
+                
+                // إذا لم توجد صور في الشيت، نستخدم الصور الافتراضية للملاعب
+                if (images.length === 0) {
+                    images = [
+                        "https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg",
+                        "https://i.ibb.co/L8xM4jM/soccer-goal-net.jpg"
+                    ];
                 }
+
+                swiperWrapper.innerHTML = ''; 
+                images.forEach(imgUrl => {
+                    swiperWrapper.innerHTML += `
+                        <div class="swiper-slide">
+                            <img src="${imgUrl}" alt="صورة الملعب" 
+                                 onerror="this.src='https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg'"
+                                 style="width:100%; height:100%; object-fit:cover;">
+                        </div>`;
+                });
+                
+                if (typeof swiper !== 'undefined') swiper.update();
             }
         }
     } catch (error) { 
@@ -528,4 +560,11 @@ window.addEventListener('appinstalled', () => {
     installBanner.style.display = 'none';
     deferredPrompt = null;
     console.log('PWA was installed');
+});
+// تأكد من وجود هذا السطر في نهاية ملف booking.html أو script.js
+const swiper = new Swiper('.swiper-container', {
+    loop: true,
+    pagination: { el: '.swiper-pagination', clickable: true },
+    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+    autoplay: { delay: 3000 }
 });
