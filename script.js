@@ -503,3 +503,37 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     console.log('PWA was installed');
 });
+// وظيفة تحديث الروابط الديناميكية من بيانات الملعب
+function updateStadiumLinks(stadiumData) {
+    if (!stadiumData) return;
+
+    // 1. تحديث رابط الموقع (Google Maps)
+    const btnLocation = document.getElementById('btnLocation');
+    if (btnLocation && stadiumData.locationUrl) {
+        btnLocation.href = stadiumData.locationUrl;
+    }
+
+    // 2. تحديث رابط الفيسبوك
+    const fbLink = document.getElementById('fbLink');
+    if (fbLink && stadiumData.facebookUrl) {
+        fbLink.href = stadiumData.facebookUrl;
+    }
+
+    // 3. تحديث رابط الإيميل
+    const emailLink = document.getElementById('emailLink');
+    if (emailLink && stadiumData.email) {
+        emailLink.href = `mailto:${stadiumData.email}`;
+    }
+
+    // 4. تحديث رابط الواتساب العائم (المشرف)
+    const whatsappFloat = document.getElementById('whatsappFloat');
+    if (whatsappFloat && stadiumData.phone) {
+        // تنظيف رقم الهاتف من المساحات
+        let cleanPhone = stadiumData.phone.replace(/\s+/g, '');
+        // إضافة رمز الدولة إذا لم يوجد (مثلاً المغرب 212)
+        if (cleanPhone.startsWith('0')) cleanPhone = '212' + cleanPhone.substring(1);
+        
+        const message = encodeURIComponent(`السلام عليكم، أريد الاستفسار عن حجز في ملعب ${stadiumData.name}`);
+        whatsappFloat.href = `https://wa.me/${cleanPhone}?text=${message}`;
+    }
+}
