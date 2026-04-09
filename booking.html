@@ -198,11 +198,64 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <i class="fab fa-instagram"></i> إنستغرام
     </a>
 
-    <button onclick="openAdminPanel()" class="footer-btn admin-btn">
-        <i class="fas fa-user-shield"></i> المسؤول
+
+</div>
+
+    <div style="text-align: center; margin-top: 20px;">
+    <button onclick="openAdminAuth()" style="background: #1e3a8a; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'Cairo';">
+        <i class="fas fa-lock"></i> لوحة التحكم (للمسؤول)
     </button>
 </div>
 
+<div id="adminAuthModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <h3>تسجيل الدخول للمسؤول</h3>
+        <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" style="width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px;">
+        <button onclick="verifyAdmin()" style="width: 100%; background: #22c55e; color: white; border: none; padding: 10px; border-radius: 5px;">دخول</button>
+        <button onclick="closeAdminAuth()" style="margin-top: 10px; background: none; border: none; color: red; cursor: pointer;">إلغاء</button>
+    </div>
+</div>
+
+<div id="adminPanel" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 90%; width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color: #1e3a8a;">لوحة تحكم المسؤول</h2>
+            <span onclick="closeAdminPanel()" style="cursor: pointer; font-size: 24px;">&times;</span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px;">
+            <div class="admin-icon" onclick="showSettings()">
+                <div style="font-size: 30px;">⚙️</div>
+                <p>الإعدادات</p>
+            </div>
+            <div class="admin-icon" onclick="showCancellations()">
+                <div style="font-size: 30px;">❌</div>
+                <p>إلغاء حجز</p>
+            </div>
+            <div class="admin-icon" onclick="showStats()">
+                <div style="font-size: 30px;">📊</div>
+                <p>البيانات</p>
+            </div>
+        </div>
+
+        <div id="adminSectionContent" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+            </div>
+    </div>
+</div>
+
+<style>
+    .admin-icon {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .admin-icon:hover { background: #eff6ff; border-color: #3b82f6; }
+    .admin-input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+</style>
           <p class="copyright">© 2026 جميع الحقوق محفوظة </p>
     </div>
       <a id="whatsappFloat" href="#" class="whatsapp-float" target="_blank">
