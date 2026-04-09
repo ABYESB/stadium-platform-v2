@@ -455,9 +455,38 @@ function handleData(bookings) {
 
 // التشغيل
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadStadiumDynamicDetails();
-    initTable();
+    // 1. إخفاء حاوية المحتوى الرئيسية فوراً لضمان عدم ظهور نصوص افتراضية
+    // (تأكد أن المحتوى محاط بـ div لديه كلاس container أو غيره للاسم الصحيح عندك)
+    const mainContainer = document.querySelector('.container');
+    if (mainContainer) mainContainer.style.opacity = '0';
+
+    try {
+        // 2. جلب تفاصيل الملعب (الاسم، اللوغو، السعر)
+        await loadStadiumDynamicDetails();
+        
+        // 3. بناء الجدول وتحميل الحجوزات
+        if (typeof initTable === "function") {
+            await initTable();
+        }
+
+        // 4. إظهار المحتوى بسلاسة بعد اكتمال كل شيء
+        if (mainContainer) {
+            mainContainer.style.transition = 'opacity 0.4s ease-in-out';
+            mainContainer.style.opacity = '1';
+        }
+
+        // 5. إخفاء شاشة التحميل (إذا كنت قد أضفت الـ Loader الذي اقترحته لك)
+        const loader = document.getElementById('loadingScreen');
+        if (loader) loader.style.display = 'none';
+
+    } catch (error) {
+        console.error("حدث خطأ أثناء تحميل البيانات:", error);
+        // في حال حدوث خطأ، نظهر المحتوى على أي حال لكي لا تبقى الشاشة بيضاء
+        if (mainContainer) mainContainer.style.opacity = '1';
+    }
 });
+
+// إغلاق المودالات عند الضغط خارجها (ابقِ عليه كما هو، فهو صحيح)
 window.onclick = function(event) {
     const bookingModal = document.getElementById('bookingModal');
     const rulesModal = document.getElementById('rulesModal');
