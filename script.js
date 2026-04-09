@@ -531,67 +531,61 @@ async function scheduleNotification(bookingDate, bookingHour) {
     });
 
     // --- دالة برمجية لجدولة التنبيهات المستقبلية ---
+// --- دالة برمجية لجدولة التنبيهات المستقبلية ---
     const setReminder = (hoursBefore, message, tag) => {
         const notifyTime = new Date(playTime.getTime() - (hoursBefore * 60 * 60 * 1000));
-        
-        // نبرمج التنبيه فقط إذا كان وقته لم يفت بعد
         if (notifyTime > now) {
             const delay = notifyTime.getTime() - now.getTime();
-            
             setTimeout(() => {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification("⚽ ملعب ", {
+                    reg.showNotification("⚽ ملاعب NET", {
                         body: message,
                         icon: "logo_no_background.png",
                         badge: "logo_no_background.png",
                         vibrate: [200, 100, 200],
                         tag: tag,
-                        requireInteraction: true // يبقى الإشعار ظاهراً حتى يغلقه المستخدم
+                        requireInteraction: true
                     });
                 });
             }, delay);
         }
     };
 
-    // --- 2. جدولة تنبيه قبل 5 ساعات ---
-    setReminder(5, `تذكير: تبقى 5 ساعات على موعد مباراتك اليوم (${bookingHour}). هل الفريق جاهز؟`, 'reminder-5h');
+    setReminder(5, `تذكير: تبقى 5 ساعات على موعد مباراتك (${bookingHour}).`, 'reminder-5h');
+    setReminder(1, `عجل يا بطل! تبقى ساعة واحدة فقط. ننتظرك في الملعب!`, 'reminder-1h');
 
-    // --- 3. جدولة تنبيه قبل ساعة واحدة ---
-    setReminder(1, `عجل يا بطل! تبقى ساعة واحدة فقط على انطلاق المباراة. ننتظرك في الملعب!`, 'reminder-1h');
-}
+        } // إغلاق if (data !== "NotFound")
+    } catch (error) { 
+        console.error("Error loading details:", error); 
+    }
+} // <--- نهاية الدالة loadStadiumDynamicDetails (تأكد أن بعدها لا توجد أقواس } زائدة)
+
+// --- كود PWA (يجب أن يكون خارج الدالة تماماً) ---
 let deferredPrompt;
 const installBanner = document.getElementById('installBanner');
 const installBtn = document.getElementById('installApp');
 
 window.addEventListener('beforeinstallprompt', (e) => {
-    // منع المتصفح من إظهار النافذة الافتراضية الباهتة
     e.preventDefault();
-    // حفظ الحدث لاستخدامه عند الضغط على الزر
     deferredPrompt = e;
-    // إظهار الشريط للمستخدم
-    installBanner.style.display = 'block';
+    if (installBanner) installBanner.style.display = 'block';
 });
 
-installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        // إظهار نافذة التثبيت الرسمية
-        deferredPrompt.prompt();
-        // انتظار قرار المستخدم
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            console.log('User accepted the install prompt');
+if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            if (installBanner) installBanner.style.display = 'none';
         }
-        deferredPrompt = null;
-        installBanner.style.display = 'none';
-    }
-});
+    });
+}
 
-// إخفاء الشريط إذا تم تثبيت التطبيق بالفعل
 window.addEventListener('appinstalled', () => {
-    installBanner.style.display = 'none';
+    if (installBanner) installBanner.style.display = 'none';
     deferredPrompt = null;
     console.log('PWA was installed');
 });
 
-}
-}
+
