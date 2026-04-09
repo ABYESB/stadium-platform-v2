@@ -25,15 +25,14 @@ async function loadStadiumDynamicDetails() {
             document.getElementById('displayStadiumName').innerText = data.stadium_name;
             document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
             
-            // 2. حل مشكلة اللوغو: يظهر لوغو المنصة إذا كان الحقل فارغاً في الشيت
+            // 2. حل مشكلة اللوغو
             const logoImg = document.getElementById('displayLogo');
             if (logoImg) {
-                // استبدل الرابط أدناه برابط لوغو منصتك الرسمي
                 const platformLogo = "https://i.ibb.co/xqvjmphT/5.png"; 
                 logoImg.src = (data.logo_url && data.logo_url.trim() !== "") ? data.logo_url : platformLogo;
             }
 
-            // 3. تحديث الأسعار والمودال (زر القوانين يشتغل جيداً)
+            // 3. تحديث الأسعار والمودال
             if (document.getElementById('modalStadiumName')) {
                 document.getElementById('modalStadiumName').innerText = data.stadium_name;
             }
@@ -44,7 +43,7 @@ async function loadStadiumDynamicDetails() {
                 document.getElementById('displayPriceNight').innerText = data.price_night;
             }
 
-            // 4. الواتساب (يشتغل جيداً)
+            // 4. الواتساب
             window.stadiumPhone = data.phone;
             const whatsappFloat = document.getElementById('whatsappFloat');
             if (whatsappFloat && data.phone) {
@@ -54,7 +53,7 @@ async function loadStadiumDynamicDetails() {
                 whatsappFloat.href = `https://wa.me/${cleanPhone}?text=${msg}`;
             }
             
-            // 5. حل مشكلة زر الموقع: منع الـ 404 وضمان الفتح الصحيح
+            // 5. زر الموقع
             const locBtn = document.getElementById('btnLocation');
             if(locBtn) {
                 if (data.location && data.location.trim() !== "" && data.location.startsWith('http')) {
@@ -72,7 +71,7 @@ async function loadStadiumDynamicDetails() {
                 }
             }
 
-            // 6. حل مشكلة الروابط الاجتماعية (إخفاء الزر إذا كان فارغاً لمنع التكرار)
+            // 6. الروابط الاجتماعية
             const handleSocialLink = (id, link) => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -80,74 +79,62 @@ async function loadStadiumDynamicDetails() {
                         el.href = link;
                         el.style.display = "inline-flex";
                     } else {
-                        el.style.display = "none"; // إخفاء الزر تماماً
+                        el.style.display = "none";
                     }
                 }
             };
             handleSocialLink('fbLink', data.fb);
             handleSocialLink('igLink', data.insta);
 
-            // 7. حل مشكلة زر الإيميل: التأكد من تفعيل الرابط
+            // 7. زر الإيميل
             const emailBtn = document.getElementById('emailLink');
             if (emailBtn) {
                 emailBtn.href = "mailto:3dworkben@gmail.com";
-                emailBtn.onclick = () => {
+                emailBtn.onclick = (e) => {
+                    e.preventDefault();
                     window.location.href = "mailto:3dworkben@gmail.com";
                 };
             }
 
- // 9. إصلاح السلايدر: عرض الصور وتفعيل الحركة
-const swiperWrapper = document.querySelector('.swiper-wrapper');
-if (swiperWrapper) {
-    let images = [];
-    if (data.img1 && data.img1.trim().startsWith('http')) images.push(data.img1.trim());
-    if (data.img2 && data.img2.trim().startsWith('http')) images.push(data.img2.trim());
-    if (data.img3 && data.img3.trim().startsWith('http')) images.push(data.img3.trim());
+            // 9. إصلاح السلايدر
+            const swiperWrapper = document.querySelector('.swiper-wrapper');
+            if (swiperWrapper) {
+                let images = [];
+                if (data.img1 && data.img1.trim().startsWith('http')) images.push(data.img1.trim());
+                if (data.img2 && data.img2.trim().startsWith('http')) images.push(data.img2.trim());
+                if (data.img3 && data.img3.trim().startsWith('http')) images.push(data.img3.trim());
 
-    const defaultImages = [
-        "https://i.ibb.co/5R4S9fP/artificial-turf-football-field.jpg",
-        "https://i.ibb.co/L8xM4jM/soccer-goal-net.jpg",
-        "https://i.ibb.co/SdfV1X2/football-players.jpg"
-    ];
+                const defaultImages = [
+                    "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800",
+                    "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
+                    "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800"
+                ];
 
-    const imagesToDisplay = images.length > 0 ? images : defaultImages;
+                const imagesToDisplay = images.length > 0 ? images : defaultImages;
+                swiperWrapper.innerHTML = ''; 
 
-    swiperWrapper.innerHTML = ''; 
-    imagesToDisplay.forEach((imgUrl, index) => {
-        swiperWrapper.innerHTML += `
-            <div class="swiper-slide">
-                <img src="${imgUrl}" 
-                     onerror="this.src='${defaultImages[0]}'"
-                     style="width:100%; height:100%; object-fit:cover; display:block;">
-            </div>`;
-    });
+                imagesToDisplay.forEach((imgUrl) => {
+                    swiperWrapper.innerHTML += `
+                        <div class="swiper-slide">
+                            <img src="${imgUrl}" 
+                                 onerror="this.src='${defaultImages[0]}'"
+                                 style="width:100%; height:100%; object-fit:cover; display:block;">
+                        </div>`;
+                });
 
-    // --- الجزء الأهم لإصلاح الحركة ---
-    // إذا كان السلايدر مفعلاً مسبقاً، نقوم بتدميره لإعادة بنائه بالصور الجديدة
-    if (window.mySwiper) window.mySwiper.destroy(true, true);
-
-    window.mySwiper = new Swiper('.swiper-container', {
-        loop: true,
-        autoplay: {
-            delay: 3000,
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-    });
-}
-} // نهاية شرط if (data !== "NotFound")
+                if (window.mySwiper) window.mySwiper.destroy(true, true);
+                window.mySwiper = new Swiper('.swiper-container', {
+                    loop: true,
+                    autoplay: { delay: 3000, disableOnInteraction: false },
+                    pagination: { el: '.swiper-pagination', clickable: true },
+                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                });
+            } // نهاية if (swiperWrapper)
+        } // نهاية if (data !== "NotFound")
     } catch (error) { 
         console.error("Error loading details:", error); 
     }
-} // نهاية الدالة بالكامل
-// 3. بناء الجدول (دالة محسنة)
+} // نهاية الدالة بالكامل loadStadiumDynamicDetails
 
 function initTable() {
     const tableBody = document.getElementById('tableBody');
@@ -493,13 +480,12 @@ function addNextSlot() {
 // --- تحديث الجدول تلقائياً كل 15 ثانية ---
 setInterval(() => {
     // نقوم بالتحديث فقط إذا كان المستخدم لا يملأ حالياً بيانات الحجز
-    // وذلك لتجنب أي تداخل أثناء قيامه بالاختيار
     const modal = document.getElementById('bookingModal');
     if (modal && modal.style.display !== "block") {
         console.log("جاري تحديث الحجوزات تلقائياً...");
-        loadExistingBookings();
+        if (typeof loadExistingBookings === "function") loadExistingBookings();
     }
-}, 15000); // 15000 ميلي ثانية تعني 15 ثانية
+}, 15000);
 
 async function scheduleNotification(bookingDate, bookingHour) {
     if (!("Notification" in window)) {
@@ -507,31 +493,24 @@ async function scheduleNotification(bookingDate, bookingHour) {
         return;
     }
 
-    // طلب الإذن من المستخدم (يظهر مرة واحدة فقط)
     const permission = await Notification.requestPermission();
     if (permission !== "granted") return;
 
-    // --- تحويل بيانات الحجز إلى كائن وقت حقيقي ---
-    // التاريخ يأتي بتنسيق DD/MM/YYYY والساعة HH:00
     const [day, month, year] = bookingDate.split('/');
     const [hour] = bookingHour.split(':');
-    // ملاحظة: الشهور في JS تبدأ من 0 (يناير = 0)
     const playTime = new Date(year, month - 1, day, parseInt(hour), 0, 0);
     const now = new Date();
 
-    // --- 1. التنبيه الفوري (مباشرة بعد الضغط على زر الحجز) ---
     navigator.serviceWorker.ready.then(reg => {
         reg.showNotification("✅ تم الحجز بنجاح", {
-            body: `موعدك في  يوم ${bookingDate} الساعة ${bookingHour}. ننتظرك!`,
+            body: `موعدك في يوم ${bookingDate} الساعة ${bookingHour}. ننتظرك!`,
             icon: "logo-512.png",
             badge: "logo-512.png",
             vibrate: [100, 50, 100],
-            tag: 'booking-confirmed' // يمنع تكرار الإشعار إذا ضغط مرتين
+            tag: 'booking-confirmed'
         });
     });
 
-    // --- دالة برمجية لجدولة التنبيهات المستقبلية ---
-// --- دالة برمجية لجدولة التنبيهات المستقبلية ---
     const setReminder = (hoursBefore, message, tag) => {
         const notifyTime = new Date(playTime.getTime() - (hoursBefore * 60 * 60 * 1000));
         if (notifyTime > now) {
@@ -552,15 +531,10 @@ async function scheduleNotification(bookingDate, bookingHour) {
     };
 
     setReminder(5, `تذكير: تبقى 5 ساعات على موعد مباراتك (${bookingHour}).`, 'reminder-5h');
-    setReminder(1, `عجل يا بطل! تبقى ساعة واحدة فقط. ننتظرك في الملعب!`, 'reminder-1h');
+    setReminder(1, `عجل يا بطل! تبقى ساعة واحدة فقط على انطلاق المباراة. ننتظرك!`, 'reminder-1h');
+}
 
-        } // إغلاق if (data !== "NotFound")
-    } catch (error) { 
-        console.error("Error loading details:", error); 
-    }
-} // <--- نهاية الدالة loadStadiumDynamicDetails (تأكد أن بعدها لا توجد أقواس } زائدة)
-
-// --- كود PWA (يجب أن يكون خارج الدالة تماماً) ---
+// --- كود PWA (يجب أن يكون مستقلاً تماماً في الخارج) ---
 let deferredPrompt;
 const installBanner = document.getElementById('installBanner');
 const installBtn = document.getElementById('installApp');
@@ -587,5 +561,3 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     console.log('PWA was installed');
 });
-
-
