@@ -590,3 +590,56 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     console.log('PWA was installed');
 });
+function openAdminAuth() {
+    document.getElementById('adminAuthModal').style.display = 'block';
+}
+
+function closeAdminAuth() {
+    document.getElementById('adminAuthModal').style.display = 'none';
+}
+
+async function verifyAdmin() {
+    const password = document.getElementById('adminPassword').value;
+    if (!password) return alert("يرجى إدخال كلمة المرور");
+
+    // نرسل طلب لجوجل سكريبت للتحقق من كلمة السر الخاصة بهذا الـ stadiumId
+    try {
+        const response = await fetch(`${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${password}`);
+        const result = await response.json();
+
+        if (result.status === "success") {
+            closeAdminAuth();
+            document.getElementById('adminPanel').style.display = 'block';
+            showSettings(); // نعرض الإعدادات كأول خيار
+        } else {
+            alert("كلمة المرور غير صحيحة!");
+        }
+    } catch (e) {
+        alert("خطأ في الاتصال بالسيرفر");
+    }
+}
+function showSettings() {
+    const content = document.getElementById('adminSectionContent');
+    content.innerHTML = `
+        <h3>⚙️ إعدادات الملعب</h3>
+        <label>كلمة المرور الجديدة:</label>
+        <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً إذا لا تريد التغيير">
+        
+        <label>اسم الملعب:</label>
+        <input type="text" id="upd_name" class="admin-input" value="${document.getElementById('displayStadiumName').innerText}">
+        
+        <label>السعر نهاراً:</label>
+        <input type="number" id="upd_price_day" class="admin-input" value="${document.getElementById('displayPriceDay').innerText}">
+        
+        <label>السعر ليلاً:</label>
+        <input type="number" id="upd_price_night" class="admin-input" value="${document.getElementById('displayPriceNight') ? document.getElementById('displayPriceNight').innerText : ''}">
+        
+        <label>رابط اللوغو:</label>
+        <input type="text" id="upd_logo" class="admin-input" value="${document.getElementById('displayLogo').src}">
+
+        <label>رقم الهاتف:</label>
+        <input type="text" id="upd_phone" class="admin-input" value="${window.stadiumPhone || ''}">
+
+        <button onclick="saveAdminSettings()" style="background:#22c55e; color:white; padding:10px; width:100%; border:none; border-radius:5px; cursor:pointer;">حفظ التغييرات</button>
+    `;
+}
