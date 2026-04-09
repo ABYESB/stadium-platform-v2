@@ -28,7 +28,7 @@ async function loadStadiumDynamicDetails() {
             // 2. حل مشكلة اللوغو
             const logoImg = document.getElementById('displayLogo');
             if (logoImg) {
-                const platformLogo = "https://i.ibb.co/xqvjmphT/5.png"; 
+                const platformLogo = "https://i.ibb.co/HLRFczNy/resized-1.png"; 
                 logoImg.src = (data.logo_url && data.logo_url.trim() !== "") ? data.logo_url : platformLogo;
             }
 
