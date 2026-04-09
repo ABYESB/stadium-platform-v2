@@ -533,8 +533,8 @@ async function scheduleNotification(bookingDate, bookingHour) {
     navigator.serviceWorker.ready.then(reg => {
         reg.showNotification("✅ تم الحجز بنجاح", {
             body: `موعدك في يوم ${bookingDate} الساعة ${bookingHour}. ننتظرك!`,
-            icon: "logo-512.png",
-            badge: "logo-512.png",
+            icon: "logo_no_background.png",
+            badge: "logo_no_background.png",
             vibrate: [100, 50, 100],
             tag: 'booking-confirmed'
         });
@@ -716,6 +716,40 @@ async function showStats() {
     }
 }
 
-function closeAdminPanel() {
-    document.getElementById('adminPanel').style.display = 'none';
+
+// --- دالة فتح نافذة المسؤول ---
+function openAdminAuth() {
+    const modal = document.getElementById('adminAuthModal');
+    if (modal) {
+        modal.style.display = 'flex'; // لإظهار النافذة
+        document.getElementById('adminPassword').value = ''; // مسح الباسورد القديم
+    } else {
+        console.error("عنصر adminAuthModal غير موجود في HTML");
+    }
+}
+
+// --- دالة التحقق من كلمة السر ---
+async function verifyAdmin() {
+    const password = document.getElementById('adminPassword').value;
+    if (!password) return alert("يرجى إدخال كلمة المرور");
+
+    try {
+        const response = await fetch(`${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
+        const result = await response.json();
+
+        if (result.status === "success") {
+            closeAdminAuth();
+            document.getElementById('adminPanel').style.display = 'flex';
+            showSettings(); 
+        } else {
+            alert("كلمة المرور غير صحيحة!");
+        }
+    } catch (e) {
+        alert("خطأ في الاتصال بالسيرفر");
+    }
+}
+
+// --- دالة إغلاق النافذة ---
+function closeAdminAuth() {
+    document.getElementById('adminAuthModal').style.display = 'none';
 }
