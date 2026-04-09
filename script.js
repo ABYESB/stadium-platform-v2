@@ -590,56 +590,132 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     console.log('PWA was installed');
 });
-function openAdminAuth() {
-    document.getElementById('adminAuthModal').style.display = 'block';
-}
+// --- 1. إعدادات المسؤول وحفظ التغييرات ---
+async function saveAdminSettings() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerText = "جاري الحفظ...";
 
-function closeAdminAuth() {
-    document.getElementById('adminAuthModal').style.display = 'none';
-}
+    const params = new URLSearchParams({
+        action: "adminUpdateSettings",
+        id: stadiumId,
+        newPass: document.getElementById('upd_pass').value,
+        stadiumName: document.getElementById('upd_name').value,
+        pDay: document.getElementById('upd_price_day').value,
+        pNight: document.getElementById('upd_price_night').value,
+        logo: document.getElementById('upd_logo').value,
+        phone: document.getElementById('upd_phone').value,
+        org: document.getElementById('upd_org') ? document.getElementById('upd_org').value : "",
+        loc: document.getElementById('upd_loc') ? document.getElementById('upd_loc').value : "",
+        fb: document.getElementById('upd_fb') ? document.getElementById('upd_fb').value : "",
+        insta: document.getElementById('upd_insta') ? document.getElementById('upd_insta').value : ""
+    });
 
-async function verifyAdmin() {
-    const password = document.getElementById('adminPassword').value;
-    if (!password) return alert("يرجى إدخال كلمة المرور");
-
-    // نرسل طلب لجوجل سكريبت للتحقق من كلمة السر الخاصة بهذا الـ stadiumId
     try {
-        const response = await fetch(`${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${password}`);
-        const result = await response.json();
-
-        if (result.status === "success") {
-            closeAdminAuth();
-            document.getElementById('adminPanel').style.display = 'block';
-            showSettings(); // نعرض الإعدادات كأول خيار
+        const response = await fetch(`${settingsScriptURL}?${params.toString()}`);
+        const result = await response.text();
+        if (result === "Success") {
+            alert("تم تحديث البيانات بنجاح! سيتم إعادة تحميل الصفحة.");
+            location.reload();
         } else {
-            alert("كلمة المرور غير صحيحة!");
+            alert("حدث خطأ أثناء التحديث");
         }
     } catch (e) {
         alert("خطأ في الاتصال بالسيرفر");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "حفظ التغييرات";
     }
 }
-function showSettings() {
+
+// --- 2. إدارة الحجوزات (عرض وإلغاء) ---
+async function showCancellations() {
     const content = document.getElementById('adminSectionContent');
-    content.innerHTML = `
-        <h3>⚙️ إعدادات الملعب</h3>
-        <label>كلمة المرور الجديدة:</label>
-        <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً إذا لا تريد التغيير">
-        
-        <label>اسم الملعب:</label>
-        <input type="text" id="upd_name" class="admin-input" value="${document.getElementById('displayStadiumName').innerText}">
-        
-        <label>السعر نهاراً:</label>
-        <input type="number" id="upd_price_day" class="admin-input" value="${document.getElementById('displayPriceDay').innerText}">
-        
-        <label>السعر ليلاً:</label>
-        <input type="number" id="upd_price_night" class="admin-input" value="${document.getElementById('displayPriceNight') ? document.getElementById('displayPriceNight').innerText : ''}">
-        
-        <label>رابط اللوغو:</label>
-        <input type="text" id="upd_logo" class="admin-input" value="${document.getElementById('displayLogo').src}">
+    content.innerHTML = "<p style='text-align:center;'>جاري جلب الحجوزات...</p>";
 
-        <label>رقم الهاتف:</label>
-        <input type="text" id="upd_phone" class="admin-input" value="${window.stadiumPhone || ''}">
+    try {
+        const response = await fetch(`${settingsScriptURL}?action=getAdminBookings&id=${stadiumId}`);
+        const bookings = await response.json();
 
-        <button onclick="saveAdminSettings()" style="background:#22c55e; color:white; padding:10px; width:100%; border:none; border-radius:5px; cursor:pointer;">حفظ التغييرات</button>
-    `;
+        if (bookings.length === 0) {
+            content.innerHTML = "<p style='text-align:center;'>لا توجد حجوزات مسجلة حالياً.</p>";
+            return;
+        }
+
+        let html = `<h3>❌ إلغاء الحجوزات</h3>
+                    <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <tr style="background:#f1f5f9;">
+                        <th style="padding:8px; border:1px solid #ddd;">الاسم</th>
+                        <th style="padding:8px; border:1px solid #ddd;">التاريخ</th>
+                        <th style="padding:8px; border:1px solid #ddd;">الساعة</th>
+                        <th style="padding:8px; border:1px solid #ddd;">إجراء</th>
+                    </tr>`;
+
+        bookings.forEach(bk => {
+            html += `<tr>
+                <td style="padding:8px; border:1px solid #ddd;">${bk.name}</td>
+                <td style="padding:8px; border:1px solid #ddd;">${bk.date}</td>
+                <td style="padding:8px; border:1px solid #ddd;">${bk.hour}</td>
+                <td style="padding:8px; border:1px solid #ddd; text-align:center;">
+                    <button onclick="cancelBooking(${bk.row})" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">إلغاء</button>
+                </td>
+            </tr>`;
+        });
+        html += `</table></div>`;
+        content.innerHTML = html;
+    } catch (e) {
+        content.innerHTML = "<p style='color:red;'>خطأ في جلب البيانات</p>";
+    }
+}
+
+async function cancelBooking(rowNumber) {
+    if (!confirm("هل أنت متأكد من إلغاء هذا الحجز نهائياً؟")) return;
+
+    try {
+        const response = await fetch(`${settingsScriptURL}?action=cancelBooking&row=${rowNumber}`);
+        const result = await response.text();
+        if (result === "CancelSuccess") {
+            alert("تم إلغاء الحجز بنجاح");
+            showCancellations(); // تحديث القائمة
+        } else {
+            alert("فشل الإلغاء");
+        }
+    } catch (e) {
+        alert("خطأ في الاتصال");
+    }
+}
+
+// --- 3. عرض البيانات والإحصائيات ---
+async function showStats() {
+    const content = document.getElementById('adminSectionContent');
+    content.innerHTML = "<p style='text-align:center;'>جاري حساب البيانات...</p>";
+
+    try {
+        const response = await fetch(`${settingsScriptURL}?action=getStats&id=${stadiumId}`);
+        const stats = await response.json();
+
+        let html = `<h3>📊 إحصائيات الحجوزات</h3>
+                    <div style="background:#1e3a8a; color:white; padding:15px; border-radius:10px; text-align:center; margin-bottom:15px;">
+                        <small>إجمالي الحجوزات (سنوي)</small>
+                        <h2 style="margin:5px 0;">${stats.yearly} ساعة</h2>
+                    </div>
+                    <h4>تفاصيل الشهور:</h4>
+                    <ul style="list-style:none; padding:0;">`;
+        
+        for (const [month, count] of Object.entries(stats.monthly)) {
+            html += `<li style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee;">
+                        <span>شهر ${month}:</span>
+                        <strong>${count} ساعة</strong>
+                    </li>`;
+        }
+        html += `</ul>`;
+        content.innerHTML = html;
+    } catch (e) {
+        content.innerHTML = "<p style='color:red;'>خطأ في حساب البيانات</p>";
+    }
+}
+
+function closeAdminPanel() {
+    document.getElementById('adminPanel').style.display = 'none';
 }
