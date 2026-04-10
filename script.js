@@ -628,44 +628,67 @@ async function saveAdminSettings() {
     }
 }
 
-// --- 2. إدارة الحجوزات (عرض وإلغاء) ---
 async function showCancellations() {
     const content = document.getElementById('adminSectionContent');
-    content.innerHTML = "<p style='text-align:center;'>جاري جلب الحجوزات...</p>";
+    content.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+            <p>جاري جلب الحجوزات...</p>
+            <div class="loader"></div> </div>`;
 
     try {
         const response = await fetch(`${settingsScriptURL}?action=getAdminBookings&id=${stadiumId}`);
         const bookings = await response.json();
 
         if (bookings.length === 0) {
-            content.innerHTML = "<p style='text-align:center;'>لا توجد حجوزات مسجلة حالياً.</p>";
+            content.innerHTML = `
+                <div style="text-align:center; padding:30px; color:#64748b;">
+                    <p>📅 لا توجد حجوزات مسجلة حالياً.</p>
+                </div>`;
             return;
         }
 
-        let html = `<h3>❌ إلغاء الحجوزات</h3>
-                    <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse: collapse; font-size: 0.9rem;">
-                    <tr style="background:#f1f5f9;">
-                        <th style="padding:8px; border:1px solid #ddd;">الاسم</th>
-                        <th style="padding:8px; border:1px solid #ddd;">التاريخ</th>
-                        <th style="padding:8px; border:1px solid #ddd;">الساعة</th>
-                        <th style="padding:8px; border:1px solid #ddd;">إجراء</th>
-                    </tr>`;
+        let html = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0; color:#1e293b; font-size:1.1rem;">❌ إلغاء الحجوزات</h3>
+                <span style="background:#f1f5f9; padding:2px 10px; border-radius:12px; font-size:0.8rem;">${bookings.length} حجز</span>
+            </div>
+            
+            <div style="overflow-y:auto; max-height:350px; border:1px solid #e2e8f0; border-radius:8px;">
+                <table style="width:100%; border-collapse: collapse; font-size: 0.85rem; background:white;">
+                    <thead style="position: sticky; top: 0; background:#f8fafc; z-index:10;">
+                        <tr>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:right;">الاسم</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">التاريخ</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">الساعة</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
 
         bookings.forEach(bk => {
-            html += `<tr>
-                <td style="padding:8px; border:1px solid #ddd;">${bk.name}</td>
-                <td style="padding:8px; border:1px solid #ddd;">${bk.date}</td>
-                <td style="padding:8px; border:1px solid #ddd;">${bk.hour}</td>
-                <td style="padding:8px; border:1px solid #ddd; text-align:center;">
-                    <button onclick="cancelBooking(${bk.row})" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">إلغاء</button>
-                </td>
-            </tr>`;
+            html += `
+                <tr style="border-bottom:1px solid #f1f5f9; transition:0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                    <td style="padding:10px 8px; font-weight:500;">${bk.name}</td>
+                    <td style="padding:10px 8px; text-align:center; color:#64748b;">${bk.date}</td>
+                    <td style="padding:10px 8px; text-align:center; direction:ltr;">${bk.hour}</td>
+                    <td style="padding:10px 8px; text-align:center;">
+                        <button onclick="cancelBooking(${bk.row}, this)" 
+                                style="background:#fee2e2; color:#ef4444; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold; transition:0.3s;">
+                            إلغاء
+                        </button>
+                    </td>
+                </tr>`;
         });
-        html += `</table></div>`;
+
+        html += `</tbody></table></div>`;
         content.innerHTML = html;
+
     } catch (e) {
-        content.innerHTML = "<p style='color:red;'>خطأ في جلب البيانات</p>";
+        content.innerHTML = `
+            <div style="text-align:center; padding:20px; color:#ef4444;">
+                <p>⚠️ خطأ في جلب البيانات، تأكد من اتصال الإنترنت.</p>
+            </div>`;
+        console.error("Fetch Error:", e);
     }
 }
 
