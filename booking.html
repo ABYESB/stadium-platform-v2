@@ -244,7 +244,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </div>
 
 <style>
-    /* الكود الذي أرسلته أنت مع تحسينات */
+    /* التنسيقات الأساسية للأيقونات والحقول */
     .admin-icon {
         background: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -257,37 +257,62 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         flex-direction: column;
         align-items: center;
         gap: 10px;
+        flex: 1; /* لتوزيع الأزرار بالتساوي */
     }
     .admin-icon:hover { background: #eff6ff; border-color: #3b82f6; }
-    .admin-input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
-
-    /* إصلاح نافذة المسؤول (المودال) لكي لا يخرج المحتوى */
-    #adminPanel {
-        max-width: 95% !important;
-        width: 600px !important;
-        max-height: 90vh !important; /* الارتفاع لا يتجاوز 90% من الشاشة */
-        overflow-y: auto !important; /* إضافة تمرير داخلي */
-        padding: 20px;
-        background: #fff;
-        border-radius: 15px;
-        position: relative;
+    
+    .admin-input { 
+        width: 100%; 
+        padding: 10px; 
+        margin-top: 5px;
+        margin-bottom: 15px; 
+        border: 1px solid #cbd5e1; 
+        border-radius: 8px; 
+        box-sizing: border-box; /* لضمان عدم خروج الحقل عن الإطار */
     }
 
-    /* تحسين الجدول لكي يظهر كاملاً داخل النافذة */
+    /* تحويل #adminPanel إلى نافذة منبثقة حقيقية (Modal) */
+    #adminPanel {
+        position: fixed; /* جعلها ثابتة فوق المحتوى */
+        top: 50%; /* في منتصف الارتفاع */
+        left: 50%; /* في منتصف العرض */
+        transform: translate(-50%, -50%); /* إزاحة دقيقة للمنتصف */
+        width: 90%;
+        max-width: 550px;
+        max-height: 85vh; /* الارتفاع لا يتجاوز 85% من الشاشة */
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* ظل عميق لإبراز اللوحة */
+        z-index: 10000; /* لضمان ظهورها فوق كل شيء */
+        padding: 25px;
+        display: none; /* سيتم تغييرها بـ block بواسطة JS */
+        overflow-y: auto; /* إضافة تمرير إذا كان المحتوى طويلاً */
+        border: 1px solid #e2e8f0;
+    }
+
+    /* رأس اللوحة (أزرار التنقل) */
+    .admin-nav {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 15px;
+    }
+
+    /* تحسين محتوى الأقسام والجدول */
     #adminSectionContent {
-        margin-top: 20px;
-        overflow-x: auto; /* تمرير أفقي للجداول العريضة */
+        margin-top: 10px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 400px; /* لضمان عدم انضغاط الجدول في الهواتف */
+        min-width: 100%;
     }
 
     th, td {
-        padding: 10px;
-        border: 1px solid #eee;
+        padding: 12px 8px;
+        border-bottom: 1px solid #f1f5f9;
         text-align: center;
         font-size: 0.85rem;
     }
@@ -295,6 +320,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     th {
         background-color: #1e3a8a;
         color: white;
+        position: sticky; /* رأس جدول ثابت */
+        top: 0;
+    }
+
+    /* زر الإغلاق (X) */
+    .close-admin {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #64748b;
     }
 </style>
           <p class="copyright">© 2026 جميع الحقوق محفوظة </p>
