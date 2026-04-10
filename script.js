@@ -808,13 +808,66 @@ async function showStats() {
 
 
 // --- دالة فتح نافذة المسؤول ---
-function openAdminAuth() {
-    const modal = document.getElementById('adminAuthModal');
-    if (modal) {
-        modal.style.display = 'flex'; // لإظهار النافذة
-        document.getElementById('adminPassword').value = ''; // مسح الباسورد القديم
-    } else {
-        console.error("عنصر adminAuthModal غير موجود في HTML");
+// --- 1. دالة تسجيل الدخول مع إشارة الانتظار ---
+async function handleAdminAuth(btn) {
+    const password = document.getElementById('adminPassInput').value;
+    if (!password) {
+        alert("من فضلك أدخل الكود أولاً");
+        return;
+    }
+
+    // إضافة تأثير الانتظار على الزر
+    btn.classList.add('btn-loading');
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${password}`);
+        const result = await response.text();
+
+        if (result === "Success") {
+            // إخفاء واجهة الدخول وإظهار اللوحة الرئيسية
+            document.getElementById('adminAuthPanel').style.display = 'none';
+            document.getElementById('adminMainOptions').style.display = 'flex';
+            showSettings(); // فتح الإعدادات تلقائياً
+        } else {
+            alert("❌ الكود غير صحيح، حاول مرة أخرى.");
+        }
+    } catch (e) {
+        alert("⚠️ خطأ في الاتصال بالسيرفر");
+    } finally {
+        // إزالة تأثير الانتظار
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+    }
+}
+
+// --- 2. دالة نسيت كلمة المرور ---
+async function handleForgotPassword() {
+    const email = prompt("أدخل بريدك الإلكتروني المسجل لإرسال الكود إليه:");
+    
+    if (!email) return;
+
+    // التأكد من صحة الإيميل بشكل بسيط
+    if (!email.includes("@")) {
+        alert("يرجى إدخال بريد إلكتروني صحيح");
+        return;
+    }
+
+    alert("جاري إرسال الكود إلى بريدك... يرجى الانتظار");
+
+    try {
+        const response = await fetch(`${settingsScriptURL}?action=forgotPassword&id=${stadiumId}&email=${email}`);
+        const result = await response.text();
+
+        if (result === "Sent") {
+            alert("✅ تم إرسال كود الدخول إلى بريدك الإلكتروني بنجاح.");
+        } else if (result === "EmailMismatch") {
+            alert("❌ هذا البريد غير مطابق للبريد المسجل لهذا الملعب.");
+        } else {
+            alert("⚠️ حدث خطأ، تأكد من إعدادات البريد في سكريبت جوجل.");
+        }
+    } catch (e) {
+        alert("❌ فشل الاتصال بالسيرفر لإرسال الإيميل.");
     }
 }
 
