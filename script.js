@@ -591,11 +591,16 @@ window.addEventListener('appinstalled', () => {
     console.log('PWA was installed');
 });
 // --- 1. إعدادات المسؤول وحفظ التغييرات ---
-async function saveAdminSettings() {
-    const btn = event.target;
-    btn.disabled = true;
-    btn.innerText = "جاري الحفظ...";
+async function saveAdminSettings(event) { // تم إضافة event هنا كمعامل
+    // التأكد من الحصول على الزر بشكل صحيح سواء من event.target أو event.currentTarget
+    const btn = event ? (event.target || event.currentTarget) : null;
+    
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "جاري الحفظ... ⏳";
+    }
 
+    // تجميع البيانات من الحقول التي أنشأتها دالة showSettings
     const params = new URLSearchParams({
         action: "adminUpdateSettings",
         id: stadiumId,
@@ -612,22 +617,84 @@ async function saveAdminSettings() {
     });
 
     try {
+        // إرسال الطلب إلى Google Apps Script
         const response = await fetch(`${settingsScriptURL}?${params.toString()}`);
         const result = await response.text();
-        if (result === "Success") {
-            alert("تم تحديث البيانات بنجاح! سيتم إعادة تحميل الصفحة.");
-            location.reload();
+
+        if (result.trim() === "Success") {
+            alert("✅ تم تحديث بيانات الملعب بنجاح! سيتم تحديث الصفحة الآن.");
+            location.reload(); // إعادة تحميل لرؤية النتائج فوراً
         } else {
-            alert("حدث خطأ أثناء التحديث");
+            alert("⚠️ حدث خطأ في السكريبت: " + result);
         }
     } catch (e) {
-        alert("خطأ في الاتصال بالسيرفر");
+        console.error("Save Error:", e);
+        alert("❌ فشل الاتصال بالسيرفر. تأكد من إعدادات النشر (Deployment) في Google Apps Script.");
     } finally {
-        btn.disabled = false;
-        btn.innerText = "حفظ التغييرات";
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = "حفظ التغييرات";
+        }
     }
 }
+// --- دالة عرض واجهة الإعدادات ---
+async function showSettings() {
+    const content = document.getElementById('adminSectionContent');
+    content.innerHTML = "<p style='text-align:center;'>جاري تحميل الإعدادات الحالية...</p>";
 
+    try {
+        // جلب البيانات الحالية للملعب لملء الحقول تلقائياً
+        const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+        const data = await response.json();
+
+        if (data === "NotFound") {
+            content.innerHTML = "<p style='color:red;'>تعذر العثور على بيانات الملعب</p>";
+            return;
+        }
+
+        // بناء نموذج الإعدادات
+        let html = `
+            <h3>⚙️ إعدادات الملعب</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label>اسم الملعب:</label>
+                <input type="text" id="upd_name" class="admin-input" value="${data.stadium_name}">
+                
+                <label>اسم المؤسسة/المسؤول:</label>
+                <input type="text" id="upd_org" class="admin-input" value="${data.org || ''}">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label>سعر النهار:</label>
+                        <input type="number" id="upd_price_day" class="admin-input" value="${data.price_day}">
+                    </div>
+                    <div>
+                        <label>سعر الليل:</label>
+                        <input type="number" id="upd_price_night" class="admin-input" value="${data.price_night}">
+                    </div>
+                </div>
+
+                <label>رقم الهاتف (واتساب):</label>
+                <input type="text" id="upd_phone" class="admin-input" value="${data.phone}">
+
+                <label>رابط الموقع (Google Maps):</label>
+                <input type="text" id="upd_loc" class="admin-input" value="${data.location || ''}">
+
+                <label>رابط اللوجو (URL):</label>
+                <input type="text" id="upd_logo" class="admin-input" value="${data.logo_url || ''}">
+
+                <label>كلمة مرور جديدة (اختياري):</label>
+                <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً للحفاظ على الحالية">
+
+                <button onclick="saveAdminSettings()" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">
+                    حفظ التغييرات
+                </button>
+            </div>
+        `;
+        content.innerHTML = html;
+    } catch (e) {
+        content.innerHTML = "<p style='color:red;'>خطأ في الاتصال بالسيرفر</p>";
+    }
+}
 async function showCancellations() {
     const content = document.getElementById('adminSectionContent');
     content.innerHTML = `
