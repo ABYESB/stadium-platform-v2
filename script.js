@@ -820,43 +820,10 @@ function openAdminAuth() {
     }
 }
 
-// دالة إغلاق النافذة
-function closeAdminAuth() {
-    document.getElementById('adminAuthModal').style.display = 'none';
+
 }
 // --- دالة فتح نافذة المسؤول ---
 // --- 1. دالة تسجيل الدخول مع إشارة الانتظار ---
-async function handleAdminAuth(btn) {
-    const password = document.getElementById('adminPassInput').value;
-    if (!password) {
-        alert("من فضلك أدخل الكود أولاً");
-        return;
-    }
-
-    // إضافة تأثير الانتظار على الزر
-    btn.classList.add('btn-loading');
-    btn.disabled = true;
-
-    try {
-        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${password}`);
-        const result = await response.text();
-
-        if (result === "Success") {
-            // إخفاء واجهة الدخول وإظهار اللوحة الرئيسية
-            document.getElementById('adminAuthPanel').style.display = 'none';
-            document.getElementById('adminMainOptions').style.display = 'flex';
-            showSettings(); // فتح الإعدادات تلقائياً
-        } else {
-            alert("❌ الكود غير صحيح، حاول مرة أخرى.");
-        }
-    } catch (e) {
-        alert("⚠️ خطأ في الاتصال بالسيرفر");
-    } finally {
-        // إزالة تأثير الانتظار
-        btn.classList.remove('btn-loading');
-        btn.disabled = false;
-    }
-}
 
 // --- 2. دالة نسيت كلمة المرور ---
 async function handleForgotPassword() {
