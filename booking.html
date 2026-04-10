@@ -20,11 +20,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css?v=1.54">
+    <link rel="stylesheet" href="style.css?v=1.55">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
-    <script src="script.js?v=1.54" defer></script>
+    <script src="script.js?v=1.55" defer></script>
 </head>
 <body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -207,12 +207,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </button>
 </div>
 
-<div id="adminAuthModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-width: 400px; text-align: center;">
-        <h3>تسجيل الدخول للمسؤول</h3>
-        <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" style="width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px;">
-        <button onclick="verifyAdmin()" style="width: 100%; background: #22c55e; color: white; border: none; padding: 10px; border-radius: 5px;">دخول</button>
-        <button onclick="closeAdminAuth()" style="margin-top: 10px; background: none; border: none; color: red; cursor: pointer;">إلغاء</button>
+<div id="adminAuthModal" class="modal-overlay" style="display:none;">
+    <div id="adminPanel" style="display: block; max-width: 400px; padding: 30px; text-align: center; border-radius: 20px;">
+        <span class="close-admin" onclick="closeAdminAuth()">×</span>
+        
+        <div id="authContent">
+            <h2 style="color: #1e3a8a; margin-bottom: 10px;">🔐 دخول المسؤول</h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px;">يرجى إدخال رمز الوصول الخاص بملعبك</p>
+            
+            <input type="password" id="adminPassword" class="admin-input" 
+                   placeholder="أدخل كود المسؤول هنا" 
+                   style="text-align: center; letter-spacing: 4px; font-size: 1.1rem; padding: 14px;">
+            
+            <button onclick="handleAdminAuth(this)" id="loginBtn" 
+                    style="width: 100%; background: #1e3a8a; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem;">
+                دخول النظام
+            </button>
+
+            <div style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+                <span class="forgot-pass" onclick="handleForgotPassword()" 
+                      style="color: #3b82f6; cursor: pointer; font-size: 0.85rem; text-decoration: none; font-weight: 500;">
+                    نسيت كود الدخول؟
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 
