@@ -890,42 +890,52 @@ async function handleForgotPassword() {
 
 // --- دالة التحقق من كلمة السر ---
 // --- دالة التحقق من كلمة السر (الإصدار النهائي والأكيد) ---
-function verifyAdmin() {
-    const password = document.getElementById('adminPassword').value;
-    if (!password) return alert("يرجى إدخال كلمة المرور");
-
-    console.log("جاري التحقق...");
-
-    // حذف أي سكريبت قديم بنفس الاسم لتجنب التكرار
-    const oldScript = document.getElementById('jsonpAuth');
-    if (oldScript) oldScript.remove();
-
-    // إنشاء طلب JSONP
-    const script = document.createElement('script');
-    script.id = 'jsonpAuth';
-    // نرسل الـ callback ليعرف جوجل سكريبت كيف يرد علينا
-    script.src = `${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(password)}&callback=handleAdminAuth`;
+async function handleAdminAuth(btn) {
+    // نأخذ القيمة من الحقل (تأكد أن ID الحقل في HTML هو adminPassInput)
+    const passwordInput = document.getElementById('adminPassInput');
+    const password = passwordInput ? passwordInput.value : "";
     
-    script.onerror = () => alert("خطأ في الاتصال بالسيرفر. تأكد من أن السكريبت منشور (Deployed)");
-    
-    document.body.appendChild(script);
-}
-
-// هذه الدالة ستستقبل الرد من جوجل وتنفذ المطلوب
-window.handleAdminAuth = function(result) {
-    if (result.status === "success") {
-        console.log("تم الدخول بنجاح");
-        closeAdminAuth();
-        document.getElementById('adminPanel').style.display = 'flex';
-        showSettings(); // عرض الإعدادات
-    } else {
-        alert("⚠️ كلمة المرور غير صحيحة!");
+    if (!password) {
+        alert("من فضلك أدخل الكود أولاً");
+        return;
     }
-    
-    // تنظيف السكريبت بعد الانتهاء
-    const script = document.getElementById('jsonpAuth');
-    if (script) script.remove();
-};
+
+    // تجهيز الزر لإظهار "جاري التحقق"
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "جاري التحقق... ⏳";
+
+    try {
+        // الاتصال بجوجل سكريبت
+        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
+        const result = await response.text();
+
+        console.log("استجابة السيرفر:", result); // لمراقبة النتيجة في Console
+
+        if (result.trim() === "Success") {
+            // إخفاء واجهة الدخول
+            document.getElementById('adminAuthModal').style.display = 'none';
+            
+            // إظهار لوحة الخيارات (تأكد أن هذا العنصر موجود في صفحتك)
+            const mainOptions = document.getElementById('adminMainOptions');
+            if (mainOptions) {
+                mainOptions.style.display = 'flex';
+            }
+            
+            // فتح قسم الإعدادات مباشرة
+            showSettings(); 
+        } else {
+            alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
+            if(passwordInput) passwordInput.value = "";
+        }
+    } catch (e) {
+        console.error("Auth Error:", e);
+        alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+}
 // --- دالة إغلاق النافذة ---
 function closeAdminAuth() {
     document.getElementById('adminAuthModal').style.display = 'none';
