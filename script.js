@@ -853,25 +853,28 @@ async function handleAdminAuth(btn) {
 
         console.log("استجابة السيرفر:", result);
 
-        if (result.trim() === "Success") {
-            // 1. إخفاء نافذة طلب الكود الصغيرة
-            closeAdminAuth();
+   if (result.trim() === "Success") {
+            // 1. إغلاق نافذة طلب الكود الصغيرة
+            closeAdminAuth(); 
             
             // 2. إظهار لوحة تحكم المسؤول الكبيرة (adminPanel)
-            const mainPanel = document.getElementById('adminPanel');
-            if (mainPanel) {
-                mainPanel.style.display = 'flex';
+            const panel = document.getElementById('adminPanel');
+            if (panel) {
+                // نستخدم 'flex' لتتوافق مع تصميمك في CSS (مركزية الشاشة)
+                panel.style.setProperty('display', 'flex', 'important'); 
+                console.log("اللوحة يجب أن تظهر الآن");
             }
 
-            // 3. إظهار أي أيقونات أو أزرار تحمل كلاس الإدارة (احتياطياً)
+            // 3. إظهار أي أيقونات إدارية متفرقة في الصفحة (إن وجدت)
             document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
                 el.style.setProperty('display', 'block', 'important');
             });
             
-            // 4. تشغيل دالة عرض الإعدادات داخل اللوحة
+            // 4. تشغيل دالة عرض الإعدادات (لتحميل البيانات داخل اللوحة فوراً)
             showSettings(); 
 
         } else {
+            // في حال فشل كلمة المرور
             alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
             if(passwordInput) {
                 passwordInput.value = "";
@@ -882,6 +885,7 @@ async function handleAdminAuth(btn) {
         console.error("Auth Error:", e);
         alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
     } finally {
+        // إعادة الزر لحالته الطبيعية في كل الأحوال
         if (btn) {
             btn.disabled = false;
             btn.innerText = originalText;
