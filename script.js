@@ -685,9 +685,9 @@ async function showSettings() {
                 <label>كلمة مرور جديدة (اختياري):</label>
                 <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً للحفاظ على الحالية">
 
-                <button onclick="saveAdminSettings()" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">
-                    حفظ التغييرات
-                </button>
+                <button onclick="saveAdminSettings(event)" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">
+    حفظ التغييرات
+</button>
             </div>
         `;
         content.innerHTML = html;
