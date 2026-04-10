@@ -816,9 +816,9 @@ function openAdminAuth() {
         if(input) {
             input.value = '';
             input.focus();
-        }
-    }
-}
+      }
+  }
+
 
 
 // --- 2. دالة نسيت كلمة المرور ---
