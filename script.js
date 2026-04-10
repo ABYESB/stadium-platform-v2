@@ -729,46 +729,42 @@ function openAdminAuth() {
 }
 
 // --- دالة التحقق من كلمة السر ---
-async function verifyAdmin() {
+// --- دالة التحقق من كلمة السر (الإصدار النهائي والأكيد) ---
+function verifyAdmin() {
     const password = document.getElementById('adminPassword').value;
     if (!password) return alert("يرجى إدخال كلمة المرور");
 
-    const url = `${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(password)}`;
+    console.log("جاري التحقق...");
 
-    try {
-        // نستخدم fetch مع تجاهل وضع CORS لأننا نحتاج فقط للرد
-        const response = await fetch(url);
-        const result = await response.json();
+    // حذف أي سكريبت قديم بنفس الاسم لتجنب التكرار
+    const oldScript = document.getElementById('jsonpAuth');
+    if (oldScript) oldScript.remove();
 
-        if (result.status === "success") {
-            closeAdminAuth();
-            document.getElementById('adminPanel').style.display = 'flex';
-            showSettings(); 
-        } else {
-            alert("كلمة المرور غير صحيحة!");
-        }
-    } catch (e) {
-        // إذا استمر خطأ CORS، سنستخدم تقنية JSONP البديلة
-        verifyAdminJSONP(password);
-    }
-}
-
-// دالة احتياطية في حال فشل الـ Fetch بسبب سياسة CORS
-function verifyAdminJSONP(pass) {
+    // إنشاء طلب JSONP
     const script = document.createElement('script');
-    script.src = `${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(pass)}&callback=handleAdminAuth`;
+    script.id = 'jsonpAuth';
+    // نرسل الـ callback ليعرف جوجل سكريبت كيف يرد علينا
+    script.src = `${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(password)}&callback=handleAdminAuth`;
+    
+    script.onerror = () => alert("خطأ في الاتصال بالسيرفر. تأكد من أن السكريبت منشور (Deployed)");
+    
     document.body.appendChild(script);
 }
 
-// هذه الدالة ستستقبل الرد من جوجل
+// هذه الدالة ستستقبل الرد من جوجل وتنفذ المطلوب
 window.handleAdminAuth = function(result) {
     if (result.status === "success") {
+        console.log("تم الدخول بنجاح");
         closeAdminAuth();
         document.getElementById('adminPanel').style.display = 'flex';
-        showSettings();
+        showSettings(); // عرض الإعدادات
     } else {
-        alert("كلمة المرور غير صحيحة!");
+        alert("⚠️ كلمة المرور غير صحيحة!");
     }
+    
+    // تنظيف السكريبت بعد الانتهاء
+    const script = document.getElementById('jsonpAuth');
+    if (script) script.remove();
 };
 // --- دالة إغلاق النافذة ---
 function closeAdminAuth() {
