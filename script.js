@@ -733,8 +733,11 @@ async function verifyAdmin() {
     const password = document.getElementById('adminPassword').value;
     if (!password) return alert("يرجى إدخال كلمة المرور");
 
+    const url = `${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(password)}`;
+
     try {
-        const response = await fetch(`${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
+        // نستخدم fetch مع تجاهل وضع CORS لأننا نحتاج فقط للرد
+        const response = await fetch(url);
         const result = await response.json();
 
         if (result.status === "success") {
@@ -745,10 +748,28 @@ async function verifyAdmin() {
             alert("كلمة المرور غير صحيحة!");
         }
     } catch (e) {
-        alert("خطأ في الاتصال بالسيرفر");
+        // إذا استمر خطأ CORS، سنستخدم تقنية JSONP البديلة
+        verifyAdminJSONP(password);
     }
 }
 
+// دالة احتياطية في حال فشل الـ Fetch بسبب سياسة CORS
+function verifyAdminJSONP(pass) {
+    const script = document.createElement('script');
+    script.src = `${settingsScriptURL}?action=verifyAdmin&id=${stadiumId}&pass=${encodeURIComponent(pass)}&callback=handleAdminAuth`;
+    document.body.appendChild(script);
+}
+
+// هذه الدالة ستستقبل الرد من جوجل
+window.handleAdminAuth = function(result) {
+    if (result.status === "success") {
+        closeAdminAuth();
+        document.getElementById('adminPanel').style.display = 'flex';
+        showSettings();
+    } else {
+        alert("كلمة المرور غير صحيحة!");
+    }
+};
 // --- دالة إغلاق النافذة ---
 function closeAdminAuth() {
     document.getElementById('adminAuthModal').style.display = 'none';
