@@ -806,7 +806,24 @@ async function showStats() {
     }
 }
 
+// دالة فتح النافذة - تأكد أن اسمها مطابق لما هو مكتوب في onclick بالـ HTML
+function openAdminAuth() {
+    const modal = document.getElementById('adminAuthModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // مسح الحقل القديم وتجهيزه للكتابة
+        const input = document.getElementById('adminPassInput');
+        if(input) {
+            input.value = '';
+            input.focus();
+        }
+    }
+}
 
+// دالة إغلاق النافذة
+function closeAdminAuth() {
+    document.getElementById('adminAuthModal').style.display = 'none';
+}
 // --- دالة فتح نافذة المسؤول ---
 // --- 1. دالة تسجيل الدخول مع إشارة الانتظار ---
 async function handleAdminAuth(btn) {
