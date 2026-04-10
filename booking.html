@@ -244,6 +244,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </div>
 
 <style>
+    /* الكود الذي أرسلته أنت مع تحسينات */
     .admin-icon {
         background: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -252,9 +253,49 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         text-align: center;
         cursor: pointer;
         transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
     }
     .admin-icon:hover { background: #eff6ff; border-color: #3b82f6; }
     .admin-input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+
+    /* إصلاح نافذة المسؤول (المودال) لكي لا يخرج المحتوى */
+    #adminPanel {
+        max-width: 95% !important;
+        width: 600px !important;
+        max-height: 90vh !important; /* الارتفاع لا يتجاوز 90% من الشاشة */
+        overflow-y: auto !important; /* إضافة تمرير داخلي */
+        padding: 20px;
+        background: #fff;
+        border-radius: 15px;
+        position: relative;
+    }
+
+    /* تحسين الجدول لكي يظهر كاملاً داخل النافذة */
+    #adminSectionContent {
+        margin-top: 20px;
+        overflow-x: auto; /* تمرير أفقي للجداول العريضة */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 400px; /* لضمان عدم انضغاط الجدول في الهواتف */
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #eee;
+        text-align: center;
+        font-size: 0.85rem;
+    }
+
+    th {
+        background-color: #1e3a8a;
+        color: white;
+    }
 </style>
           <p class="copyright">© 2026 جميع الحقوق محفوظة </p>
     </div>
