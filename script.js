@@ -847,24 +847,30 @@ async function handleAdminAuth(btn) {
     btn.innerText = "جاري التحقق... ⏳";
 
     try {
-        // الاتصال بجوجل سكريبت (تأكد من تعريف settingsScriptURL و stadiumId في ملفك)
+        // الاتصال بجوجل سكريبت
         const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
         const result = await response.text();
 
         console.log("استجابة السيرفر:", result);
 
         if (result.trim() === "Success") {
-            // إخفاء نافذة الدخول
+            // 1. إخفاء نافذة طلب الكود الصغيرة
             closeAdminAuth();
             
-            // إظهار لوحة التحكم الرئيسية
-            const mainOptions = document.getElementById('adminMainOptions') || document.getElementById('adminPanel');
-            if (mainOptions) {
-                mainOptions.style.display = 'flex';
+            // 2. إظهار لوحة تحكم المسؤول الكبيرة (adminPanel)
+            const mainPanel = document.getElementById('adminPanel');
+            if (mainPanel) {
+                mainPanel.style.display = 'flex';
             }
+
+            // 3. إظهار أي أيقونات أو أزرار تحمل كلاس الإدارة (احتياطياً)
+            document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
+                el.style.setProperty('display', 'block', 'important');
+            });
             
-            // تشغيل دالة الإعدادات (الموجودة مسبقاً في ملفك)
+            // 4. تشغيل دالة عرض الإعدادات داخل اللوحة
             showSettings(); 
+
         } else {
             alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
             if(passwordInput) {
@@ -876,10 +882,13 @@ async function handleAdminAuth(btn) {
         console.error("Auth Error:", e);
         alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
     } finally {
-        btn.disabled = false;
-        btn.innerText = originalText;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
     }
 }
+
 
 // --- 4. دالة نسيت كلمة المرور ---
 async function handleForgotPassword() {
@@ -910,3 +919,6 @@ async function handleForgotPassword() {
         alert("❌ فشل الاتصال بالسيرفر لإرسال الإيميل.");
     }
 } // هذا القوس ضروري جداً لإغلاق الدالة
+function closeAdminPanel() {
+    document.getElementById('adminPanel').style.display = 'none';
+}
