@@ -807,27 +807,86 @@ async function showStats() {
 }
 
 // دالة فتح النافذة - تأكد أن اسمها مطابق لما هو مكتوب في onclick بالـ HTML
+
+// --- 1. دالة فتح نافذة المسؤول ---
 function openAdminAuth() {
     const modal = document.getElementById('adminAuthModal');
     if (modal) {
         modal.style.display = 'flex';
-        // مسح الحقل القديم وتجهيزه للكتابة
+        // تجهيز الحقل للكتابة
         const input = document.getElementById('adminPassInput');
         if(input) {
             input.value = '';
             input.focus();
-      }
-  }
+        }
+    }
+}
 
+// --- 2. دالة إغلاق النافذة ---
+function closeAdminAuth() {
+    const modal = document.getElementById('adminAuthModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
 
+// --- 3. دالة تسجيل الدخول ومعالجة كلمة السر ---
+async function handleAdminAuth(btn) {
+    const passwordInput = document.getElementById('adminPassInput');
+    const password = passwordInput ? passwordInput.value.trim() : "";
+    
+    if (!password) {
+        alert("⚠️ من فضلك أدخل الكود أولاً");
+        if(passwordInput) passwordInput.focus();
+        return;
+    }
 
-// --- 2. دالة نسيت كلمة المرور ---
+    // إشارة الانتظار على الزر
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "جاري التحقق... ⏳";
+
+    try {
+        // الاتصال بجوجل سكريبت (تأكد من تعريف settingsScriptURL و stadiumId في ملفك)
+        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
+        const result = await response.text();
+
+        console.log("استجابة السيرفر:", result);
+
+        if (result.trim() === "Success") {
+            // إخفاء نافذة الدخول
+            closeAdminAuth();
+            
+            // إظهار لوحة التحكم الرئيسية
+            const mainOptions = document.getElementById('adminMainOptions') || document.getElementById('adminPanel');
+            if (mainOptions) {
+                mainOptions.style.display = 'flex';
+            }
+            
+            // تشغيل دالة الإعدادات (الموجودة مسبقاً في ملفك)
+            showSettings(); 
+        } else {
+            alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
+            if(passwordInput) {
+                passwordInput.value = "";
+                passwordInput.focus();
+            }
+        }
+    } catch (e) {
+        console.error("Auth Error:", e);
+        alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+}
+
+// --- 4. دالة نسيت كلمة المرور ---
 async function handleForgotPassword() {
     const email = prompt("أدخل بريدك الإلكتروني المسجل لإرسال الكود إليه:");
     
     if (!email) return;
 
-    // التأكد من صحة الإيميل بشكل بسيط
     if (!email.includes("@")) {
         alert("يرجى إدخال بريد إلكتروني صحيح");
         return;
@@ -839,67 +898,15 @@ async function handleForgotPassword() {
         const response = await fetch(`${settingsScriptURL}?action=forgotPassword&id=${stadiumId}&email=${email}`);
         const result = await response.text();
 
-        if (result === "Sent") {
+        if (result.trim() === "Sent") {
             alert("✅ تم إرسال كود الدخول إلى بريدك الإلكتروني بنجاح.");
-        } else if (result === "EmailMismatch") {
+        } else if (result.trim() === "EmailMismatch") {
             alert("❌ هذا البريد غير مطابق للبريد المسجل لهذا الملعب.");
         } else {
             alert("⚠️ حدث خطأ، تأكد من إعدادات البريد في سكريبت جوجل.");
         }
     } catch (e) {
+        console.error("Forgot Pass Error:", e);
         alert("❌ فشل الاتصال بالسيرفر لإرسال الإيميل.");
     }
-}
-
-// --- دالة التحقق من كلمة السر ---
-// --- دالة التحقق من كلمة السر (الإصدار النهائي والأكيد) ---
-async function handleAdminAuth(btn) {
-    // نأخذ القيمة من الحقل (تأكد أن ID الحقل في HTML هو adminPassInput)
-    const passwordInput = document.getElementById('adminPassInput');
-    const password = passwordInput ? passwordInput.value : "";
-    
-    if (!password) {
-        alert("من فضلك أدخل الكود أولاً");
-        return;
-    }
-
-    // تجهيز الزر لإظهار "جاري التحقق"
-    const originalText = btn.innerText;
-    btn.disabled = true;
-    btn.innerText = "جاري التحقق... ⏳";
-
-    try {
-        // الاتصال بجوجل سكريبت
-        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
-        const result = await response.text();
-
-        console.log("استجابة السيرفر:", result); // لمراقبة النتيجة في Console
-
-        if (result.trim() === "Success") {
-            // إخفاء واجهة الدخول
-            document.getElementById('adminAuthModal').style.display = 'none';
-            
-            // إظهار لوحة الخيارات (تأكد أن هذا العنصر موجود في صفحتك)
-            const mainOptions = document.getElementById('adminMainOptions');
-            if (mainOptions) {
-                mainOptions.style.display = 'flex';
-            }
-            
-            // فتح قسم الإعدادات مباشرة
-            showSettings(); 
-        } else {
-            alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
-            if(passwordInput) passwordInput.value = "";
-        }
-    } catch (e) {
-        console.error("Auth Error:", e);
-        alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
-    } finally {
-        btn.disabled = false;
-        btn.innerText = originalText;
-    }
-}
-// --- دالة إغلاق النافذة ---
-function closeAdminAuth() {
-    document.getElementById('adminAuthModal').style.display = 'none';
 }
