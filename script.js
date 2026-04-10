@@ -909,4 +909,4 @@ async function handleForgotPassword() {
         console.error("Forgot Pass Error:", e);
         alert("❌ فشل الاتصال بالسيرفر لإرسال الإيميل.");
     }
-}
+} // هذا القوس ضروري جداً لإغلاق الدالة
