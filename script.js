@@ -14,35 +14,38 @@ let currentStartDate = getMonday(new Date());
 
 // 2. جلب تفاصيل الملعب وتحديث الواجهة
 async function loadStadiumDynamicDetails() {
+
     if (!stadiumId) return;
+
     try {
+
         const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+
         const data = await response.json();
+
         
+
         if (data !== "NotFound") {
-            // 1. تحديث النصوص الأساسية
+
+            // 1. النصوص الأساسية
+
             document.title = "حجز " + data.stadium_name;
-            
-            const nameElem = document.getElementById('displayStadiumName');
-            if (nameElem) nameElem.innerText = data.stadium_name;
 
-            const orgElem = document.getElementById('displayOrg');
-            if (orgElem) orgElem.innerText = "بإشراف: " + data.org;
+            document.getElementById('displayStadiumName').innerText = data.stadium_name;
 
-            // إضافة العنوان (Location) تحت الاسم
-            const locElem = document.getElementById('displayLocation'); 
-            if (locElem) locElem.innerText = data.location || "";
-            
-            // 2. معالجة اللوغو (شعار المنصة vs شعار الملعب)
+            document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
+
+            // 2. حل مشكلة اللوغو
+
             const logoImg = document.getElementById('displayLogo');
+
             if (logoImg) {
+
                 const platformLogo = "https://i.ibb.co/HLRFczNy/resized-1.png"; 
-                // إذا كان الرابط فارغاً أو يحتوي على كلمة "undefined" أو "null"
-                if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "null") {
-                    logoImg.src = data.logo_url;
-                } else {
-                    logoImg.src = platformLogo;
-                }
+
+                logoImg.src = (data.logo_url && data.logo_url.trim() !== "") ? data.logo_url : platformLogo;
+
+             }
     
             // 3. تحديث الأسعار والمودال
             if (document.getElementById('modalStadiumName')) {
