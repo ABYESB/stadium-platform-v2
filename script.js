@@ -743,24 +743,37 @@ async function showCancellations() {
                 <span style="background:#f1f5f9; padding:2px 10px; border-radius:12px; font-size:0.8rem;">${bookings.length} حجز</span>
             </div>
             
-            <div style="overflow-y:auto; max-height:350px; border:1px solid #e2e8f0; border-radius:8px;">
+            <div style="overflow-y:auto; max-height:450px; border:1px solid #e2e8f0; border-radius:8px;">
                 <table style="width:100%; border-collapse: collapse; font-size: 0.85rem; background:white;">
                     <thead style="position: sticky; top: 0; background:#f8fafc; z-index:10;">
                         <tr>
-                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:right;">الاسم</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:right;">اليوم</th>
                             <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">التاريخ</th>
                             <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">الساعة</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:right;">الاسم</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">الهاتف</th>
                             <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">إجراء</th>
                         </tr>
                     </thead>
                     <tbody>`;
 
         bookings.forEach(bk => {
+            // تحويل التاريخ (dd/MM/yyyy) لاسم اليوم
+            const dateParts = bk.date.split("/");
+            const dateObj = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+            const dayName = dateObj.toLocaleDateString('ar-MA', { weekday: 'long' });
+
             html += `
                 <tr style="border-bottom:1px solid #f1f5f9; transition:0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                    <td style="padding:10px 8px; font-weight:500;">${bk.name}</td>
+                    <td style="padding:10px 8px; font-weight:bold; color:#1e3a8a;">${dayName}</td>
                     <td style="padding:10px 8px; text-align:center; color:#64748b;">${bk.date}</td>
                     <td style="padding:10px 8px; text-align:center; direction:ltr;">${bk.hour}</td>
+                    <td style="padding:10px 8px; font-weight:500;">${bk.name}</td>
+                    <td style="padding:10px 8px; text-align:center;">
+                        <a href="tel:${bk.phone}" style="text-decoration:none; color:#16a34a; font-weight:bold;">
+                            ${bk.phone} 📞
+                        </a>
+                    </td>
                     <td style="padding:10px 8px; text-align:center;">
                         <button onclick="cancelBooking(${bk.row}, this)" 
                                 style="background:#fee2e2; color:#ef4444; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold; transition:0.3s;">
@@ -782,20 +795,36 @@ async function showCancellations() {
     }
 }
 
-async function cancelBooking(rowNumber) {
+async function cancelBooking(rowNumber, btn) { // أضفنا btn هنا
     if (!confirm("هل أنت متأكد من إلغاء هذا الحجز نهائياً؟")) return;
+
+    // تحسين تجربة المستخدم: تعطيل الزر مؤقتاً
+    const originalText = btn ? btn.innerText : "إلغاء";
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "...";
+    }
 
     try {
         const response = await fetch(`${settingsScriptURL}?action=cancelBooking&row=${rowNumber}`);
         const result = await response.text();
-        if (result === "CancelSuccess") {
-            alert("تم إلغاء الحجز بنجاح");
-            showCancellations(); // تحديث القائمة
+        
+        if (result.trim() === "CancelSuccess") {
+            alert("✅ تم إلغاء الحجز بنجاح");
+            showCancellations(); // تحديث القائمة فوراً
         } else {
-            alert("فشل الإلغاء");
+            alert("⚠️ فشل الإلغاء: " + result);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
         }
     } catch (e) {
-        alert("خطأ في الاتصال");
+        alert("❌ خطأ في الاتصال بالسيرفر");
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
     }
 }
 
