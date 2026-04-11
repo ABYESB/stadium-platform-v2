@@ -831,30 +831,73 @@ async function cancelBooking(rowNumber, btn) { // أضفنا btn هنا
 // --- 3. عرض البيانات والإحصائيات ---
 async function showStats() {
     const content = document.getElementById('adminSectionContent');
-    content.innerHTML = "<p style='text-align:center;'>جاري حساب البيانات...</p>";
+    content.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+            <p>جاري تحليل البيانات المالية والزمنية...</p>
+            <div class="loader"></div> 
+        </div>`;
 
     try {
         const response = await fetch(`${settingsScriptURL}?action=getStats&id=${stadiumId}`);
-        const stats = await response.json();
-
-        let html = `<h3>📊 إحصائيات الحجوزات</h3>
-                    <div style="background:#1e3a8a; color:white; padding:15px; border-radius:10px; text-align:center; margin-bottom:15px;">
-                        <small>إجمالي الحجوزات (سنوي)</small>
-                        <h2 style="margin:5px 0;">${stats.yearly} ساعة</h2>
-                    </div>
-                    <h4>تفاصيل الشهور:</h4>
-                    <ul style="list-style:none; padding:0;">`;
+        const data = await response.json();
         
-        for (const [month, count] of Object.entries(stats.monthly)) {
-            html += `<li style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee;">
-                        <span>شهر ${month}:</span>
-                        <strong>${count} ساعة</strong>
-                    </li>`;
-        }
-        html += `</ul>`;
+        const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+        
+        let totalHours = 0;
+        let totalIncome = 0;
+
+        let html = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0; color:#1e293b; font-size:1.1rem;">📊 تقرير السنة المالية ${data.year}</h3>
+                <span style="background:#e0f2fe; color:#0369a1; padding:2px 10px; border-radius:12px; font-size:0.8rem; font-weight:bold;">تحديث تلقائي</span>
+            </div>
+            
+            <div style="overflow-y:auto; max-height:450px; border:1px solid #e2e8f0; border-radius:8px;">
+                <table style="width:100%; border-collapse: collapse; font-size: 0.85rem; background:white;">
+                    <thead style="position: sticky; top: 0; background:#f8fafc; z-index:10;">
+                        <tr>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:right;">الشهر</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">عدد الساعات</th>
+                            <th style="padding:12px 8px; border-bottom:2px solid #e2e8f0; text-align:center;">المداخيل (د.م)</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        data.monthlyStats.forEach((m, index) => {
+            totalHours += m.hours;
+            totalIncome += m.income;
+            
+            // إظهار الشهور التي بها نشاط فقط أو إظهار الكل حسب رغبتك
+            // هنا سنظهر الشهور الـ 12 كاملة كما طلبت
+            html += `
+                <tr style="border-bottom:1px solid #f1f5f9; transition:0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                    <td style="padding:10px 8px; font-weight:bold; color:#475569;">${monthNames[index]}</td>
+                    <td style="padding:10px 8px; text-align:center;">${m.hours} ساعة</td>
+                    <td style="padding:10px 8px; text-align:center; color:#16a34a; font-weight:bold;">${m.income.toLocaleString()}</td>
+                </tr>`;
+        });
+
+        html += `
+                    </tbody>
+                    <tfoot style="position: sticky; bottom: 0; background:#1e3a8a; color:white; font-weight:bold;">
+                        <tr>
+                            <td style="padding:12px 8px;">المجموع السنوي</td>
+                            <td style="padding:12px 8px; text-align:center;">${totalHours} ساعة</td>
+                            <td style="padding:12px 8px; text-align:center; font-size:1rem;">${totalIncome.toLocaleString()} د.م</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <p style="font-size:0.7rem; color:#94a3b8; margin-top:10px; text-align:center;">* يتم احتساب المداخيل بناءً على أسعار النهار والليل المحددة في الإعدادات.</p>`;
+
         content.innerHTML = html;
+
     } catch (e) {
-        content.innerHTML = "<p style='color:red;'>خطأ في حساب البيانات</p>";
+        content.innerHTML = `
+            <div style="text-align:center; padding:20px; color:#ef4444;">
+                <p>⚠️ فشل في تحليل البيانات المالية.</p>
+            </div>`;
+        console.error("Stats Error:", e);
     }
 }
 
