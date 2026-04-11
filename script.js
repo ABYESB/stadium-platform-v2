@@ -154,12 +154,7 @@ if (logoImg) {
                 });
             } // نهاية if (swiperWrapper)
         } // نهاية if (data !== "NotFound")
-       // 🚀 أضف هذا الجزء هنا لرفع الستارة وإظهار الصفحة
-        const mainContainer = document.querySelector('.app-container');
-        if (mainContainer) {
-            mainContainer.style.opacity = "1";
-            mainContainer.style.visibility = "visible";
-        } 
+      
     } catch (error) { 
         console.error("Error loading details:", error); 
     }
