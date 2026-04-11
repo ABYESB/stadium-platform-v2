@@ -610,6 +610,8 @@ async function saveAdminSettings(event) { // تم إضافة event هنا كمع
         pNight: document.getElementById('upd_price_night').value,
         logo: document.getElementById('upd_logo').value,
         phone: document.getElementById('upd_phone').value,
+        fb: document.getElementById('upd_fb').value, // إضافة الفيسبوك
+    insta: document.getElementById('upd_insta').value, // إضافة الإنستغرام
         // --- الإضافات الجديدة لصور السلايدر ---
         img1: document.getElementById('upd_img1') ? document.getElementById('upd_img1').value : "",
         img2: document.getElementById('upd_img2') ? document.getElementById('upd_img2').value : "",
@@ -696,6 +698,12 @@ async function showSettings() {
 
 <label>رابط صورة السلايدر 3:</label>
 <input type="text" id="upd_img3" class="admin-input" value="${data.img3 || ''}">
+
+<label>رابط الفيسبوك (Facebook):</label>
+<input type="text" id="upd_fb" class="admin-input" value="${data.fb || ''}" placeholder="https://facebook.com/yourpage">
+
+<label>رابط الإنستغرام (Instagram):</label>
+<input type="text" id="upd_insta" class="admin-input" value="${data.insta || ''}" placeholder="https://instagram.com/yourpage">
 
                 <label>كلمة مرور جديدة (اختياري):</label>
                 <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً للحفاظ على الحالية">
