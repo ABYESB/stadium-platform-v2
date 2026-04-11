@@ -1,10 +1,10 @@
 // --- 1. الإعدادات والروابط الأساسية ---
 
 // الرابط الأول: المسؤول عن جلب (اسم الملعب، اللوغو، الأسعار، الموقع)
-const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbymwBPEtNEp8OSyVnZoa-Ob_zR6gUJ2vIXnkcR0tTv6bPNdUowjxgs5jVCanKhzckx9/exec';
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbxu7JIYhCTC-tL7AQFX5qCvwuRj5gqoDPZvhKh7M4-97qIZVWY3H-SkrzpCEpU_aDG5/exec';
 
 // الرابط الثاني: المسؤول عن (جلب الحجوزات القديمة، تلوين المربعات بالأحمر، تسجيل حجز جديد)
-const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbymwBPEtNEp8OSyVnZoa-Ob_zR6gUJ2vIXnkcR0tTv6bPNdUowjxgs5jVCanKhzckx9/exec';
+const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbxu7JIYhCTC-tL7AQFX5qCvwuRj5gqoDPZvhKh7M4-97qIZVWY3H-SkrzpCEpU_aDG5/exec';
 
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
@@ -610,6 +610,11 @@ async function saveAdminSettings(event) { // تم إضافة event هنا كمع
         pNight: document.getElementById('upd_price_night').value,
         logo: document.getElementById('upd_logo').value,
         phone: document.getElementById('upd_phone').value,
+        // --- الإضافات الجديدة لصور السلايدر ---
+        img1: document.getElementById('upd_img1') ? document.getElementById('upd_img1').value : "",
+        img2: document.getElementById('upd_img2') ? document.getElementById('upd_img2').value : "",
+        img3: document.getElementById('upd_img3') ? document.getElementById('upd_img3').value : "",
+        // ---------------------------------------
         org: document.getElementById('upd_org') ? document.getElementById('upd_org').value : "",
         loc: document.getElementById('upd_loc') ? document.getElementById('upd_loc').value : "",
         fb: document.getElementById('upd_fb') ? document.getElementById('upd_fb').value : "",
@@ -681,6 +686,16 @@ async function showSettings() {
 
                 <label>رابط اللوجو (URL):</label>
                 <input type="text" id="upd_logo" class="admin-input" value="${data.logo_url || ''}">
+
+
+<label>رابط صورة السلايدر 1:</label>
+<input type="text" id="upd_img1" class="admin-input" value="${data.img1 || ''}">
+
+<label>رابط صورة السلايدر 2:</label>
+<input type="text" id="upd_img2" class="admin-input" value="${data.img2 || ''}">
+
+<label>رابط صورة السلايدر 3:</label>
+<input type="text" id="upd_img3" class="admin-input" value="${data.img3 || ''}">
 
                 <label>كلمة مرور جديدة (اختياري):</label>
                 <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً للحفاظ على الحالية">
