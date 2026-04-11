@@ -20,18 +20,30 @@ async function loadStadiumDynamicDetails() {
         const data = await response.json();
         
         if (data !== "NotFound") {
-            // 1. النصوص الأساسية
+            // 1. تحديث النصوص الأساسية
             document.title = "حجز " + data.stadium_name;
-            document.getElementById('displayStadiumName').innerText = data.stadium_name;
-            document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
             
-            // 2. حل مشكلة اللوغو
+            const nameElem = document.getElementById('displayStadiumName');
+            if (nameElem) nameElem.innerText = data.stadium_name;
+
+            const orgElem = document.getElementById('displayOrg');
+            if (orgElem) orgElem.innerText = "بإشراف: " + data.org;
+
+            // إضافة العنوان (Location) تحت الاسم
+            const locElem = document.getElementById('displayLocation'); 
+            if (locElem) locElem.innerText = data.location || "";
+            
+            // 2. معالجة اللوغو (شعار المنصة vs شعار الملعب)
             const logoImg = document.getElementById('displayLogo');
             if (logoImg) {
                 const platformLogo = "https://i.ibb.co/HLRFczNy/resized-1.png"; 
-                logoImg.src = (data.logo_url && data.logo_url.trim() !== "") ? data.logo_url : platformLogo;
-            }
-
+                // إذا كان الرابط فارغاً أو يحتوي على كلمة "undefined" أو "null"
+                if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "null") {
+                    logoImg.src = data.logo_url;
+                } else {
+                    logoImg.src = platformLogo;
+                }
+    
             // 3. تحديث الأسعار والمودال
             if (document.getElementById('modalStadiumName')) {
                 document.getElementById('modalStadiumName').innerText = data.stadium_name;
