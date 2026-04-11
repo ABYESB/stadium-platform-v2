@@ -27,25 +27,33 @@ async function loadStadiumDynamicDetails() {
 
         if (data !== "NotFound") {
 
-            // 1. النصوص الأساسية
+           // 1. النصوص الأساسية (مع حماية ضد العناصر المفقودة)
+if (data.stadium_name) {
+    document.title = "حجز " + data.stadium_name;
+    const nameEl = document.getElementById('displayStadiumName');
+    if (nameEl) nameEl.innerText = data.stadium_name;
+}
 
-            document.title = "حجز " + data.stadium_name;
+const orgEl = document.getElementById('displayOrg');
+if (orgEl) orgEl.innerText = "بإشراف: " + (data.org || "");
 
-            document.getElementById('displayStadiumName').innerText = data.stadium_name;
+// 2. حل مشكلة اللوغو
+const logoImg = document.getElementById('displayLogo');
+if (logoImg) {
+    // استخدم الصورة المحلية كقيمة افتراضية صلبة
+    const platformLogo = "logo_no_background.png"; 
+    
+    // فحص الرابط القادم من الداتا (تأكد أنه ليس نص "undefined")
+    const hasRemoteLogo = data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "undefined";
+    
+    logoImg.src = hasRemoteLogo ? data.logo_url : platformLogo;
 
-            document.getElementById('displayOrg').innerText = "بإشراف: " + data.org;
-
-            // 2. حل مشكلة اللوغو
-
-            const logoImg = document.getElementById('displayLogo');
-
-            if (logoImg) {
-
-                const platformLogo = "https://i.ibb.co/HLRFczNy/resized-1.png"; 
-
-                logoImg.src = (data.logo_url && data.logo_url.trim() !== "") ? data.logo_url : platformLogo;
-
-             }
+    // إضافة معالج خطأ: إذا فشل الرابط الخارجي، عد للصورة المحلية
+    logoImg.onerror = function() {
+        this.src = platformLogo;
+        this.onerror = null; // لمنع الحلقة اللانهائية
+    };
+}
     
             // 3. تحديث الأسعار والمودال
             if (document.getElementById('modalStadiumName')) {
