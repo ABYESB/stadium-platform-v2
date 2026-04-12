@@ -308,33 +308,26 @@ function handleSlotSelection(element) {
     }
     updateModalDetails(); 
 }
-function updateModalDetails() {
-    const detailsText = document.getElementById('selectedDetails');
-    if (!detailsText || selectedSlots.length === 0) return;
-
-    // ترتيب الساعات المختارة تصاعدياً
-    const sortedSlots = [...selectedSlots].sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
-    const date = sortedSlots[0].date;
-    const hours = sortedSlots.map(s => s.hour).join(" و ");
-
-    detailsText.innerText = `الموعد: يوم ${date} | الساعة: ${hours}`;
-}
-
 async function submitFinalBooking() {
     const name = document.getElementById('userName').value;
     const phone = document.getElementById('userPhone').value;
     
-    const phoneRegex = /^[0-9]{10,13}$/; 
+    // 1. إضافة خاصية التحقق من رقم الهاتف (أرقام فقط ومن 10 إلى 13 رقماً)
+    const phoneRegex = /^[0-9]{10,13}$/;
     if (!name || !phone) return alert("يرجى إدخال الاسم ورقم الهاتف.");
-    if (!phoneRegex.test(phone)) return alert("يرجى إدخال رقم هاتف صحيح (أرقام فقط).");
+    
+    if (!phoneRegex.test(phone)) {
+        return alert("يرجى إدخال رقم هاتف صحيح (أرقام فقط بدون حروف أو رموز).");
+    }
 
+    // إظهار رسالة انتظار
     const btn = document.getElementById('finalConfirmBtn');
     const originalText = btn.innerText;
     btn.innerText = "جاري التأكد والحجز... ⏳";
     btn.disabled = true;
 
     try {
-        // 1. التأكد والحجز في الشيت
+        // نستخدم حلقة تكرار لمعالجة الساعات واحدة تلو الأخرى للتأكد من خلوها في الشيت
         for (const slot of selectedSlots) {
             const response = await fetch(bookingScriptURL, {
                 method: 'POST',
@@ -350,45 +343,51 @@ async function submitFinalBooking() {
 
             const result = await response.json();
 
+            // إذا كان الرد من الشيت يخبرنا بأن الساعة محجوزة بالفعل
             if (result.result === "error") {
                 alert("⚠️ " + result.message);
-                initTable();
+                initTable(); 
                 closeBookingModal();
-                return;
+                return; 
             }
         }
 
-        // 2. تلوين الخانات في الجدول فوراً (تحديث بصري)
+        // --- النجاح: تلوين الخانات في الجدول أولاً ---
         selectedSlots.forEach(slot => {
             if (slot.element) {
                 slot.element.classList.remove('selected');
                 slot.element.classList.add('booked');
                 slot.element.innerText = "محجوز";
-                slot.element.style.backgroundColor = "#ef4444";
+                slot.element.style.backgroundColor = "#ef4444"; 
                 slot.element.style.color = "white";
                 slot.element.style.pointerEvents = "none";
                 slot.element.onclick = null;
+
                 scheduleNotification(slot.date, slot.hour);
             }
         });
 
-        // 3. حساب الوقت وعرض التذكرة مباشرة
+        // --- 2. بدلاً من رسالة alert، نقوم بحساب الوقت واستدعاء التذكرة ---
         selectedSlots.sort((a, b) => a.hour - b.hour);
         const firstSlot = selectedSlots[0];
         const lastSlot = selectedSlots[selectedSlots.length - 1];
-        const timeRange = `${firstSlot.hour}:00 إلى ${parseInt(lastSlot.hour) + 1}:00`;
+
+        const startTime = firstSlot.hour + ":00";
+        const endTime = (parseInt(lastSlot.hour) + 1) + ":00";
+        const timeRange = `${startTime} إلى ${endTime}`;
+
         const currentStadiumName = document.title.split('-')[0] || "ملعب بوعسل";
         const stadiumUrl = window.location.href;
 
-        // إظهار التذكرة (تلقائياً ستخفي الفورم وتظهر التذكرة في مكانها)
+        // استدعاء دالة التذكرة (التي تتولى عرض التذكرة وخيار الواتساب)
         showBookingTicket(currentStadiumName, firstSlot.date, timeRange, stadiumUrl);
 
+        // تحديث البيانات في الخلفية
         loadExistingBookings();
 
     } catch (error) {
         console.error("Error:", error);
-        // تم إزالة الـ alert المزعج بناءً على طلبك
-        // في حال حدوث خطأ تقني، سيتم تحديث الجدول فقط بصمت
+        // تم إبقاء initTable لضمان تحديث الجدول في حالة وقوع خطأ تقني
         initTable();
     } finally {
         btn.innerText = originalText;
@@ -1054,72 +1053,51 @@ function closeAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
 }
 function showBookingTicket(stadiumName, date, time, stadiumUrl) {
-    // 1. استخراج اسم اليوم
+    // 1. استخراج اسم اليوم بطريقة آمنة
     const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-    const bookingDate = new Date(date);
-    const dayName = days[bookingDate.getDay()];
+    
+    // تحويل التاريخ من DD/MM/YYYY إلى تنسيق يفهمه JavaScript (اختياري حسب تنسيق مدخلاتك)
+    let parts = date.split('/');
+    let formattedDate = parts.length === 3 ? new Date(parts[2], parts[1] - 1, parts[0]) : new Date(date);
+    
+    const dayName = days[formattedDate.getDay()] || "الموعد المحدد";
 
-    // 2. نص الواتساب
-    const shareText = `⚽ *مباراة جديدة جاهزة!*
-📍 *الملعب:* ${stadiumName}
-📅 *اليوم:* ${dayName}
-📆 *التاريخ:* ${date}
-⏰ *الوقت:* ${time}
-
-🔗 *رابط الملعب وتفاصيله:*
-${stadiumUrl}
-
-تم الحجز عبر *ملاعب NET* 🏟️.`;
+    // 2. نص الواتساب (مختصر وأنيق)
+    const shareText = `⚽ *تذكرة حجز مباراة*\n\n📍 الملعب: ${stadiumName}\n📅 اليوم: ${dayName}\n📆 التاريخ: ${date}\n⏰ الوقت: ${time}\n\n🔗 الرابط:\n${stadiumUrl}\n\nتم عبر ملاعب NET 🏟️`;
 
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
-    // 3. بناء التذكرة
+    // 3. بناء التذكرة (تبسيط الـ HTML لضمان التوافق)
     const ticketHtml = `
-    <div class="ticket-container">
-        <div class="ticket-header">
-            <h2 style="margin:0; font-size:1.2rem;">تذكرة حجز مباراة</h2>
-            <small>ملاعب NET - الرياضة أسلوب حياة</small>
+    <div class="ticket-container" style="text-align:center; font-family:'Cairo', sans-serif;">
+        <div class="ticket-header" style="background:#1e3a8a; color:white; padding:10px; border-radius:10px 10px 0 0;">
+            <h3 style="margin:0;">تم الحجز بنجاح! ✅</h3>
         </div>
-        <div class="ticket-body">
-            <div class="ticket-row">
-                <span class="ticket-label">اسم الملعب</span>
-                <span class="ticket-value">${stadiumName}</span>
-            </div>
-            <div class="ticket-row" style="display:flex; justify-content:space-between;">
-                <div>
-                    <span class="ticket-label">اليوم</span>
-                    <span class="ticket-value">${dayName}</span>
-                </div>
-                <div>
-                    <span class="ticket-label">التاريخ</span>
-                    <span class="ticket-value">${date}</span>
-                </div>
-                <div>
-                    <span class="ticket-label">الوقت</span>
-                    <span class="ticket-value">${time}</span>
-                </div>
-            </div>
+        <div class="ticket-body" style="padding:15px; border:1px solid #e2e8f0; border-top:none; background:#fff;">
+            <p style="margin:5px 0;"><strong>${stadiumName}</strong></p>
+            <p style="margin:5px 0; color:#475569;">${dayName} | ${date}</p>
+            <p style="margin:5px 0; font-size:1.2rem; color:#1e3a8a; font-weight:bold;">${time}</p>
         </div>
-        <div class="ticket-footer">
-            <button onclick="window.open('${whatsappUrl}', '_blank')" class="share-btn">
-                <span>مشاركة مع الفريق عبر واتساب</span>
-                <i class="fab fa-whatsapp"></i>
+        <div class="ticket-footer" style="margin-top:15px;">
+            <button onclick="window.open('${whatsappUrl}', '_blank')" 
+                    style="background:#22c55e; color:white; border:none; padding:12px 20px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; font-family:'Cairo';">
+                ارسل التفاصيل للفريق (واتساب) 💬
             </button>
-            <p style="font-size:0.6rem; color:#94a3b8; margin-top:8px;">يمكنك عمل لقطة شاشة (Screenshot) لحفظ التذكرة</p>
+            <p style="font-size:0.7rem; color:#64748b; margin-top:10px;">يفضل عمل لقطة شاشة للتذكرة 📸</p>
         </div>
     </div>`;
 
-    // --- التعديل الجوهري لحل مشكلة الـ Null ---
+    // 4. عرض التذكرة في الحاوية المخصصة
     const formContent = document.getElementById('bookingFormContent');
     const ticketContainer = document.getElementById('successTicketContainer');
 
     if (ticketContainer && formContent) {
-        formContent.style.display = 'none';      // إخفاء فورم الإدخال
-        ticketContainer.style.display = 'block'; // إظهار حاوية التذكرة
-        ticketContainer.innerHTML = ticketHtml;  // وضع التذكرة داخل الحاوية
+        formContent.style.display = 'none';
+        ticketContainer.style.display = 'block';
+        ticketContainer.innerHTML = ticketHtml;
     } else {
-        // في حال عدم وجود العناصر (احتياطاً)
-        alert("✅ تم الحجز بنجاح!");
-        console.error("لم يتم العثور على successTicketContainer أو bookingFormContent");
+        // إذا لم يجد الحاويات، يفتح الواتساب مباشرة كحل احتياطي
+        alert(`✅ تم الحجز!\nالملعب: ${stadiumName}\nالوقت: ${time}`);
+        window.open(whatsappUrl, '_blank');
     }
 }
