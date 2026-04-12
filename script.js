@@ -278,20 +278,23 @@ function handleSlotSelection(element) {
         }
     }
 
-    // تفعيل/إلغاء اختيار المربع (تغيير بصري فوري وسلس)
+    // تفعيل/إلغاء اختيار المربع
     element.classList.toggle('selected');
 
     if (element.classList.contains('selected')) {
         selectedSlots.push({ hour, date, element, dayName }); 
+        
+        // --- إضافة التحديث هنا لضمان ظهور النص فوراً عند فتح النافذة ---
+        updateModalDetails(); 
+        
         document.getElementById('bookingModal').style.display = "block";
         
-        // --- منطق ذكاء زر الساعة الإضافية بناءً على حالة الجدول الحالية ---
+        // --- منطق ذكاء زر الساعة الإضافية ---
         const extraBtn = document.getElementById('extraSlotContainer');
         if (selectedSlots.length === 1) {
             let nextH = (parseInt(hour.split(':')[0]) + 1) + ":00";
             let nextSlot = document.querySelector(`[data-date="${date}"][data-hour="${nextH}"]`);
             
-            // يظهر الزر فقط إذا كانت الساعة التالية متاحة حالياً في الجدول
             if (nextSlot && !nextSlot.classList.contains('booked') && !nextSlot.classList.contains('past')) {
                 extraBtn.style.display = "block";
             } else {
@@ -304,32 +307,51 @@ function handleSlotSelection(element) {
         selectedSlots = selectedSlots.filter(s => s.element !== element);
         if (selectedSlots.length === 0) {
             document.getElementById('bookingModal').style.display = "none";
+        } else {
+            // تحديث النص في حال إلغاء ساعة واحدة وبقاء الأخرى
+            updateModalDetails();
         }
     }
+    // استدعاء أخير للتأكيد
     updateModalDetails(); 
 }
+
 function updateModalDetails() {
     const detailsElement = document.getElementById('selectedDetails');
-    if (!detailsElement || selectedSlots.length === 0) return;
+    if (!detailsElement) {
+        console.error("عنصر selectedDetails غير موجود في الصفحة!");
+        return;
+    }
 
-    // ترتيب الساعات لضمان عرضها بشكل صحيح (مثلاً 20 ثم 21)
+    if (selectedSlots.length === 0) {
+        detailsElement.style.display = 'none';
+        return;
+    }
+
+    // ترتيب الساعات
     selectedSlots.sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
 
     const firstSlot = selectedSlots[0];
     const date = firstSlot.date;
+    let text = "";
 
     if (selectedSlots.length === 1) {
-        // نص في حالة حجز ساعة واحدة
-        detailsElement.innerText = `حجز يوم: ${date} الساعة ${firstSlot.hour}`;
+        text = `📅 حجز يوم: ${date} | ⏰ الساعة: ${firstSlot.hour}`;
     } else {
-        // نص في حالة حجز ساعتين متتاليتين
         const lastSlot = selectedSlots[selectedSlots.length - 1];
-        detailsElement.innerText = `حجز يوم: ${date} من الساعة ${firstSlot.hour} إلى ${parseInt(lastSlot.hour) + 1}:00`;
+        const nextHour = (parseInt(lastSlot.hour.split(':')[0]) + 1) + ":00";
+        text = `📅 حجز يوم: ${date} | ⏰ من ${firstSlot.hour} إلى ${nextHour}`;
     }
 
-    // إظهار العنصر في حال كان مخفياً
+    // التحديث الفعلي للنص والإظهار
+    detailsElement.innerText = text;
     detailsElement.style.display = 'block';
+    
+    // تأكيد إضافي: أحياناً يكون العنصر مخفياً بسبب CSS الأب
+    detailsElement.style.visibility = 'visible';
+    detailsElement.style.opacity = '1';
 }
+
 async function submitFinalBooking() {
     const name = document.getElementById('userName').value;
     const phone = document.getElementById('userPhone').value;
