@@ -871,9 +871,15 @@ async function showStats() {
         let totalIncome = 0;
 
         let html = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <h3 style="margin:0; color:#1e293b; font-size:1.1rem;">📊 تقرير السنة المالية ${data.year}</h3>
                 <span style="background:#e0f2fe; color:#0369a1; padding:2px 10px; border-radius:12px; font-size:0.8rem; font-weight:bold;">تحديث تلقائي</span>
+            </div>
+
+            <div style="background: #fff7ed; border-right: 4px solid #f97316; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                <p style="margin:0; font-size:0.75rem; color: #9a3412; line-height:1.4;">
+                    <strong>💡 معلومة:</strong> يتم تحديث الإحصائيات وأرشفة الحجوزات <b>كل بداية أسبوع جديد</b>. الحجوزات الجارية ستظهر هنا فور ترحيلها للأرشيف.
+                </p>
             </div>
             
             <div style="overflow-y:auto; max-height:450px; border:1px solid #e2e8f0; border-radius:8px;">
@@ -887,15 +893,17 @@ async function showStats() {
                     </thead>
                     <tbody>`;
 
-        data.monthlyStats.forEach((m, index) => {
+        // تعديل مشكل الأشهر: نستخدم m.month لضمان الدقة
+        data.monthlyStats.forEach((m) => {
             totalHours += m.hours;
             totalIncome += m.income;
             
-            // إظهار الشهور التي بها نشاط فقط أو إظهار الكل حسب رغبتك
-            // هنا سنظهر الشهور الـ 12 كاملة كما طلبت
+            // التأكد من جلب اسم الشهر الصحيح (m.month يبدأ من 1 لذا نطرح 1)
+            const currentMonthName = monthNames[m.month - 1];
+            
             html += `
                 <tr style="border-bottom:1px solid #f1f5f9; transition:0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                    <td style="padding:10px 8px; font-weight:bold; color:#475569;">${monthNames[index]}</td>
+                    <td style="padding:10px 8px; font-weight:bold; color:#475569;">${currentMonthName}</td>
                     <td style="padding:10px 8px; text-align:center;">${m.hours} ساعة</td>
                     <td style="padding:10px 8px; text-align:center; color:#16a34a; font-weight:bold;">${m.income.toLocaleString()}</td>
                 </tr>`;
