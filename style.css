@@ -542,3 +542,71 @@ th { background-color: #1e3a8a; color: white; }
     }
 
 }
+.ticket-container {
+    background: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    max-width: 350px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border: 1px solid #e2e8f0;
+}
+
+.ticket-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.ticket-body {
+    padding: 20px;
+    background-image: radial-gradient(#f1f5f9 1px, transparent 1px);
+    background-size: 20px 20px;
+    text-align: right;
+    position: relative;
+}
+
+.ticket-row {
+    margin-bottom: 15px;
+}
+
+.ticket-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    display: block;
+}
+
+.ticket-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+.ticket-footer {
+    border-top: 2px dashed #e2e8f0;
+    padding: 15px;
+    text-align: center;
+    background: #f8fafc;
+}
+
+.share-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.share-btn:hover {
+    background: #128C7E;
+}
