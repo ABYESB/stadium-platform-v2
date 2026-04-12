@@ -308,6 +308,28 @@ function handleSlotSelection(element) {
     }
     updateModalDetails(); 
 }
+function updateModalDetails() {
+    const detailsElement = document.getElementById('selectedDetails');
+    if (!detailsElement || selectedSlots.length === 0) return;
+
+    // ترتيب الساعات لضمان عرضها بشكل صحيح (مثلاً 20 ثم 21)
+    selectedSlots.sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
+
+    const firstSlot = selectedSlots[0];
+    const date = firstSlot.date;
+
+    if (selectedSlots.length === 1) {
+        // نص في حالة حجز ساعة واحدة
+        detailsElement.innerText = `حجز يوم: ${date} الساعة ${firstSlot.hour}`;
+    } else {
+        // نص في حالة حجز ساعتين متتاليتين
+        const lastSlot = selectedSlots[selectedSlots.length - 1];
+        detailsElement.innerText = `حجز يوم: ${date} من الساعة ${firstSlot.hour} إلى ${parseInt(lastSlot.hour) + 1}:00`;
+    }
+
+    // إظهار العنصر في حال كان مخفياً
+    detailsElement.style.display = 'block';
+}
 async function submitFinalBooking() {
     const name = document.getElementById('userName').value;
     const phone = document.getElementById('userPhone').value;
