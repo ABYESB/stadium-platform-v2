@@ -324,14 +324,9 @@ async function submitFinalBooking() {
     const name = document.getElementById('userName').value;
     const phone = document.getElementById('userPhone').value;
     
-    // التعديل: التحقق من وجود البيانات ومن صحة رقم الهاتف (أرقام فقط)
     const phoneRegex = /^[0-9]{10,13}$/; 
-    if (!name || !phone) {
-        return alert("يرجى إدخال الاسم ورقم الهاتف.");
-    }
-    if (!phoneRegex.test(phone)) {
-        return alert("يرجى إدخال رقم هاتف صحيح (أرقام فقط، بين 10 و 13 رقماً).");
-    }
+    if (!name || !phone) return alert("يرجى إدخال الاسم ورقم الهاتف.");
+    if (!phoneRegex.test(phone)) return alert("يرجى إدخال رقم هاتف صحيح (أرقام فقط).");
 
     const btn = document.getElementById('finalConfirmBtn');
     const originalText = btn.innerText;
@@ -339,6 +334,7 @@ async function submitFinalBooking() {
     btn.disabled = true;
 
     try {
+        // 1. التأكد والحجز في الشيت
         for (const slot of selectedSlots) {
             const response = await fetch(bookingScriptURL, {
                 method: 'POST',
@@ -362,7 +358,7 @@ async function submitFinalBooking() {
             }
         }
 
-        // --- النجاح: معالجة العناصر في الجدول ---
+        // 2. تلوين الخانات في الجدول فوراً (تحديث بصري)
         selectedSlots.forEach(slot => {
             if (slot.element) {
                 slot.element.classList.remove('selected');
@@ -372,39 +368,28 @@ async function submitFinalBooking() {
                 slot.element.style.color = "white";
                 slot.element.style.pointerEvents = "none";
                 slot.element.onclick = null;
-
                 scheduleNotification(slot.date, slot.hour);
             }
         });
 
-        // --- التعديل الأخير: حساب النطاق الزمني للتذكرة ---
-        
-        // 1. ترتيب الساعات المختارة تصاعدياً
+        // 3. حساب الوقت وعرض التذكرة مباشرة
         selectedSlots.sort((a, b) => a.hour - b.hour);
-        
         const firstSlot = selectedSlots[0];
         const lastSlot = selectedSlots[selectedSlots.length - 1];
-
-        // 2. حساب وقت البداية ووقت النهاية (إضافة ساعة لآخر وقت تم اختياره)
-        const startTime = firstSlot.hour + ":00";
-        const endTime = (parseInt(lastSlot.hour) + 1) + ":00";
-        const timeRange = `${startTime} إلى ${endTime}`;
-
-        const currentStadiumName = document.title.split('-')[0] || "ملعبنا";
+        const timeRange = `${firstSlot.hour}:00 إلى ${parseInt(lastSlot.hour) + 1}:00`;
+        const currentStadiumName = document.title.split('-')[0] || "ملعب بوعسل";
         const stadiumUrl = window.location.href;
 
-        // 3. استدعاء التذكرة بالبيانات المحدثة (تشمل النطاق الزمني)
+        // إظهار التذكرة (تلقائياً ستخفي الفورم وتظهر التذكرة في مكانها)
         showBookingTicket(currentStadiumName, firstSlot.date, timeRange, stadiumUrl);
 
-        // إغلاق نافذة إدخال البيانات وتحديث الحجوزات
-        closeBookingModal();
         loadExistingBookings();
 
     } catch (error) {
         console.error("Error:", error);
-        alert("تنبيه: يرجى التحقق من الجدول للتأكد من حالة الحجز النهائية.");
+        // تم إزالة الـ alert المزعج بناءً على طلبك
+        // في حال حدوث خطأ تقني، سيتم تحديث الجدول فقط بصمت
         initTable();
-        closeBookingModal();
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;
