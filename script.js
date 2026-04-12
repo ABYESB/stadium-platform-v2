@@ -396,24 +396,39 @@ async function submitFinalBooking() {
 }
 function closeBookingModal() {
     const modal = document.getElementById('bookingModal');
+    const formContent = document.getElementById('bookingFormContent');
+    const ticketContainer = document.getElementById('successTicketContainer');
+    
+    // 1. إغلاق النافذة
     if (modal) modal.style.display = "none";
 
-    // تنظيف الحقول
-    document.getElementById('userName').value = "";
-    document.getElementById('userPhone').value = "";
+    // 2. إعادة تصفير الواجهة (إظهار الفورم وإخفاء التذكرة لحجز جديد)
+    if (formContent) formContent.style.display = 'block';
+    if (ticketContainer) {
+        ticketContainer.style.display = 'none';
+        ticketContainer.innerHTML = ''; // مسح محتوى التذكرة السابقة
+    }
+
+    // 3. تنظيف الحقول
+    const nameInput = document.getElementById('userName');
+    const phoneInput = document.getElementById('userPhone');
+    if (nameInput) nameInput.value = "";
+    if (phoneInput) phoneInput.value = "";
+
     const checkbox = document.getElementById('confirmCheckbox');
     if (checkbox) checkbox.checked = false;
 
-    // إزالة تحديد المربعات الخضراء (فقط التي لم يتم حجزها)
+    // 4. إزالة تحديد المربعات الخضراء (فقط التي لم يتم حجزها بعد)
     selectedSlots.forEach(s => {
         if (s.element && !s.element.classList.contains('booked')) {
             s.element.classList.remove('selected');
         }
     });
     
+    // 5. تصفير مصفوفة الساعات المختارة
     selectedSlots = [];
     
-    // تحديث حالة زر التأكيد
+    // 6. تحديث حالة زر التأكيد
     if (typeof toggleSubmitButton === "function") toggleSubmitButton();
 }
 
