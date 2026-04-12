@@ -324,18 +324,22 @@ async function submitFinalBooking() {
     const name = document.getElementById('userName').value;
     const phone = document.getElementById('userPhone').value;
     
-    if (!name || !phone) return alert("يرجى إدخال الاسم ورقم الهاتف.");
+    // التعديل: التحقق من وجود البيانات ومن صحة رقم الهاتف (أرقام فقط)
+    const phoneRegex = /^[0-9]{10,13}$/; 
+    if (!name || !phone) {
+        return alert("يرجى إدخال الاسم ورقم الهاتف.");
+    }
+    if (!phoneRegex.test(phone)) {
+        return alert("يرجى إدخال رقم هاتف صحيح (أرقام فقط، بين 10 و 13 رقماً).");
+    }
 
-    // إظهار رسالة انتظار
     const btn = document.getElementById('finalConfirmBtn');
     const originalText = btn.innerText;
     btn.innerText = "جاري التأكد والحجز... ⏳";
     btn.disabled = true;
 
     try {
-        // نستخدم حلقة تكرار لمعالجة الساعات واحدة تلو الأخرى للتأكد من خلوها في الشيت
         for (const slot of selectedSlots) {
-            // ملاحظة: أزلنا mode: 'no-cors' لنتمكن من قراءة رد الشيت (هل الساعة محجوزة أم لا)
             const response = await fetch(bookingScriptURL, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -350,42 +354,53 @@ async function submitFinalBooking() {
 
             const result = await response.json();
 
-            // إذا كان الرد من الشيت يخبرنا بأن الساعة محجوزة بالفعل
             if (result.result === "error") {
-                alert("⚠️ " + result.message); // سيعرض رسالة: عذراً، تم حجز هذا الوقت!
-                initTable(); // تحديث الجدول فوراً لإظهار الحجوزات الحقيقية
+                alert("⚠️ " + result.message);
+                initTable();
                 closeBookingModal();
-                return; // التوقف فوراً ومنع إكمال العملية
+                return;
             }
         }
 
-        // --- إذا وصلنا هنا، يعني أن جميع الساعات تم حجزها بنجاح في الشيت ---
+        // --- النجاح: معالجة العناصر في الجدول ---
         selectedSlots.forEach(slot => {
             if (slot.element) {
                 slot.element.classList.remove('selected');
                 slot.element.classList.add('booked');
                 slot.element.innerText = "محجوز";
-                slot.element.style.backgroundColor = "#ef4444"; // اللون الأحمر
+                slot.element.style.backgroundColor = "#ef4444";
                 slot.element.style.color = "white";
                 slot.element.style.pointerEvents = "none";
                 slot.element.onclick = null;
 
-                // تفعيل جدولة التنبيهات للساعة المحجوزة
                 scheduleNotification(slot.date, slot.hour);
             }
         });
 
-        alert("✅ تم الحجز بنجاح!");
+        // --- التعديل الأخير: حساب النطاق الزمني للتذكرة ---
         
-        // إغلاق النافذة وتنظيف المختار
+        // 1. ترتيب الساعات المختارة تصاعدياً
+        selectedSlots.sort((a, b) => a.hour - b.hour);
+        
+        const firstSlot = selectedSlots[0];
+        const lastSlot = selectedSlots[selectedSlots.length - 1];
+
+        // 2. حساب وقت البداية ووقت النهاية (إضافة ساعة لآخر وقت تم اختياره)
+        const startTime = firstSlot.hour + ":00";
+        const endTime = (parseInt(lastSlot.hour) + 1) + ":00";
+        const timeRange = `${startTime} إلى ${endTime}`;
+
+        const currentStadiumName = document.title.split('-')[0] || "ملعبنا";
+        const stadiumUrl = window.location.href;
+
+        // 3. استدعاء التذكرة بالبيانات المحدثة (تشمل النطاق الزمني)
+        showBookingTicket(currentStadiumName, firstSlot.date, timeRange, stadiumUrl);
+
+        // إغلاق نافذة إدخال البيانات وتحديث الحجوزات
         closeBookingModal();
-        
-        // تحديث البيانات في الخلفية بدون مسح الجدول
         loadExistingBookings();
 
     } catch (error) {
-        // في حالة وجود قيود CORS من جوجل، سيتم الحجز في الشيت لكن المتصفح قد يظهر خطأ
-        // لذا نقوم بتحديث الجدول للتأكد من الحالة النهائية
         console.error("Error:", error);
         alert("تنبيه: يرجى التحقق من الجدول للتأكد من حالة الحجز النهائية.");
         initTable();
@@ -1052,4 +1067,68 @@ async function handleForgotPassword() {
 } // هذا القوس ضروري جداً لإغلاق الدالة
 function closeAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
+}
+function showBookingTicket(stadiumName, date, time, stadiumUrl) {
+    // 1. استخراج اسم اليوم من التاريخ
+    const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    const bookingDate = new Date(date);
+    const dayName = days[bookingDate.getDay()];
+
+    // 2. تجهيز النص المحدث للواتساب (شامل الرابط واسم اليوم)
+    const shareText = `⚽ *مباراة جديدة جاهزة!*
+    
+📍 *الملعب:* ${stadiumName}
+📅 *اليوم:* ${dayName}
+📆 *التاريخ:* ${date}
+⏰ *الوقت:* ${time}
+
+🔗 *رابط الملعب وتفاصيله:*
+${stadiumUrl}
+
+تم الحجز عبر *ملاعب NET* 🏟️. يلا يا شباب كونوا في الموعد!`;
+
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+
+    // 3. بناء هيكل التذكرة البصري
+    const ticketHtml = `
+    <div class="ticket-container">
+        <div class="ticket-header">
+            <h2 style="margin:0; font-size:1.2rem;">تذكرة حجز مباراة</h2>
+            <small>ملاعب NET - الرياضة أسلوب حياة</small>
+        </div>
+        <div class="ticket-body">
+            <div class="ticket-row">
+                <span class="ticket-label">اسم الملعب</span>
+                <span class="ticket-value">${stadiumName}</span>
+            </div>
+            <div class="ticket-row" style="display:flex; justify-content:space-between;">
+                <div>
+                    <span class="ticket-label">اليوم</span>
+                    <span class="ticket-value">${dayName}</span>
+                </div>
+                <div>
+                    <span class="ticket-label">التاريخ</span>
+                    <span class="ticket-value">${date}</span>
+                </div>
+                <div>
+                    <span class="ticket-label">الوقت</span>
+                    <span class="ticket-value">${time}</span>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+                <p style="font-style:italic; color:#3b82f6; font-size:0.8rem;">"العقل السليم في الجسم السليم" 🏃‍♂️</p>
+            </div>
+        </div>
+        <div class="ticket-footer">
+            <button onclick="window.open('${whatsappUrl}', '_blank')" class="share-btn">
+                <span>مشاركة مع الفريق عبر واتساب</span>
+                <i class="fab fa-whatsapp"></i>
+            </button>
+            <p style="font-size:0.6rem; color:#94a3b8; margin-top:8px;">يمكنك عمل لقطة شاشة (Screenshot) لحفظ التذكرة</p>
+        </div>
+    </div>
+    `;
+
+    // إدراج التذكرة في واجهة النجاح
+    document.getElementById('successModalContent').innerHTML = ticketHtml;
 }
