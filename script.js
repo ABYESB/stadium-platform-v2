@@ -1069,14 +1069,13 @@ function closeAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
 }
 function showBookingTicket(stadiumName, date, time, stadiumUrl) {
-    // 1. استخراج اسم اليوم من التاريخ
+    // 1. استخراج اسم اليوم
     const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
     const bookingDate = new Date(date);
     const dayName = days[bookingDate.getDay()];
 
-    // 2. تجهيز النص المحدث للواتساب (شامل الرابط واسم اليوم)
+    // 2. نص الواتساب
     const shareText = `⚽ *مباراة جديدة جاهزة!*
-    
 📍 *الملعب:* ${stadiumName}
 📅 *اليوم:* ${dayName}
 📆 *التاريخ:* ${date}
@@ -1085,11 +1084,11 @@ function showBookingTicket(stadiumName, date, time, stadiumUrl) {
 🔗 *رابط الملعب وتفاصيله:*
 ${stadiumUrl}
 
-تم الحجز عبر *ملاعب NET* 🏟️. يلا يا شباب كونوا في الموعد!`;
+تم الحجز عبر *ملاعب NET* 🏟️.`;
 
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
-    // 3. بناء هيكل التذكرة البصري
+    // 3. بناء التذكرة
     const ticketHtml = `
     <div class="ticket-container">
         <div class="ticket-header">
@@ -1115,9 +1114,6 @@ ${stadiumUrl}
                     <span class="ticket-value">${time}</span>
                 </div>
             </div>
-            <div style="text-align:center; margin-top:10px;">
-                <p style="font-style:italic; color:#3b82f6; font-size:0.8rem;">"العقل السليم في الجسم السليم" 🏃‍♂️</p>
-            </div>
         </div>
         <div class="ticket-footer">
             <button onclick="window.open('${whatsappUrl}', '_blank')" class="share-btn">
@@ -1126,9 +1122,19 @@ ${stadiumUrl}
             </button>
             <p style="font-size:0.6rem; color:#94a3b8; margin-top:8px;">يمكنك عمل لقطة شاشة (Screenshot) لحفظ التذكرة</p>
         </div>
-    </div>
-    `;
+    </div>`;
 
-    // إدراج التذكرة في واجهة النجاح
-    document.getElementById('successModalContent').innerHTML = ticketHtml;
+    // --- التعديل الجوهري لحل مشكلة الـ Null ---
+    const formContent = document.getElementById('bookingFormContent');
+    const ticketContainer = document.getElementById('successTicketContainer');
+
+    if (ticketContainer && formContent) {
+        formContent.style.display = 'none';      // إخفاء فورم الإدخال
+        ticketContainer.style.display = 'block'; // إظهار حاوية التذكرة
+        ticketContainer.innerHTML = ticketHtml;  // وضع التذكرة داخل الحاوية
+    } else {
+        // في حال عدم وجود العناصر (احتياطاً)
+        alert("✅ تم الحجز بنجاح!");
+        console.error("لم يتم العثور على successTicketContainer أو bookingFormContent");
+    }
 }
