@@ -20,11 +20,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css?v=1.91">
+    <link rel="stylesheet" href="style.css?v=1.92">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
-    <script src="script.js?v=1.91" defer></script>
+    <script src="script.js?v=1.92" defer></script>
 </head>
 <body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -117,25 +117,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     
 <div id="bookingModal" class="modal">
-    <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none; max-width: 500px;">
+    <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none; max-width: 500px; margin: auto; position: relative; top: 50px; background: white;">
+        
         <div style="background-color: #1e3a8a; color: white; padding: 15px; position: relative;">
             <span class="close" onclick="closeBookingModal()" style="color: white; font-size: 28px; cursor: pointer; position: absolute; right: 20px; top: 10px;">×</span>
             <h3 style="margin: 0; text-align: center; font-family: 'Cairo', sans-serif;">تأكيد حجز <span id="modalStadiumName">الملعب</span></h3>
         </div>
         
-        <div id="successTicketContainer" style="display:none; padding: 20px; background: white;">
-             </div>
+        <div id="successTicketContainer" style="display:none; padding: 20px; background: white; text-align: center; font-family: 'Cairo', sans-serif;">
+            </div>
 
         <div id="bookingFormContent" style="padding: 20px; text-align: right; font-family: 'Cairo', sans-serif; background: white;">
+            
             <p id="selectedDetails" style="background: #f0f7ff; padding: 10px; border-radius: 8px; color: #1e3a8a; font-weight: bold; border-right: 5px solid #2563eb;"></p>
 
             <div id="extraSlotContainer" style="display:none; margin: 15px 0; padding: 12px; background-color: #f0fdf4; border: 1px dashed #22c55e; border-radius: 10px; text-align: center;">
-                <p style="margin: 0 0 10px 0; color: #166534; font-weight: bold; font-size: 0.9rem;">💡 هل ترغب في حجز ساعتين متتاليتين؟</p>
+                <p style="margin: 0 0 10px 0; color: #166534; font-weight: bold; font-size: 0.9rem;">💡 هل ترغب في حجز ساعتين متتاليتين بدلاً من ساعة واحدة؟</p>
                 <button type="button" onclick="addNextSlot()" style="background-color: #22c55e; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: 'Cairo', sans-serif;">نعم، أضفها للحجز</button>
             </div>
 
             <div style="background: #fff3cd; padding: 12px; border-radius: 8px; font-size: 0.85em; color: #856404; margin-bottom: 15px; border: 1px solid #ffeeba; line-height: 1.6;">
-                ⚠️ <strong>نظام الحماية:</strong> يتم تسجيل رقم الهاتف. في حال عدم الحضور، سيتم <strong>حظر رقمك</strong> نهائياً.
+                ⚠️ <strong>نظام الحماية:</strong> يتم تسجيل رقم الهاتف. في حال الحجز وعدم الحضور، سيتم <strong>حظر رقمك</strong> نهائياً.
             </div>
 
             <label style="display: block; margin-top: 10px; font-weight: bold;">الاسم الكامل:</label>
@@ -150,8 +152,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </label>
 
             <div style="margin-top: 20px; display: flex; gap: 10px;">
-                <button id="finalConfirmBtn" onclick="submitFinalBooking()" disabled style="flex: 2; background-color: #22c55e; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; opacity: 0.5;">تأكيد الحجز</button>
-                <button onclick="closeBookingModal()" style="flex: 1; background-color: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">إلغاء</button>
+                <button id="finalConfirmBtn" onclick="submitFinalBooking()" disabled style="flex: 2; background-color: #22c55e; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; opacity: 0.5; font-family: 'Cairo', sans-serif;">تأكيد الحجز</button>
+                <button onclick="closeBookingModal()" style="flex: 1; background-color: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo', sans-serif;">إلغاء</button>
             </div>
         </div>
     </div>
