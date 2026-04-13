@@ -28,6 +28,67 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </head>
 <body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <div id="upgradeBadgeContainer" style="position: fixed; top: 15px; right: 15px; z-index: 999; display: none;">
+    <button onclick="openPricingModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 18px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-family: 'Cairo';">
+        <i class="fas fa-crown"></i> ترقية الحساب
+    </button>
+</div>
+
+<div id="pricingModal" class="modal-overlay" style="display:none;">
+    <div class="pricing-container">
+        <span class="close-pricing" onclick="closePricingModal()">&times;</span>
+        <h2 style="color: #1e3a8a; margin-bottom: 20px;">اختر خطة النجاح لملعبك 🚀</h2>
+        
+        <div class="plans-wrapper">
+            <div class="plan-card">
+                <h3>الخطة المجانية</h3>
+                <div class="price">0 د.م <span>/ دائماً</span></div>
+                <ul class="features">
+                    <li>✅ حجز ساعات لا محدود</li>
+                    <li>✅ وضع عنوان الملعب</li>
+                    <li>✅ اسم الجهة المشرفة</li>
+                    <li>✅ التواصل مع المشرف</li>
+                    <li>✅ الموقع على الخريطة</li>
+                    <li>✅ التحكم في الأسعار</li>
+                    <li>✅ روابط التواصل</li>
+                </ul>
+                <button class="plan-btn free-btn" onclick="closePricingModal()">العودة للواجهة</button>
+            </div>
+
+            <div class="plan-card premium-card">
+                <div class="popular-tag">الموصى به</div>
+                <h3>الخطة الاحترافية</h3>
+                <div class="price">200 د.م <span>/ شهرياً</span></div>
+                <ul class="features">
+                    <li>⭐ كل مميزات المجانية</li>
+                    <li>✅ لوحة تحكم متكاملة</li>
+                    <li>✅ وضع شعار الجمعية</li>
+                    <li>✅ صور الملعب في السلايدر</li>
+                    <li>✅ إدارة وإلغاء الحجوزات</li>
+                    <li>✅ إحصائيات الأرباح 📊</li>
+                </ul>
+                <div id="paymentSelection">
+                    <button class="plan-btn premium-btn" onclick="showPaymentOptions()">اشترك الآن</button>
+                </div>
+                
+                <div id="paymentOptions" style="display: none; margin-top: 15px; text-align: right;">
+                    <p style="font-weight: bold; font-size: 0.9rem;">اختر نوع الاشتراك:</p>
+                    <select id="planType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px;">
+                        <option value="200">شهري - 200 د.م</option>
+                        <option value="1500">سنوي - 1500 د.م</option>
+                    </select>
+                    <p style="font-weight: bold; font-size: 0.9rem;">وسيلة الدفع:</p>
+                    <select id="payMethod" style="width: 100%; padding: 8px; margin-bottom: 15px; border-radius: 5px;">
+                        <option value="Card">بطاقة بنكية 💳</option>
+                        <option value="Transfer">تحويل بنكي 🏦</option>
+                        <option value="CashPlus">كاش بلبيس 💸</option>
+                    </select>
+                    <button class="plan-btn premium-btn" onclick="confirmFinalPayment()">مواصلة الدفع</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <div id="installBanner" style="display:none; background: #2e7d32; color: white; padding: 15px; text-align: center; font-family: 'Cairo', sans-serif; position: sticky; top: 0; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
         <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
