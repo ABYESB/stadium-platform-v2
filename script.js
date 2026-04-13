@@ -1242,16 +1242,24 @@ async function checkSubscriptionStatus() {
 function shakeUpgradeButton() {
     const btn = document.getElementById('mainUpgradeBtn');
     if (btn) {
-        // إضافة كلاس الاهتزاز
+        // إزالة الكلاس أولاً (في حال كان موجوداً من ضغطة سابقة)
+        btn.classList.remove('shake-animation');
+        
+        // إجبار المتصفح على إعادة الحساب (Reflow) لكي يتقبل الحركة مرة أخرى
+        void btn.offsetWidth; 
+        
+        // إضافة الكلاس
         btn.classList.add('shake-animation');
         
-        // إزالة الكلاس بعد انتهاء الحركة لكي نتمكن من تشغيلها مرة أخرى
+        // التمرير للزر ليشاهده المستخدم
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        // إزالة الكلاس بعد انتهاء الحركة (نصف ثانية)
         setTimeout(() => {
             btn.classList.remove('shake-animation');
-        }, 400);
-        
-        // تمرير الصفحة للزر إذا كان بعيداً عن العين
-        btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 500);
+    } else {
+        console.error("لم يتم العثور على زر mainUpgradeBtn");
     }
 }
 
