@@ -416,6 +416,29 @@ td {
         <i class="fab fa-whatsapp"></i>
         <span class="tooltip-text">المشرف</span>
     </a>
+
+<div id="pricingModal" class="modal" style="display:none; direction: rtl;">
+    <div class="modal-content" style="max-width: 600px; text-align: center;">
+        <span class="close" onclick="closePricing()">&times;</span>
+        <h2 style="color: #1e3a8a;">ترقية حسابك لـ ملاعب NET 🚀</h2>
+        <p>اختر الخطة التي تناسبك لإدارة ملعبك باحترافية</p>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+            <div style="border: 2px solid #ddd; padding: 20px; border-radius: 10px; flex: 1; min-width: 200px;">
+                <h3>الخطة الشهرية</h3>
+                <p style="font-size: 22px; color: #2e7d32; font-weight: bold;">200 د.م <span style="font-size: 14px;">/ شهر</span></p>
+                <button onclick="processPayment('Monthly')" style="background: #1e3a8a; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">اشترك الآن</button>
+            </div>
+
+            <div style="border: 2px solid #2e7d32; padding: 20px; border-radius: 10px; flex: 1; min-width: 200px; background: #f0fdf4; position: relative;">
+                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #2e7d32; color: white; padding: 2px 10px; border-radius: 10px; font-size: 12px;">توفير 37%</span>
+                <h3>الخطة السنوية</h3>
+                <p style="font-size: 22px; color: #2e7d32; font-weight: bold;">1500 د.م <span style="font-size: 14px;">/ سنة</span></p>
+                <button onclick="processPayment('Yearly')" style="background: #2e7d32; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">اشترك ووفر</button>
+            </div>
+        </div>
+    </div>
+</div>
     
 </body>
 </html>
