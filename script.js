@@ -1290,3 +1290,41 @@ function showStats() {
     // هنا كودك الأصلي لفتح الإحصائيات
     loadActualStats();
 }
+// دالة لفتح نافذة الأسعار
+function openPricingModal() {
+    document.getElementById('pricingModal').style.display = 'flex';
+}
+
+// دالة لإغلاق النافذة
+function closePricingModal() {
+    document.getElementById('pricingModal').style.display = 'none';
+}
+
+// إظهار خيارات الدفع عند اختيار الخطة المدفوعة
+function showPaymentOptions() {
+    document.getElementById('paymentSelection').style.display = 'none';
+    document.getElementById('paymentOptions').style.display = 'block';
+}
+
+// معالجة الدفع النهائي (التواصل عبر واتساب للتأكيد)
+function confirmFinalPayment() {
+    const plan = document.getElementById('planType').value == "1500" ? "سنوي (1500 د.م)" : "شهري (200 د.م)";
+    const method = document.getElementById('payMethod').value;
+    const stadiumName = document.title.split('-')[0].trim();
+    
+    let methodText = "";
+    if(method === "Card") methodText = "البطاقة البنكية";
+    if(method === "Transfer") methodText = "تحويل بنكي";
+    if(method === "CashPlus") methodText = "كاش بليس";
+
+    const msg = `مرحباً ملاعب NET، أريد ترقية حسابي:\n🏟️ الملعب: ${stadiumName}\n💳 الخطة: ${plan}\n💰 وسيلة الدفع: ${methodText}`;
+    const whatsappUrl = `https://wa.me/2126XXXXXXXX?text=${encodeURIComponent(msg)}`; // ضع رقمك هنا
+    
+    window.open(whatsappUrl, '_blank');
+}
+
+// لجعل الزر يظهر بعد تثبيت التطبيق أو عند تحميل الصفحة
+window.addEventListener('load', () => {
+    // يمكنك هنا إضافة شرط: إذا كان الحساب Free، اظهر الزر
+    document.getElementById('upgradeBadgeContainer').style.display = 'block';
+});
