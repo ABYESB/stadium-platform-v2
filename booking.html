@@ -325,32 +325,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     </div>
         </div>  
         
-<div id="subscriptionSection" style="margin-top: 20px; padding: 15px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0;">
-    <h4 style="margin-bottom: 10px; color: #1e3a8a;"><i class="fas fa-crown"></i> حالة الحساب</h4>
-    
-    <div id="accountStatusDisplay">
-        <p>جاري التحقق من نوع الاشتراك...</p>
-    </div>
-
-    <div id="upgradeOptions" style="display: none; margin-top: 15px;">
-        <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 15px 0;">
-        <p style="font-weight: bold; color: #2e7d32;">🚀 قم بترقية حسابك لفتح الإحصائيات المتقدمة</p>
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button onclick="processPayment('Monthly')" style="flex: 1; background: #1e3a8a; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo';">
-                خطة 200 د.م / شهر
-            </button>
-            <button onclick="processPayment('Yearly')" style="flex: 1; background: #2e7d32; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo';">
-                خطة 1500 د.م / سنة
-            </button>
-        </div>
-    </div>
-</div>
-                
+<div id="upgradeOptions" style="display: none; margin-top: 20px;">
+    <button id="mainUpgradeBtn" onclick="openPricingModal()" class="glow-animation" 
+            style="width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; font-size: 1.1rem;">
+        عرض خطط الترقية والمميزات <i class="fas fa-crown"></i>
+    </button>
+</div>     
         
-
         <div id="adminSectionContent">
             </div>
-
     </div>
 </div>
     
