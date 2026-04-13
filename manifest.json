@@ -15,12 +15,12 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "index.html",
+  "start_url": "/stadium-platform-v2/index.html",
   "background_color": "#ffffff",
   "theme_color": "#2e7d32",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/bouassel/",
+  "scope": "/stadium-platform-v2/",
   "lang": "ar",
   "dir": "rtl"
 }
