@@ -1093,8 +1093,7 @@ async function handleAdminAuth(btn) {
                 console.log("اللوحة يجب أن تظهر الآن");
             }
 
-              // --- أضف هذا السطر هنا ---
-             checkSubscriptionStatus();
+               checkSubscriptionStatus();
             // 3. إظهار أي أيقونات إدارية متفرقة في الصفحة (إن وجدت)
             document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
                 el.style.setProperty('display', 'block', 'important');
@@ -1206,8 +1205,10 @@ function showBookingTicket(stadiumName, date, time, stadiumUrl) {
     }
 }
 
-let currentAccountStatus = "Free"; // القيمة الافتراضية
+// --- المتغيرات العالمية ---
+let currentAccountStatus = "Free"; 
 
+// --- 1. دالة فحص حالة الاشتراك (هذه كانت ناقصة في قائمتك) ---
 async function checkSubscriptionStatus() {
     const statusDisplay = document.getElementById('accountStatusDisplay');
     const upgradeOptions = document.getElementById('upgradeOptions');
@@ -1216,78 +1217,66 @@ async function checkSubscriptionStatus() {
         const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
         
-        // حفظ الحالة عالمياً لاستخدامها في الدوال الأخرى
         currentAccountStatus = data.status || "Free";
 
         if (currentAccountStatus === "Premium") {
-            statusDisplay.innerHTML = `
+            if(statusDisplay) statusDisplay.innerHTML = `
                 <div style="color: #166534; background: #dcfce7; padding: 10px; border-radius: 8px; display: inline-block;">
                     <i class="fas fa-check-circle"></i> حساب احترافي (Premium)
                 </div>
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">ينتهي الاشتراك في: ${data.expiryDate || 'غير محدد'}</p>
             `;
-            upgradeOptions.style.display = 'none';
+            if(upgradeOptions) upgradeOptions.style.display = 'none';
         } else {
-            statusDisplay.innerHTML = `
+            if(statusDisplay) statusDisplay.innerHTML = `
                 <div style="color: #991b1b; background: #fee2e2; padding: 10px; border-radius: 8px; display: inline-block;">
                     <i class="fas fa-info-circle"></i> حساب مجاني (Limited)
                 </div>
             `;
-            upgradeOptions.style.display = 'block';
+            if(upgradeOptions) upgradeOptions.style.display = 'block';
         }
     } catch (e) {
-        console.error("خطأ في جلب حالة الاشتراك:", e);
-        currentAccountStatus = "Free";
+        console.error("خطأ في فحص الاشتراك:", e);
+    }
+}
+// دالة لتشغيل الاهتزاز على زر الترقية
+function shakeUpgradeButton() {
+    const btn = document.getElementById('mainUpgradeBtn');
+    if (btn) {
+        // إضافة كلاس الاهتزاز
+        btn.classList.add('shake-animation');
+        
+        // إزالة الكلاس بعد انتهاء الحركة لكي نتمكن من تشغيلها مرة أخرى
+        setTimeout(() => {
+            btn.classList.remove('shake-animation');
+        }, 400);
+        
+        // تمرير الصفحة للزر إذا كان بعيداً عن العين
+        btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
-
-function processPayment(plan) {
-    const stadiumName = document.title.split('-')[0].trim();
-    const id = new URLSearchParams(window.location.search).get('id');
-    
-    // رسالة الواتساب لتأكيد الطلب يدوياً (كخطوة أولى احترافية)
-    const msg = `مرحباً ملاعب NET، أريد تفعيل الخطة (${plan}) لملعبي:\n- الاسم: ${stadiumName}\n- المعرف: ${id}`;
-    const whatsappUrl = `https://wa.me/2126XXXXXXXX?text=${encodeURIComponent(msg)}`;
-
-    // إذا كنت ستستخدم رابط Fatourati جاهز:
-    // const paymentLink = "https://link.fatourati.ma/your-payment-page";
-    // window.open(paymentLink, '_blank');
-
-    alert("سيتم توجيهك الآن لإتمام الدفع وتأكيد الحساب.");
-    window.location.href = whatsappUrl;
-}
-// دالة مساعدة لإظهار رسالة "يجب الاشتراك"
-function showUpgradeRequiredMessage(featureName) {
-    document.getElementById('adminSectionContent').innerHTML = `
-        <div style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 15px; margin-top: 10px; border: 1px dashed #cbd5e1;">
-            <i class="fas fa-lock" style="font-size: 40px; color: #94a3b8; margin-bottom: 15px;"></i>
-            <h3 style="color: #1e3a8a;">ميزة ${featureName} مقفولة</h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">هذه الميزة متاحة فقط للمشتركين في الباقة الاحترافية.</p>
-            <button onclick="document.getElementById('subscriptionSection').scrollIntoView({behavior: 'smooth'})" 
-                    style="background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: bold;">
-                ترقية الحساب الآن 🚀
-            </button>
-        </div>
-    `;
-}
-
-// تعديل الدوال لتعمل بالقفل
+// تعديل دوال الأزرار
 function showSettings() {
-    if (currentAccountStatus !== "Premium") return showUpgradeRequiredMessage("الإعدادات");
-    // هنا كودك الأصلي لفتح الإعدادات
+    if (currentAccountStatus !== "Premium") {
+        shakeUpgradeButton(); // هز زر الاشتراك بدلاً من فتح الإعدادات
+        return;
+    }
     loadActualSettings(); 
 }
 
 function showCancellations() {
-    if (currentAccountStatus !== "Premium") return showUpgradeRequiredMessage("إلغاء الحجوزات");
-    // هنا كودك الأصلي لفتح قائمة الإلغاء
+    if (currentAccountStatus !== "Premium") {
+        shakeUpgradeButton();
+        return;
+    }
     loadActualCancellations();
 }
 
 function showStats() {
-    if (currentAccountStatus !== "Premium") return showUpgradeRequiredMessage("البيانات والإحصائيات");
-    // هنا كودك الأصلي لفتح الإحصائيات
+    if (currentAccountStatus !== "Premium") {
+        shakeUpgradeButton();
+        return;
+    }
     loadActualStats();
 }
 // دالة لفتح نافذة الأسعار
