@@ -742,64 +742,94 @@ async function showSettings() {
         }
 
         // بناء نموذج الإعدادات
-        let html = `
-            <h3>⚙️ إعدادات الملعب</h3>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <label>اسم الملعب:</label>
-                <input type="text" id="upd_name" class="admin-input" value="${data.stadium_name}">
-                
-                <label>اسم المؤسسة/المسؤول:</label>
-                <input type="text" id="upd_org" class="admin-input" value="${data.org || ''}">
+      let html = `
+    <h3 style="text-align: center; color: #1e3a8a; font-family: 'Cairo', sans-serif;">⚙️ إعدادات الملعب</h3>
+    <div style="display: flex; flex-direction: column; gap: 15px; font-family: 'Cairo', sans-serif; text-align: right; direction: rtl;">
+        
+        <label><b>اسم الملعب:</b></label>
+        <input type="text" id="upd_name" class="admin-input" value="${data.stadium_name}">
+        
+        <label><b>اسم المؤسسة/المسؤول:</b></label>
+        <input type="text" id="upd_org" class="admin-input" value="${data.org || ''}">
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label>سعر النهار:</label>
-                        <input type="number" id="upd_price_day" class="admin-input" value="${data.price_day}">
-                    </div>
-                    <div>
-                        <label>سعر الليل:</label>
-                        <input type="number" id="upd_price_night" class="admin-input" value="${data.price_night}">
-                    </div>
-                </div>
-
-                <label>رقم الهاتف (واتساب):</label>
-                <input type="text" id="upd_phone" class="admin-input" value="${data.phone}">
-
-                <label>رابط الموقع (Google Maps):</label>
-                <input type="text" id="upd_loc" class="admin-input" value="${data.location || ''}">
-
-                <label>رابط اللوجو (URL):</label>
-                <input type="text" id="upd_logo" class="admin-input" value="${data.logo_url || ''}">
-
-
-<label>رابط صورة السلايدر 1:</label>
-<input type="text" id="upd_img1" class="admin-input" value="${data.img1 || ''}">
-
-<label>رابط صورة السلايدر 2:</label>
-<input type="text" id="upd_img2" class="admin-input" value="${data.img2 || ''}">
-
-<label>رابط صورة السلايدر 3:</label>
-<input type="text" id="upd_img3" class="admin-input" value="${data.img3 || ''}">
-
-<label>رابط الفيسبوك (Facebook):</label>
-<input type="text" id="upd_fb" class="admin-input" value="${data.fb || ''}" placeholder="https://facebook.com/yourpage">
-
-<label>رابط الإنستغرام (Instagram):</label>
-<input type="text" id="upd_insta" class="admin-input" value="${data.insta || ''}" placeholder="https://instagram.com/yourpage">
-
-                <label>كلمة مرور جديدة (اختياري):</label>
-                <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً للحفاظ على الحالية">
-
-                <button onclick="saveAdminSettings(event)" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">
-    حفظ التغييرات
-</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+                <label><b>سعر النهار:</b></label>
+                <input type="number" id="upd_price_day" class="admin-input" value="${data.price_day}">
             </div>
-        `;
-        content.innerHTML = html;
+            <div>
+                <label><b>سعر الليل:</b></label>
+                <input type="number" id="upd_price_night" class="admin-input" value="${data.price_night}">
+            </div>
+        </div>
+
+        <label><b>رقم الهاتف (واتساب):</b></label>
+        <input type="text" id="upd_phone" class="admin-input" value="${data.phone}">
+
+        <div class="admin-field">
+            <label style="display: flex; align-items: center; gap: 8px;">
+                <b>موقع الملعب (Google Maps):</b>
+                <span onclick="showMapHelp()" style="cursor: pointer; background: #1e3a8a; color: white; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px;" title="كيف أحصل على الرابط؟">؟</span>
+            </label>
+            <input type="text" id="upd_loc" class="admin-input" value="${data.location || ''}" placeholder="ضع رابط الخريطة هنا">
+        </div>
+
+        <div style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+            <label style="display: flex; align-items: center; gap: 8px; color: #2563eb;">
+                <b>روابط الصور (الشعار والسلايدر):</b>
+                <span onclick="showImageHelp()" style="cursor: pointer; background: #2563eb; color: white; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px;">؟</span>
+            </label>
+            <p style="font-size: 11px; color: #64748b; margin: 5px 0;">ارفع الصور على <a href="https://postimages.org/" target="_blank" style="color:#22c55e; font-weight:bold; text-decoration:none;">Postimages.org</a> وانسخ "الرابط المباشر".</p>
+            
+            <label style="font-size: 12px; display:block; margin-top:10px;">رابط اللوجو:</label>
+            <input type="text" id="upd_logo" class="admin-input" value="${data.logo_url || ''}" placeholder="رابط اللوجو المباشر (Direct Link)" style="margin-bottom:8px;">
+            
+            <label style="font-size: 12px; display:block;">صور السلايدر (1، 2، 3):</label>
+            <input type="text" id="upd_img1" class="admin-input" value="${data.img1 || ''}" placeholder="رابط صورة السلايدر 1" style="margin-bottom:5px;">
+            <input type="text" id="upd_img2" class="admin-input" value="${data.img2 || ''}" placeholder="رابط صورة السلايدر 2" style="margin-bottom:5px;">
+            <input type="text" id="upd_img3" class="admin-input" value="${data.img3 || ''}" placeholder="رابط صورة السلايدر 3">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+                <label><b>فيسبوك:</b></label>
+                <input type="text" id="upd_fb" class="admin-input" value="${data.fb || ''}" placeholder="facebook.com/page">
+            </div>
+            <div>
+                <label><b>إنستغرام:</b></label>
+                <input type="text" id="upd_insta" class="admin-input" value="${data.insta || ''}" placeholder="instagram.com/user">
+            </div>
+        </div>
+
+        <div>
+            <label><b>كلمة مرور جديدة:</b></label>
+            <input type="password" id="upd_pass" class="admin-input" placeholder="اتركه فارغاً للحفاظ على الحالية">
+            <small style="display:block; color:#ef4444; font-size:11px; margin-top:3px;">⚠️ تأكد من حفظها جيداً، فهي مفتاح دخولك للوحة التحكم.</small>
+        </div>
+
+        <button onclick="saveAdminSettings(event)" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:15px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px; font-size:1.1em; transition: 0.3s;">
+            💾 حفظ التغييرات النهائية
+        </button>
+    </div>
+`;
+content.innerHTML = html;
+
+
     } catch (e) {
         content.innerHTML = "<p style='color:red;'>خطأ في الاتصال بالسيرفر</p>";
     }
 }
+
+// دالات المساعدة (يجب وضعها خارج دالة الإعدادات لتعمل عند الضغط)
+window.showMapHelp = function() {
+    alert("📍 للحصول على الرابط الصحيح:\n1. افتح Google Maps وابحث عن ملعبك.\n2. اضغط على زر 'مشاركة' ثم اختر 'نسخ الرابط'.\n3. الصق الرابط هنا.");
+};
+
+window.showImageHelp = function() {
+    alert("🖼️ كيفية رفع الصور والحصول على رابط:\n1. ادخل لموقع Postimages.org.\n2. ارفع صورتك.\n3. بعد الرفع، انسخ الرابط المكتوب بجانبه 'Direct Link' (الرابط المباشر).\n4. الرابط الصحيح يجب أن ينتهي بـ .jpg أو .png");
+}; 
+
+
 async function showCancellations() {
     const content = document.getElementById('adminSectionContent');
     content.innerHTML = `
