@@ -46,18 +46,47 @@
             <input type="tel" id="managerPhone" placeholder="06xxxxxxxx">
         </div>
 
-        <div class="section">
-            <label>موقع الملعب (وصف أو رابط الخريطة)</label>
-            <input type="text" id="location" placeholder="اكتب العنوان أو ضع رابط Google Maps">
-        </div>
+       <div class="section">
+    <label style="display: flex; align-items: center; gap: 8px; font-weight: bold;">
+        موقع الملعب (رابط الخريطة)
+        <span onclick="showMapInstructions()" style="cursor: pointer; background: #1e3a8a; color: white; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px;" title="كيف أحصل على الرابط؟">؟</span>
+    </label>
+    <input type="text" id="location" placeholder="ضع رابط Google Maps هنا" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px;">
+    
+    <small style="display: block; color: #666; margin-top: 5px; font-size: 0.85rem;">
+        💡 للحصول على أفضل نتيجة، استخدم رابط "المشاركة" من تطبيق الخرائط.
+    </small>
+</div>
 
-        <div class="section">
-            <label>روابط التواصل الاجتماعي</label>
-            <div class="grid">
-                <input type="text" id="fbLink" placeholder="فيسبوك">
-                <input type="text" id="instaLink" placeholder="إنستغرام">
-            </div>
+<script>
+function showMapInstructions() {
+    alert(
+      "كيفية الحصول على الرابط الصحيح:\n" +
+      "1. افتح تطبيق Google Maps وابحث عن ملعبك.\n" +
+      "2. اضغط على زر 'مشاركة' (Share).\n" +
+      "3. اختر 'نسخ الرابط' (Copy link).\n" +
+      "4. قم بلصق الرابط هنا.\n\n" +
+      "شكل الرابط يجب أن يبدأ بـ https://maps.app.goo.gl/... أو https://goo.gl/maps/..."
+    );
+}
+</script>
+
+       <div class="section">
+    <label style="display: block; font-weight: bold; margin-bottom: 8px;">روابط التواصل الاجتماعي</label>
+    <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+            <input type="text" id="fbLink" placeholder="مثال: facebook.com/stadium.name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            <small style="color: #666; font-size: 0.75rem; display: block; margin-top: 4px;">رابط صفحة الفيسبوك</small>
         </div>
+        <div>
+            <input type="text" id="instaLink" placeholder="مثال: instagram.com/stadium.name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            <small style="color: #666; font-size: 0.75rem; display: block; margin-top: 4px;">رابط حساب الإنستغرام</small>
+        </div>
+    </div>
+    <p style="background: #fdfaf1; color: #856404; padding: 8px; border-radius: 6px; font-size: 0.8rem; margin-top: 10px; border: 1px dashed #e5e7eb;">
+        💡 <strong>نصيحة:</strong> اذهب إلى صفحتك وانسخ الرابط من شريط العنوان في المتصفح لضمان عمله بشكل صحيح.
+    </p>
+</div>
 
         <button type="button" class="btn-save" onclick="saveSettings()">حفظ التغييرات ونشر الصفحة</button>
     </form>
