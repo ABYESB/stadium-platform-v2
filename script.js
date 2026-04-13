@@ -1,17 +1,20 @@
 // --- 1. الإعدادات والروابط الأساسية ---
 
-// الرابط الموحد لسكريبت جوجل (بما أنهما نفس الرابط)
-const mainScriptURL = 'https://script.google.com/macros/s/AKfycbwWq_eSdhcYQlXjT6igU73PZp4o8xV3WkDz1UsuiYEHlU0MuBX_-yyzC70bhc0GAD5l/exec';
+// الرابط الأول: المسؤول عن جلب (اسم الملعب، اللوغو، الأسعار، الموقع)
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbwWq_eSdhcYQlXjT6igU73PZp4o8xV3WkDz1UsuiYEHlU0MuBX_-yyzC70bhc0GAD5l/exec';
+
+// الرابط الثاني: المسؤول عن (جلب الحجوزات القديمة، تلوين المربعات بالأحمر، تسجيل حجز جديد)
+const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbwWq_eSdhcYQlXjT6igU73PZp4o8xV3WkDz1UsuiYEHlU0MuBX_-yyzC70bhc0GAD5l/exec';
 
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
 
-// --- إضافة منطق الذاكرة هنا ---
+// --- نظام حفظ الجلسة (الذاكرة) ---
 if (stadiumId) {
-    // حفظ المعرف ليتذكره index.html لاحقاً
+    // حفظ المعرف فور الدخول لكي يتذكره تطبيق PWA في المرات القادمة
     localStorage.setItem('savedStadiumId', stadiumId);
 } else {
-    // إذا دخل المستخدم لصفحة الحجز بدون ID بالخطأ، نحاول استعادته من الذاكرة
+    // إذا دخل المستخدم بدون ID، نحاول جلب آخر ملعب زاره من الذاكرة
     const savedId = localStorage.getItem('savedStadiumId');
     if (savedId) {
         window.location.replace("booking.html?id=" + savedId);
