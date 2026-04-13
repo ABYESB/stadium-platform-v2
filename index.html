@@ -6,15 +6,23 @@
     <title>جاري توجيهك...</title>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const stadiumId = urlParams.get('id');
+        let stadiumId = urlParams.get('id');
 
-        // منطق التوجيه الجذري
-        if (!stadiumId) {
-            // لا يوجد ملعب محدد؟ اذهب لإنشاء ملعب جديد
-            window.location.replace("register.html");
+        // 1. إذا كان المستخدم داخل برابط يحتوي على ID، نحفظه فوراً في ذاكرة الهاتف
+        if (stadiumId) {
+            localStorage.setItem('savedStadiumId', stadiumId);
         } else {
-            // يوجد معرف؟ اذهب لصفحة الحجز مباشرة
+            // 2. إذا دخل بدون ID (مثل فتح التطبيق من الأيقونة)، نبحث عنه في الذاكرة
+            stadiumId = localStorage.getItem('savedStadiumId');
+        }
+
+        // 3. منطق التوجيه النهائي
+        if (stadiumId) {
+            // وجدنا معرفاً (سواء من الرابط أو الذاكرة) اذهب للحجز
             window.location.replace("booking.html?id=" + stadiumId);
+        } else {
+            // لا يوجد أي أثر لمعرف ملعب؟ اذهب للتسجيل
+            window.location.replace("register.html");
         }
     </script>
     <style>
