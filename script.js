@@ -1093,6 +1093,8 @@ async function handleAdminAuth(btn) {
                 console.log("اللوحة يجب أن تظهر الآن");
             }
 
+              // --- أضف هذا السطر هنا ---
+             checkSubscriptionStatus();
             // 3. إظهار أي أيقونات إدارية متفرقة في الصفحة (إن وجدت)
             document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
                 el.style.setProperty('display', 'block', 'important');
@@ -1202,4 +1204,52 @@ function showBookingTicket(stadiumName, date, time, stadiumUrl) {
         alert(`✅ تم الحجز!\nالملعب: ${stadiumName}\nالوقت: ${time}`);
         window.open(whatsappUrl, '_blank');
     }
+}
+
+// --- دالة فحص وعرض حالة الاشتراك ---
+async function checkSubscriptionStatus() {
+    const statusDisplay = document.getElementById('accountStatusDisplay');
+    const upgradeOptions = document.getElementById('upgradeOptions');
+
+    try {
+        // نطلب البيانات من السكريبت (تأكد أن السكريبت يرسل status)
+        const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+        const data = await response.json();
+
+        if (data.status === "Premium") {
+            statusDisplay.innerHTML = `
+                <div style="color: #166534; background: #dcfce7; padding: 10px; border-radius: 8px; display: inline-block;">
+                    <i class="fas fa-check-circle"></i> حساب احترافي (Premium)
+                </div>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">ينتهي الاشتراك في: ${data.expiryDate || 'غير محدد'}</p>
+            `;
+            upgradeOptions.style.display = 'none';
+            // هنا يمكنك تفعيل أزرار الإحصائيات
+        } else {
+            statusDisplay.innerHTML = `
+                <div style="color: #991b1b; background: #fee2e2; padding: 10px; border-radius: 8px; display: inline-block;">
+                    <i class="fas fa-info-circle"></i> حساب مجاني (Limited)
+                </div>
+            `;
+            upgradeOptions.style.display = 'block';
+        }
+    } catch (e) {
+        console.error("خطأ في جلب حالة الاشتراك:", e);
+    }
+}
+
+function processPayment(plan) {
+    const stadiumName = document.title.split('-')[0].trim();
+    const id = new URLSearchParams(window.location.search).get('id');
+    
+    // رسالة الواتساب لتأكيد الطلب يدوياً (كخطوة أولى احترافية)
+    const msg = `مرحباً ملاعب NET، أريد تفعيل الخطة (${plan}) لملعبي:\n- الاسم: ${stadiumName}\n- المعرف: ${id}`;
+    const whatsappUrl = `https://wa.me/2126XXXXXXXX?text=${encodeURIComponent(msg)}`;
+
+    // إذا كنت ستستخدم رابط Fatourati جاهز:
+    // const paymentLink = "https://link.fatourati.ma/your-payment-page";
+    // window.open(paymentLink, '_blank');
+
+    alert("سيتم توجيهك الآن لإتمام الدفع وتأكيد الحساب.");
+    window.location.href = whatsappUrl;
 }
