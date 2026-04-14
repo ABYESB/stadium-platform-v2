@@ -20,11 +20,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css?v=1.102">
+    <link rel="stylesheet" href="style.css?v=1.103">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
-    <script src="script.js?v=1.102" defer></script>
+    <script src="script.js?v=1.103" defer></script>
 </head>
 <body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -71,20 +71,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     <button class="plan-btn premium-btn" onclick="showPaymentOptions()">اشترك الآن</button>
                 </div>
                 
-                <div id="paymentOptions" style="display: none; margin-top: 15px; text-align: right;">
-                    <p style="font-weight: bold; font-size: 0.9rem;">اختر نوع الاشتراك:</p>
-                    <select id="planType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px;">
-                        <option value="200">شهري - 200 د.م</option>
-                        <option value="1500">سنوي - 1500 د.م</option>
-                    </select>
-                    <p style="font-weight: bold; font-size: 0.9rem;">وسيلة الدفع:</p>
-                    <select id="payMethod" style="width: 100%; padding: 8px; margin-bottom: 15px; border-radius: 5px;">
-                        <option value="Card">بطاقة بنكية 💳</option>
-                        <option value="Transfer">تحويل بنكي 🏦</option>
-                        <option value="CashPlus">كاش بلبيس 💸</option>
-                    </select>
-                    <button class="plan-btn premium-btn" onclick="confirmFinalPayment()">مواصلة الدفع</button>
-                </div>
+               <div id="paymentOptions" style="display: none; margin-top: 15px; text-align: right;">
+    <p style="font-weight: bold; font-size: 0.9rem;">اختر نوع الاشتراك:</p>
+    <select id="planType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; font-family: 'Cairo';">
+        <option value="200">شهري - 200 د.م</option>
+        <option value="1500">سنوي - 1500 د.م</option>
+    </select>
+
+    <p style="font-weight: bold; font-size: 0.9rem;">وسيلة الدفع:</p>
+    <select id="payMethod" onchange="toggleTransferDetails()" style="width: 100%; padding: 8px; margin-bottom: 15px; border-radius: 5px; font-family: 'Cairo';">
+        <option value="Transfer">تحويل بنكي 🏦</option>
+        <option value="Card">بطاقة بنكية 💳</option>
+    </select>
+
+    <div id="transferInstructions" style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: right; font-size: 0.85rem;">
+        <p style="color: #166534; font-weight: bold; margin-bottom: 5px;">تفاصيل التحويل البنكي:</p>
+        <p style="margin: 5px 0;"><strong>RIB:</strong> 0000 0000 0000 0000 0000 0000</p>
+        <p style="margin: 5px 0;"><strong>الاسم:</strong> اسمك الكامل أو اسم الشركة</p>
+        <p style="color: #ef4444; font-size: 0.75rem; margin-top: 8px; line-height: 1.4;">
+            * يرجى إرسال صورة وصل التحويل عبر واتساب لتفعيل حسابك فوراً.
+        </p>
+    </div>
+
+    <button class="plan-btn premium-btn" onclick="confirmFinalPayment()">مواصلة التفعيل</button>
+</div>
             </div>
         </div>
     </div>
