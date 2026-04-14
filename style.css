@@ -3,8 +3,16 @@
 
 body {
 /* 1. تنسيق زر الواجهة (الأعلى - ثابت وأنيق) */
+/* 1. تنسيق زر الواجهة (الأعلى - في جهة اليمين) */
+.upgrade-home-container {
+    position: absolute; /* أو fixed إذا كنت تريده أن يتبعك عند النزول */
+    top: 20px;
+    right: 20px; /* هنا التحكم بجهة اليمين */
+    z-index: 1000;
+}
+
 .upgrade-home-btn {
-    background: linear-gradient(135deg, #1e3a8a, #3b82f6); /* أزرق ملكي متناسق مع الموقع */
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     color: white !important;
     padding: 8px 18px;
     border-radius: 25px;
@@ -14,11 +22,15 @@ body {
     font-family: 'Cairo', sans-serif;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .upgrade-home-btn:hover {
     background: #1e3a8a;
     transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
 .modal-overlay {
