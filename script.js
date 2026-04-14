@@ -1317,24 +1317,36 @@ function showPaymentOptions() {
 }
 
 // معالجة الدفع النهائي (التواصل عبر واتساب للتأكيد)
+// أضف هذا الجزء أولاً لمراقبة اختيار وسيلة الدفع وإظهار التعليمات تلقائياً
+document.getElementById('payMethod').addEventListener('change', function() {
+    const instructions = document.getElementById('transferInstructions');
+    if (this.value === "Transfer") {
+        instructions.style.display = 'block';
+    } else {
+        instructions.style.display = 'none';
+    }
+});
+
 function confirmFinalPayment() {
     const plan = document.getElementById('planType').value == "1500" ? "سنوي (1500 د.م)" : "شهري (200 د.م)";
     const method = document.getElementById('payMethod').value;
     const stadiumName = document.title.split('-')[0].trim();
     
-    let methodText = "";
-    if(method === "Card") methodText = "البطاقة البنكية";
-    if(method === "Transfer") methodText = "تحويل بنكي";
-    if(method === "CashPlus") methodText = "كاش بليس";
+    // 1. التعامل مع البطاقة البنكية (غير جاهزة)
+    if (method === "Card") {
+        alert("⚠️ عذراً، خدمة الدفع المباشر بالبطاقة البنكية قيد التطوير حالياً.\n\nيرجى استخدام خيار 'التحويل البنكي' مؤقتاً لتفعيل حسابك فوراً.");
+        return; // توقف هنا ولا تفتح واتساب
+    }
 
-    const msg = `مرحباً ملاعب NET، أريد ترقية حسابي:\n🏟️ الملعب: ${stadiumName}\n💳 الخطة: ${plan}\n💰 وسيلة الدفع: ${methodText}`;
+    // 2. التعامل مع التحويل البنكي
+    let methodText = "تحويل بنكي";
+    
+    const msg = `مرحباً ملاعب NET، أريد ترقية حسابي:\n🏟️ الملعب: ${stadiumName}\n💳 الخطة: ${plan}\n💰 وسيلة الدفع: ${methodText}\n--- (سأقوم بإرسال صورة الوصل الآن)`;
+    
     const whatsappUrl = `https://wa.me/2126XXXXXXXX?text=${encodeURIComponent(msg)}`; // ضع رقمك هنا
+    
+    // تنبيه بسيط قبل الانتقال لواتساب
+    alert("سيتم الآن توجيهك إلى واتساب.\n\nيرجى إرفاق صورة وصل التحويل في المحادثة لضمان تفعيل الحساب في أقل من ساعة.");
     
     window.open(whatsappUrl, '_blank');
 }
-
-// لجعل الزر يظهر بعد تثبيت التطبيق أو عند تحميل الصفحة
-window.addEventListener('load', () => {
-    // يمكنك هنا إضافة شرط: إذا كان الحساب Free، اظهر الزر
-    document.getElementById('upgradeBadgeContainer').style.display = 'block';
-});
