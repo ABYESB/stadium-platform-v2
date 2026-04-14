@@ -75,54 +75,40 @@ body {
 
 
 
-/* 2. الهيدر والشعار (توسيط كامل كما في الأصل) */
 
+/* 2. الهيدر والشعار (توسيط وتصميم دائري احترافي) */
 .header-section, .header {
-
     display: flex !important;
-
     flex-direction: column !important;
-
     align-items: center !important;
-
     justify-content: center !important;
-
     text-align: center !important;
-
     width: 100%;
-
     margin-bottom: 20px;
-
+    padding-top: 20px;
 }
 
-
-
-.main-logo, .header img {
-
+/* الكود السحري لتحويل أي شعار لدائرة */
+.main-logo, .header img, #displayLogo {
     display: block !important;
-
     margin: 0 auto 15px auto !important;
-
-    max-width: 150px;
-
-    height: auto;
-
+    width: 110px !important;      /* عرض ثابت */
+    height: 110px !important;     /* طول ثابت مطابق للعرض */
+    border-radius: 50% !important; /* جعل الحواف دائرية 100% */
+    object-fit: cover !important;  /* قص الصورة لتملأ الدائرة دون تمطيط */
+    border: 3px solid #ffffff !important; /* إطار أبيض ينهي شكل الدائرة */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; /* ظل لإبراز الشعار */
+    background-color: white !important; /* خلفية بيضاء للشعارات الشفافة */
 }
-
-
 
 h2 {
-
     color: #1e3a8a;
-
-    margin: 0;
-
+    margin: 10px 0 5px 0;
     font-size: 1.5em;
-
     text-align: center;
-
+    font-family: 'Cairo', sans-serif;
+    font-weight: bold;
 }
-
 
 
 /* 3. أزرار العمليات (Action Buttons) - تنظيم السطر الواحد */
