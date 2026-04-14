@@ -740,7 +740,7 @@ async function saveAdminSettings(event) { // تم إضافة event هنا كمع
     }
 }
 // --- دالة عرض واجهة الإعدادات ---
-async function showSettings() {
+async function loadActualSettings() {
     const content = document.getElementById('adminSectionContent');
     content.innerHTML = "<p style='text-align:center;'>جاري تحميل الإعدادات الحالية...</p>";
 
@@ -843,7 +843,7 @@ window.showImageHelp = function() {
 }; 
 
 
-async function showCancellations() {
+async function loadActualCancellations() {
     const content = document.getElementById('adminSectionContent');
     content.innerHTML = `
         <div style="text-align:center; padding:20px;">
@@ -954,7 +954,7 @@ async function cancelBooking(rowNumber, btn) { // أضفنا btn هنا
 }
 
 // --- 3. عرض البيانات والإحصائيات ---
-async function showStats() {
+async function loadActualStats() {
     const content = document.getElementById('adminSectionContent');
     content.innerHTML = `
         <div style="text-align:center; padding:20px;">
@@ -1287,14 +1287,27 @@ function showStats() {
     }
     loadActualStats();
 }
-// دالة لفتح نافذة الأسعار
 function openPricingModal() {
-    document.getElementById('pricingModal').style.display = 'flex';
+    // 1. إظهار نافذة الأسعار (المهمة الأساسية)
+    const modal = document.getElementById('pricingModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.zIndex = "20000"; // التأكد من أنها فوق كل شيء
+    }
+
+    // 2. التحقق: إذا كانت لوحة التحكم مفتوحة، نقوم بإغلاقها
+    const adminPanel = document.getElementById('adminPanel');
+    if (adminPanel && adminPanel.style.display !== 'none') {
+        adminPanel.style.display = 'none';
+    }
 }
 
 // دالة لإغلاق النافذة
 function closePricingModal() {
-    document.getElementById('pricingModal').style.display = 'none';
+    const modal = document.getElementById('pricingModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 // إظهار خيارات الدفع عند اختيار الخطة المدفوعة
