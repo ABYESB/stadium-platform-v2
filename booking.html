@@ -28,10 +28,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </head>
 <body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-   <div id="upgradeBadgeContainer" style="position: fixed; top: 15px; right: 15px; z-index: 999; display: block;">
-    <button onclick="openPricingModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 18px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-family: 'Cairo';">
-        <i class="fas fa-crown"></i> 👑 ترقية الحساب إلى
-</div>
+
+
+   <div id="upgradeBadgeContainer" style="position: fixed; top: 20px; right: 20px; z-index: 999999 !important; display: flex !important; align-items: center; justify-content: center;">
+    <button onclick="openPricingModal()" class="shake-animation glow-animation" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: 2px solid #fff; padding: 12px 22px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.3); font-family: 'Cairo'; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+        <span style="font-size: 18px;">👑</span> 
+        <span>ترقية الحساب</span>
+    </button>
+</div> 
 
 <div id="pricingModal" class="modal-overlay" style="display:none;">
     <div class="pricing-container">
