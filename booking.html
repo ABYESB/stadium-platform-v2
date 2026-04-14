@@ -20,18 +20,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css?v=1.105">
+    <link rel="stylesheet" href="style.css?v=1.106">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
-    <script src="script.js?v=1.105" defer></script>
+    <script src="script.js?v=1.106" defer></script>
 </head>
 <body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG32N2WN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <div id="upgradeBadgeContainer" style="position: fixed; top: 15px; right: 15px; z-index: 999; display: none;">
+   <div id="upgradeBadgeContainer" style="position: fixed; top: 15px; right: 15px; z-index: 999; display: block;">
     <button onclick="openPricingModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 18px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-family: 'Cairo';">
-        <i class="fas fa-crown"></i> ترقية الحساب
-    </button>
+        <i class="fas fa-crown"></i> 👑 ترقية الحساب إلى
 </div>
 
 <div id="pricingModal" class="modal-overlay" style="display:none;">
@@ -509,6 +508,36 @@ td {
 @media (max-width: 600px) {
     .admin-header h2 { font-size: 1rem; }
     .nav-icon { font-size: 20px; }
+}
+    /* الكود الناقص لظهور زر الترقية */
+#upgradeBadgeContainer {
+    display: block !important;
+    text-align: center;
+    margin: 15px auto;
+    width: 100%;
+}
+
+.upgrade-btn {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white !important;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* ربط الحركات الموجودة في كودك */
+    animation: shakeMe 2s infinite, glowBtn 1.5s infinite; 
+}
+
+.upgrade-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
 }
 </style>
           <p class="copyright">© 2026 جميع الحقوق محفوظة </p>
