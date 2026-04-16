@@ -738,7 +738,7 @@ async function saveAdminSettings(event) { // تم إضافة event هنا كمع
         org: document.getElementById('upd_org') ? document.getElementById('upd_org').value : "",
         loc: document.getElementById('upd_loc') ? document.getElementById('upd_loc').value : "",
         fb: document.getElementById('upd_fb') ? document.getElementById('upd_fb').value : "",
-        insta: document.getElementById('upd_insta') ? document.getElementById('upd_insta').value : ""
+        insta: document.getElementById('upd_insta') ? document.getElementById('upd_insta').value : "",
         status: document.getElementById('upd_maintenance').checked ? "maintenance" : "open", 
     });
 
