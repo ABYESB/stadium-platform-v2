@@ -845,6 +845,7 @@ async function loadActualSettings() {
         </div>
 
 
+// --- بداية الجزء الذي كان يحتوي على الخطأ ---
     <div style="background: #fff5f5; padding: 15px; border-radius: 12px; border: 1px solid #feb2b2; margin-bottom: 15px;">
         <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
             <b style="color: #c53030;">🛑 وضع الصيانة (إيقاف الحجز):</b>
@@ -852,12 +853,14 @@ async function loadActualSettings() {
         </label>
         <p style="font-size: 11px; color: #744; margin-top: 5px;">عند التفعيل، سيظهر تنبيه للمستخدمين وسيتم قفل جدول المواعيد بالكامل.</p>
     </div>
-`;
-        <button onclick="saveAdminSettings(event)" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:15px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px; font-size:1.1em; transition: 0.3s;">
-            💾 حفظ التغييرات النهائية
-        </button>
-    </div>
-`;
+
+    <button onclick="saveAdminSettings(event)" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:15px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px; font-size:1.1em; transition: 0.3s;">
+        💾 حفظ التغييرات النهائية
+    </button>
+</div>
+`; // علامة إغلاق واحدة فقط للنص بالكامل
+
+// الآن نقوم بوضع النص داخل الـ HTML
 content.innerHTML = html;
 
 
