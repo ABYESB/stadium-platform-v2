@@ -820,6 +820,15 @@ async function loadActualSettings() {
             <small style="display:block; color:#ef4444; font-size:11px; margin-top:3px;">⚠️ تأكد من حفظها جيداً، فهي مفتاح دخولك للوحة التحكم.</small>
         </div>
 
+
+    <div style="background: #fff5f5; padding: 15px; border-radius: 12px; border: 1px solid #feb2b2; margin-bottom: 15px;">
+        <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <b style="color: #c53030;">🛑 وضع الصيانة (إيقاف الحجز):</b>
+            <input type="checkbox" id="upd_maintenance" style="width: 20px; height: 20px;" ${data.status === 'maintenance' ? 'checked' : ''}>
+        </label>
+        <p style="font-size: 11px; color: #744; margin-top: 5px;">عند التفعيل، سيظهر تنبيه للمستخدمين وسيتم قفل جدول المواعيد بالكامل.</p>
+    </div>
+`;
         <button onclick="saveAdminSettings(event)" id="saveBtn" style="background:#22c55e; color:white; border:none; padding:15px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px; font-size:1.1em; transition: 0.3s;">
             💾 حفظ التغييرات النهائية
         </button>
