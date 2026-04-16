@@ -39,7 +39,34 @@ async function loadStadiumDynamicDetails() {
         
 
         if (data !== "NotFound") {
+            
+if (data.status === "maintenance") {
+                // 1. استهداف حاوية الجدول (التي تحتوي على أزرار الأسابيع والجدول نفسه)
+                // نستخدم selector عام يشمل الجدول بالكامل
+                const tableArea = document.querySelector('.table-responsive') || document.getElementById('tableBody');
+                if (tableArea) {
+                    tableArea.innerHTML = `
+                        <div style="text-align:center; padding: 40px 20px; background: #fff5f5; border-radius: 15px; border: 2px dashed #fc8181; margin: 20px; font-family: 'Cairo', sans-serif;">
+                            <div style="font-size: 50px; margin-bottom: 10px;">🚧</div>
+                            <h2 style="color: #c53030; margin-bottom: 10px;">الملعب في صيانة مؤقتة</h2>
+                            <p style="color: #744242; line-height: 1.6;">نعتذر منكم، تم إيقاف الحجز حالياً لأعمال الإصلاح أو التحديث. يرجى العودة في وقت لاحق.</p>
+                            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 25px; border-radius: 50px; border: none; background: #c53030; color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">تحديث الصفحة</button>
+                        </div>
+                    `;
+                }
 
+                // 2. إخفاء أزرار التحكم في الأسابيع إذا وجدت
+                const weekControls = document.querySelector('.week-controls');
+                if (weekControls) weekControls.style.display = 'none';
+
+                // 3. تعطيل زر الحجز في المودال كاحتياط
+                const finalBtn = document.getElementById('finalConfirmBtn');
+                if (finalBtn) {
+                    finalBtn.disabled = true;
+                    finalBtn.innerText = "الحجز مغلق حالياً";
+                }
+            }
+            // --- 🏁 نهاية كود وضع الصيانة ---
            // 1. النصوص الأساسية (مع حماية ضد العناصر المفقودة)
 if (data.stadium_name) {
     document.title = "حجز " + data.stadium_name;
@@ -716,6 +743,7 @@ async function saveAdminSettings(event) { // تم إضافة event هنا كمع
         loc: document.getElementById('upd_loc') ? document.getElementById('upd_loc').value : "",
         fb: document.getElementById('upd_fb') ? document.getElementById('upd_fb').value : "",
         insta: document.getElementById('upd_insta') ? document.getElementById('upd_insta').value : ""
+        status: document.getElementById('upd_maintenance').checked ? "maintenance" : "open", 
     });
 
     try {
