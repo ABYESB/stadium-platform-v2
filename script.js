@@ -27,22 +27,16 @@ let currentStartDate = getMonday(new Date());
 
 // 2. جلب تفاصيل الملعب وتحديث الواجهة
 async function loadStadiumDynamicDetails() {
-
     if (!stadiumId) return;
 
     try {
-
         const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
-
         const data = await response.json();
-
-        
 
         if (data !== "NotFound") {
             
-if (data.status === "maintenance") {
-                // 1. استهداف حاوية الجدول (التي تحتوي على أزرار الأسابيع والجدول نفسه)
-                // نستخدم selector عام يشمل الجدول بالكامل
+            // --- 🚧 بداية كود وضع الصيانة ---
+            if (data.status === "maintenance") {
                 const tableArea = document.querySelector('.table-responsive') || document.getElementById('tableBody');
                 if (tableArea) {
                     tableArea.innerHTML = `
@@ -55,24 +49,26 @@ if (data.status === "maintenance") {
                     `;
                 }
 
-                // 2. إخفاء أزرار التحكم في الأسابيع إذا وجدت
                 const weekControls = document.querySelector('.week-controls');
                 if (weekControls) weekControls.style.display = 'none';
 
-                // 3. تعطيل زر الحجز في المودال كاحتياط
                 const finalBtn = document.getElementById('finalConfirmBtn');
                 if (finalBtn) {
                     finalBtn.disabled = true;
                     finalBtn.innerText = "الحجز مغلق حالياً";
                 }
+
+                // توقف عن تنفيذ باقي الدالة لأن الملعب في صيانة
+                return; 
             }
             // --- 🏁 نهاية كود وضع الصيانة ---
-           // 1. النصوص الأساسية (مع حماية ضد العناصر المفقودة)
-if (data.stadium_name) {
-    document.title = "حجز " + data.stadium_name;
-    const nameEl = document.getElementById('displayStadiumName');
-    if (nameEl) nameEl.innerText = data.stadium_name;
-}
+
+            // 1. النصوص الأساسية 
+            if (data.stadium_name) {
+                document.title = "حجز " + data.stadium_name;
+                const nameEl = document.getElementById('displayStadiumName');
+                if (nameEl) nameEl.innerText = data.stadium_name;
+            }
 
 const orgEl = document.getElementById('displayOrg');
 if (orgEl) orgEl.innerText = "بإشراف: " + (data.org || "");
