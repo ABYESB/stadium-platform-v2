@@ -2,13 +2,13 @@
 /* 1. التنسيقات العامة والخلفية الأصلية */
 
 body {
-/* 1. تنسيق زر الواجهة (الأعلى - ثابت وأنيق) */
-/* 1. تنسيق زر الواجهة (الأعلى - في جهة اليمين) */
 .upgrade-home-container {
-    position: absolute; /* أو fixed إذا كنت تريده أن يتبعك عند النزول */
+    position: absolute; /* سيبقى في أعلى الصفحة */
     top: 20px;
-    right: 20px; /* هنا التحكم بجهة اليمين */
-    z-index: 1000;
+    right: 20px !important; /* إجبار الظهور جهة اليمين */
+    left: auto !important;  /* إلغاء أي قيم افتراضية لجهة اليسار */
+    transform: none !important; 
+    z-index: 1001; /* رفعه ليكون فوق أي عنصر آخر */
 }
 
 .upgrade-home-btn {
