@@ -34,34 +34,16 @@ async function loadStadiumDynamicDetails() {
         const data = await response.json();
 
         if (data !== "NotFound") {
-            
-            // --- 🚧 بداية كود وضع الصيانة ---
-            if (data.status === "maintenance") {
-                const tableArea = document.querySelector('.table-responsive') || document.getElementById('tableBody');
-                if (tableArea) {
-                    tableArea.innerHTML = `
-                        <div style="text-align:center; padding: 40px 20px; background: #fff5f5; border-radius: 15px; border: 2px dashed #fc8181; margin: 20px; font-family: 'Cairo', sans-serif;">
-                            <div style="font-size: 50px; margin-bottom: 10px;">🚧</div>
-                            <h2 style="color: #c53030; margin-bottom: 10px;">الملعب في صيانة مؤقتة</h2>
-                            <p style="color: #744242; line-height: 1.6;">نعتذر منكم، تم إيقاف الحجز حالياً لأعمال الإصلاح أو التحديث. يرجى العودة في وقت لاحق.</p>
-                            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 25px; border-radius: 50px; border: none; background: #c53030; color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">تحديث الصفحة</button>
-                        </div>
-                    `;
-                }
+            // تخزين الحالة في متغير عالمي لاستخدامه عند الضغط على زر الحجز
+            window.stadiumStatus = data.status; 
 
-                const weekControls = document.querySelector('.week-controls');
-                if (weekControls) weekControls.style.display = 'none';
-
-                const finalBtn = document.getElementById('finalConfirmBtn');
-                if (finalBtn) {
-                    finalBtn.disabled = true;
-                    finalBtn.innerText = "الحجز مغلق حالياً";
-                }
-
-                // توقف عن تنفيذ باقي الدالة لأن الملعب في صيانة
-                return; 
+            // بقية الكود الخاص بالاسم واللوغو والأسعار يظل كما هو...
+            if (data.stadium_name) {
+                document.getElementById('displayStadiumName').innerText = data.stadium_name;
             }
-            // --- 🏁 نهاية كود وضع الصيانة ---
+            // ... (احذف أي كود كان يعمل InnerHTML لمسح الجدول)
+            
+          
 
             // 1. النصوص الأساسية 
             if (data.stadium_name) {
@@ -389,6 +371,10 @@ function updateModalDetails() {
 }
 
 async function submitFinalBooking() {
+    if (window.stadiumStatus === "maintenance") {
+        alert("نعتذر منك، لا يمكن إتمام الحجز حالياً لأن الملعب في حالة صيانة أو إصلاح.");
+        return; // هذا السطر سيمنع الكود بالأسفل من العمل
+    }
     const name = document.getElementById('userName').value;
     const phone = document.getElementById('userPhone').value;
     
@@ -709,47 +695,45 @@ window.addEventListener('appinstalled', () => {
     console.log('PWA was installed');
 });
 // --- 1. إعدادات المسؤول وحفظ التغييرات ---
-async function saveAdminSettings(event) { // تم إضافة event هنا كمعامل
-    // التأكد من الحصول على الزر بشكل صحيح سواء من event.target أو event.currentTarget
+async function saveAdminSettings(event) {
+    // 1. إدارة حالة الزر (تعطيل وتغيير النص)
     const btn = event ? (event.target || event.currentTarget) : null;
-    
     if (btn) {
         btn.disabled = true;
         btn.innerText = "جاري الحفظ... ⏳";
     }
 
-    // تجميع البيانات من الحقول التي أنشأتها دالة showSettings
-    const params = new URLSearchParams({
-        action: "adminUpdateSettings",
-        id: stadiumId,
-        newPass: document.getElementById('upd_pass').value,
-        stadiumName: document.getElementById('upd_name').value,
-        pDay: document.getElementById('upd_price_day').value,
-        pNight: document.getElementById('upd_price_night').value,
-        logo: document.getElementById('upd_logo').value,
-        phone: document.getElementById('upd_phone').value,
-        fb: document.getElementById('upd_fb').value, // إضافة الفيسبوك
-    insta: document.getElementById('upd_insta').value, // إضافة الإنستغرام
-        // --- الإضافات الجديدة لصور السلايدر ---
-        img1: document.getElementById('upd_img1') ? document.getElementById('upd_img1').value : "",
-        img2: document.getElementById('upd_img2') ? document.getElementById('upd_img2').value : "",
-        img3: document.getElementById('upd_img3') ? document.getElementById('upd_img3').value : "",
-        // ---------------------------------------
-        org: document.getElementById('upd_org') ? document.getElementById('upd_org').value : "",
-        loc: document.getElementById('upd_loc') ? document.getElementById('upd_loc').value : "",
-        fb: document.getElementById('upd_fb') ? document.getElementById('upd_fb').value : "",
-        insta: document.getElementById('upd_insta') ? document.getElementById('upd_insta').value : "",
-        status: document.getElementById('upd_maintenance').checked ? "maintenance" : "open", 
-    });
-
     try {
-        // إرسال الطلب إلى Google Apps Script
+        // 2. تجميع البيانات (تنظيف الكود من التكرار وضمان عدم وجود أخطاء null)
+        const params = new URLSearchParams({
+            action: "adminUpdateSettings",
+            id: stadiumId,
+            newPass: document.getElementById('upd_pass')?.value || "",
+            stadiumName: document.getElementById('upd_name')?.value || "",
+            pDay: document.getElementById('upd_price_day')?.value || "",
+            pNight: document.getElementById('upd_price_night')?.value || "",
+            logo: document.getElementById('upd_logo')?.value || "",
+            phone: document.getElementById('upd_phone')?.value || "",
+            org: document.getElementById('upd_org')?.value || "",
+            loc: document.getElementById('upd_loc')?.value || "",
+            fb: document.getElementById('upd_fb')?.value || "",
+            insta: document.getElementById('upd_insta')?.value || "",
+            // صور السلايدر
+            img1: document.getElementById('upd_img1')?.value || "",
+            img2: document.getElementById('upd_img2')?.value || "",
+            img3: document.getElementById('upd_img3')?.value || "",
+            // حالة الصيانة (الربط مع الزر)
+            status: document.getElementById('upd_maintenance')?.checked ? "maintenance" : "open"
+        });
+
+        // 3. إرسال الطلب إلى Google Apps Script
         const response = await fetch(`${settingsScriptURL}?${params.toString()}`);
         const result = await response.text();
 
+        // 4. معالجة النتيجة
         if (result.trim() === "Success") {
             alert("✅ تم تحديث بيانات الملعب بنجاح! سيتم تحديث الصفحة الآن.");
-            location.reload(); // إعادة تحميل لرؤية النتائج فوراً
+            location.reload(); 
         } else {
             alert("⚠️ حدث خطأ في السكريبت: " + result);
         }
@@ -757,6 +741,7 @@ async function saveAdminSettings(event) { // تم إضافة event هنا كمع
         console.error("Save Error:", e);
         alert("❌ فشل الاتصال بالسيرفر. تأكد من إعدادات النشر (Deployment) في Google Apps Script.");
     } finally {
+        // 5. إعادة الزر لحالته الطبيعية
         if (btn) {
             btn.disabled = false;
             btn.innerText = "حفظ التغييرات";
