@@ -1,10 +1,10 @@
 // --- 1. الإعدادات والروابط الأساسية ---
 
 // الرابط الأول: المسؤول عن جلب (اسم الملعب، اللوغو، الأسعار، الموقع)
-const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbxY8JfuPommhpdxXbr0wipcxb-mYIp9G5Z00MoBN1A7f9mKZtDcw1W7XwEqVxpP7M1Q/exec';
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbyVrLA5O8kTj03HWi6qR-FJH9seFhliXxVc828Re0dqC0HwcRMiRtflMv6L75i22KSB/exec';
 
 // الرابط الثاني: المسؤول عن (جلب الحجوزات القديمة، تلوين المربعات بالأحمر، تسجيل حجز جديد)
-const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbxY8JfuPommhpdxXbr0wipcxb-mYIp9G5Z00MoBN1A7f9mKZtDcw1W7XwEqVxpP7M1Q/exec';
+const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbyVrLA5O8kTj03HWi6qR-FJH9seFhliXxVc828Re0dqC0HwcRMiRtflMv6L75i22KSB/exec';
 
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
