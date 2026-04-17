@@ -1235,7 +1235,8 @@ async function checkSubscriptionStatus() {
         const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
         
-        currentAccountStatus = data.status || "Free";
+        // التعديل هنا: نستخدم accountType بدلاً من status
+        currentAccountStatus = data.accountType || "Free"; 
 
         if (currentAccountStatus === "Premium") {
             if(statusDisplay) statusDisplay.innerHTML = `
