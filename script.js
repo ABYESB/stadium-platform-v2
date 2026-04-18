@@ -1,10 +1,10 @@
 // --- 1. الإعدادات والروابط الأساسية ---
 
 // الرابط الأول: المسؤول عن جلب (اسم الملعب، اللوغو، الأسعار، الموقع)
-const settingsScriptURL = 'https://script.google.com/macros/s/AKfycby9ert5m4TbQqU5pnP-Mhw0qVkRjcx8nRbKdZYoB5go40sgMh9mkHDCFs4dBVPVsYyU/exec';
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycby0o8MkCHqoAwj5J3syF1r329WvhVJtconmCbe4JIFM4KIq7l4NsTtK5ib6iafcnJ2M/exec';
 
 // الرابط الثاني: المسؤول عن (جلب الحجوزات القديمة، تلوين المربعات بالأحمر، تسجيل حجز جديد)
-const bookingScriptURL = 'https://script.google.com/macros/s/AKfycby9ert5m4TbQqU5pnP-Mhw0qVkRjcx8nRbKdZYoB5go40sgMh9mkHDCFs4dBVPVsYyU/exec';
+const bookingScriptURL = 'https://script.google.com/macros/s/AKfycby0o8MkCHqoAwj5J3syF1r329WvhVJtconmCbe4JIFM4KIq7l4NsTtK5ib6iafcnJ2M/exec';
 
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
@@ -35,7 +35,8 @@ async function loadStadiumDynamicDetails() {
 
         if (data !== "NotFound") {
             // تخزين الحالة في متغير عالمي لاستخدامه عند الضغط على زر الحجز
-            window.stadiumStatus = data.status; 
+            window.stadiumData = data; 
+            window.stadiumStatus = data.status;
 
             // بقية الكود الخاص بالاسم واللوغو والأسعار يظل كما هو...
             if (data.stadium_name) {
@@ -171,6 +172,9 @@ if (logoImg) {
                     navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
                 });
             } // نهاية if (swiperWrapper)
+            if (typeof initTable === "function") {
+                initTable();
+                }
         } // نهاية if (data !== "NotFound")
       
     } catch (error) { 
@@ -211,9 +215,14 @@ function initTable() {
     }
 
     const now = new Date();
-    let allRowsHtml = ''; // متغير جديد لتجميع كل الصفوف بدلاً من مسح الجدول فوراً
+    let allRowsHtml = ''; 
 
-    for (let hour = 8; hour <= 23; hour++) {
+    // --- التعديل هنا: تحديد وقت البدء والنهاية ديناميكياً ---
+    // إذا لم تكن القيم موجودة في بيانات الملعب، نستخدم الافتراضي (8 إلى 23)
+    let startHour = (stadiumData && stadiumData.openHour) ? parseInt(stadiumData.openHour) : 8;
+    let endHour = (stadiumData && stadiumData.closeHour) ? parseInt(stadiumData.closeHour) : 23;
+
+    for (let hour = startHour; hour <= endHour; hour++) {
         let hLabel24 = `${hour}:00`; 
         let currentH = hour > 12 ? hour - 12 : hour;
         let nextH = (hour + 1) > 12 ? (hour + 1) - 12 : (hour + 1);
@@ -246,12 +255,10 @@ function initTable() {
             }
         }
         row += `</tr>`;
-        allRowsHtml += row; // تجميع الصفوف هنا
+        allRowsHtml += row; 
     }
     
-    // التحديث الفعلي للجدول يتم مرة واحدة فقط في النهاية لمنع الوميض الأبيض
     tableBody.innerHTML = allRowsHtml;
-    
     loadExistingBookings(); 
 }
 function getFormattedDate(date) {
@@ -718,6 +725,8 @@ async function saveAdminSettings(event) {
             loc: document.getElementById('upd_loc')?.value || "",
             fb: document.getElementById('upd_fb')?.value || "",
             insta: document.getElementById('upd_insta')?.value || "",
+            openHour: document.getElementById('openHourInput')?.value || "8",
+            closeHour: document.getElementById('closeHourInput')?.value || "23",
             // صور السلايدر
             img1: document.getElementById('upd_img1')?.value || "",
             img2: document.getElementById('upd_img2')?.value || "",
@@ -763,7 +772,6 @@ async function loadActualSettings() {
             return;
         }
 
-        // بناء نموذج الإعدادات
       let html = `
     <h3 style="text-align: center; color: #1e3a8a; font-family: 'Cairo', sans-serif;">⚙️ إعدادات الملعب</h3>
     <div style="display: flex; flex-direction: column; gap: 15px; font-family: 'Cairo', sans-serif; text-align: right; direction: rtl;">
@@ -829,6 +837,22 @@ async function loadActualSettings() {
             <small style="display:block; color:#ef4444; font-size:11px; margin-top:3px;">⚠️ تأكد من حفظها جيداً، فهي مفتاح دخولك للوحة التحكم.</small>
         </div>
 
+        <div class="setting-item">
+    <label><i class="fas fa-clock"></i> ساعات عمل الملعب:</label>
+    <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <div style="flex: 1;">
+            <small>وقت الافتتاح</small>
+            <select id="openHourInput" class="admin-input">
+                </select>
+        </div>
+        <div style="flex: 1;">
+            <small>وقت الإغلاق</small>
+            <select id="closeHourInput" class="admin-input">
+                </select>
+        </div>
+    </div>
+</div>
+
 
 <div style="background: #fff5f5; padding: 15px; border-radius: 12px; border: 1px solid #feb2b2; margin-bottom: 15px;">
             <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
@@ -845,7 +869,22 @@ async function loadActualSettings() {
     `;
 content.innerHTML = html;
 
+// --- أضف الكود هنا لملء الخيارات فور ظهورها في الصفحة ---
+    const openSelect = document.getElementById('openHourInput');
+    const closeSelect = document.getElementById('closeHourInput');
 
+    if (openSelect && closeSelect) {
+        for (let i = 0; i <= 23; i++) {
+            let label = i < 10 ? '0' + i + ':00' : i + ':00';
+            openSelect.add(new Option(label, i));
+            closeSelect.add(new Option(label, i));
+        }
+
+        // تحديد القيم الحالية التي جلبناها من السيرفر (data)
+        // لاحظ أننا نستخدم data هنا لأنها تحتوي على أحدث القيم من السيرفر
+        openSelect.value = data.openHour || 8;
+        closeSelect.value = data.closeHour || 23;
+    } 
     } catch (e) {
         content.innerHTML = "<p style='color:red;'>خطأ في الاتصال بالسيرفر</p>";
     }
