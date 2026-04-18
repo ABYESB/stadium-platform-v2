@@ -20,10 +20,11 @@ if (stadiumId) {
         window.location.replace("booking.html?id=" + savedId);
     }
 }
-// ----------------------------
 
 let selectedSlots = [];
 let currentStartDate = getMonday(new Date());
+
+window.stadiumData = null;
 
 // 2. جلب تفاصيل الملعب وتحديث الواجهة
 async function loadStadiumDynamicDetails() {
@@ -217,10 +218,19 @@ function initTable() {
     const now = new Date();
     let allRowsHtml = ''; 
 
-    // --- التعديل هنا: تحديد وقت البدء والنهاية ديناميكياً ---
-    // إذا لم تكن القيم موجودة في بيانات الملعب، نستخدم الافتراضي (8 إلى 23)
-    let startHour = (stadiumData && stadiumData.openHour) ? parseInt(stadiumData.openHour) : 8;
-    let endHour = (stadiumData && stadiumData.closeHour) ? parseInt(stadiumData.closeHour) : 23;
+    // --- التعديل المدمج: قراءة الساعات ديناميكياً من البيانات المحملة ---
+    // نستخدم window.stadiumData للتأكد من الوصول للبيانات التي جلبها fetch
+    let startHour = 8; 
+    let endHour = 23;
+
+    if (window.stadiumData) {
+        if (window.stadiumData.openHour !== undefined && window.stadiumData.openHour !== "") {
+            startHour = parseInt(window.stadiumData.openHour);
+        }
+        if (window.stadiumData.closeHour !== undefined && window.stadiumData.closeHour !== "") {
+            endHour = parseInt(window.stadiumData.closeHour);
+        }
+    }
 
     for (let hour = startHour; hour <= endHour; hour++) {
         let hLabel24 = `${hour}:00`; 
