@@ -1418,3 +1418,37 @@ function confirmFinalPayment() {
     
     window.open(whatsappUrl, '_blank');
 }
+
+
+function showPaymentMethods() {
+    const content = document.getElementById('adminSectionContent');
+    content.innerHTML = `
+        <div style="text-align: right; animation: fadeIn 0.5s;">
+            <h3 style="color: #1e3a8a; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">💳 إعدادات طرق الدفع</h3>
+            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px;">حدد كيف ترغب في استلام مستحقات الحجز من اللاعبين.</p>
+            
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0; color: #1e293b;">الدفع نقداً (في الملعب)</h4>
+                    <small style="color: #22c55e;">● مفعّل حالياً</small>
+                </div>
+                <div style="color: #22c55e; font-size: 1.5rem;">✅</div>
+            </div>
+
+            <div onclick="alert('🚀 هذه الخاصية قيد التطوير حالياً.\nسيتم تفعيل الدفع بالبطاقة البنكية فور انتهاء الإجراءات القانونية والتقنية.')" 
+                 style="background: #ffffff; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;">
+                <div>
+                    <h4 style="margin: 0; color: #94a3b8;">الدفع عبر البطاقة البنكية</h4>
+                    <small style="color: #ef4444;">🔒 قيد التطوير (قريباً)</small>
+                </div>
+                <div style="background: #f1f5f9; color: #94a3b8; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: bold;">طلب تفعيل</div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 15px; background: #fffbeb; border-right: 4px solid #f59e0b; border-radius: 4px;">
+                <p style="font-size: 0.8rem; color: #92400e; margin: 0;">
+                    <strong>ملاحظة:</strong> تفعيل الدفع الإلكتروني يتطلب التوفر على "مقاول ذاتي" أو "شركة". نحن نعمل على تسهيل هذه العملية لكم.
+                </p>
+            </div>
+        </div>
+    `;
+}
