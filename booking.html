@@ -317,21 +317,24 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <span onclick="closeAdminPanel()" class="admin-close-btn">&times;</span>
         </div>
         
-        <div class="admin-nav-bar">
-            <div class="admin-nav-item" onclick="showSettings()">
-                <div class="nav-icon">⚙️</div>
-                <span>الإعدادات</span>
-            </div>
-            <div class="admin-nav-item" onclick="showCancellations()">
-                <div class="nav-icon">❌</div>
-                <span>إلغاء حجز</span>
-            </div>
-            <div class="admin-nav-item" onclick="showStats()">
-                <div class="nav-icon">📊</div>
-                <span>البيانات</span>
-
-                    </div>
-        </div>  
+<div class="admin-nav-bar">
+    <div class="admin-nav-item" onclick="showSettings()">
+        <div class="nav-icon">⚙️</div>
+        <span>الإعدادات</span>
+    </div>
+    <div class="admin-nav-item" onclick="showCancellations()">
+        <div class="nav-icon">❌</div>
+        <span>إلغاء حجز</span>
+    </div>
+    <div class="admin-nav-item" onclick="showStats()">
+        <div class="nav-icon">📊</div>
+        <span>البيانات</span>
+    </div>
+    <div class="admin-nav-item" onclick="showPaymentMethods()">
+        <div class="nav-icon">💳</div>
+        <span>طرق الدفع</span>
+    </div>
+</div> 
         
 <div id="upgradeOptions" style="display: none; margin-top: 20px;">
     <button id="mainUpgradeBtn" onclick="openPricingModal()" class="glow-animation" 
