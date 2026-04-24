@@ -1452,3 +1452,19 @@ function showPaymentMethods() {
         </div>
     `;
 }
+
+
+// وظائف نافذة سياسة الخصوصية الجديدة
+function openPrivacy() {
+    const privacyModal = document.getElementById('privacyModal');
+    if (privacyModal) {
+        privacyModal.style.display = 'flex';
+    }
+}
+
+function closePrivacy() {
+    const privacyModal = document.getElementById('privacyModal');
+    if (privacyModal) {
+        privacyModal.style.display = 'none';
+    }
+}
