@@ -373,18 +373,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   animation: glowBtn 1.5s infinite;
 }
  /* 1. هيكلة اللوحة كصفحة كاملة (Full Screen) */
+/* 1. هيكلة اللوحة كصفحة كاملة (Full Screen) */
 #adminPanel {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%; /* تم التغيير من 100vw إلى 100% */
-    height: 100%; /* تم التغيير من 100vh إلى 100% */
+    width: 100%;
+    height: 100%;
     background: #ffffff;
-    z-index: 99999;
+    /* جعلناه 9999 ليكون تحت النوافذ المنبثقة (Modals) */
+    z-index: 9999; 
     display: none; 
     flex-direction: column;
     font-family: 'Cairo', sans-serif;
-    overflow: hidden; /* لمنع التمرير المزدوج */
+    overflow: hidden;
 }
 
 .admin-full-container {
@@ -393,9 +395,44 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     height: 100%;
     width: 100%;
     max-width: 900px; 
-    margin: 0 auto; /* هذا يضمن توسيط لوحة التحكم في الشاشات الكبيرة */
+    margin: 0 auto;
     background: #fff;
     position: relative;
+    box-shadow: 0 0 40px rgba(0,0,0,0.1);
+}
+
+/* 2. النظام العالمي لتوسيط النوافذ (Modals) */
+/* هذا الجزء سيحل مشكلة الصور التي أرسلتها (الانزياح) */
+.modal, .custom-modal, .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px); /* لمسة عصرية */
+    /* التوسيط المطلق */
+    align-items: center;
+    justify-content: center;
+    /* z-index أعلى من لوحة الإدارة لضمان الظهور فوقها */
+    z-index: 999999 !important; 
+}
+
+.modal-content, .custom-modal-content {
+    background-color: #ffffff;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 20px;
+    margin: auto !important; /* إلغاء أي انزياح قديم */
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* 2. الجزء العلوي الثابت (Header) */
