@@ -30,6 +30,10 @@ window.stadiumData = null;
 async function loadStadiumDynamicDetails() {
     if (!stadiumId) return;
 
+    // 1. (اختياري) إظهار رسالة تحميل بسيطة في الجدول
+    const tableBody = document.getElementById('tableBody');
+    if (tableBody) tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">جاري تحميل المواعيد...</td></tr>';
+
     try {
         const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
@@ -173,23 +177,47 @@ if (logoImg) {
                     navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
                 });
             } // نهاية if (swiperWrapper)
+      // استدعاء بناء الجدول مع تمرير البيانات الجديدة لضمان السرعة والدقة
             if (typeof initTable === "function") {
-                initTable();
-                }
-        } // نهاية if (data !== "NotFound")
+                initTable(data); 
+            }
+
+        } else {
+            // في حال لم يتم العثور على الملعب
+            if (tableBody) tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">عذراً، لم يتم العثور على بيانات هذا الملعب.</td></tr>';
+        }
       
     } catch (error) { 
         console.error("Error loading details:", error); 
+        // عرض رسالة الخطأ للمستخدم في حال فشل الاتصال بالسيرفر
+        const tableBody = document.getElementById('tableBody');
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="8" style="color:red; text-align:center; padding:20px;">⚠️ فشل تحميل البيانات، يرجى التأكد من الاتصال بالإنترنت وتحديث الصفحة.</td></tr>';
+        }
     }
-} // نهاية الدالة بالكامل loadStadiumDynamicDetails
+} // نهاية الدالة loadStadiumDynamicDetails
 
-function initTable() {
+function initTable(dataFromFetch) {
     const tableBody = document.getElementById('tableBody');
     const headerRow = document.getElementById('headerRow');
     const footerRow = document.getElementById('footerRow'); 
     const dateDisplay = document.getElementById('dateDisplay');
     
     if (!tableBody || !headerRow) return;
+
+    // --- 1. تحديد الساعات (تعديل الأداء) ---
+    const data = dataFromFetch || window.stadiumData;
+    let startHour = 8; 
+    let endHour = 23;
+
+    if (data) {
+        if (data.openHour !== undefined && data.openHour !== "") {
+            startHour = parseInt(data.openHour);
+        }
+        if (data.closeHour !== undefined && data.closeHour !== "") {
+            endHour = parseInt(data.closeHour);
+        }
+    }
 
     // تفريغ السطر العلوي والسفلي تمهيداً لملئهما
     headerRow.innerHTML = '<th>الساعة</th>';
@@ -218,20 +246,7 @@ function initTable() {
     const now = new Date();
     let allRowsHtml = ''; 
 
-    // --- التعديل المدمج: قراءة الساعات ديناميكياً من البيانات المحملة ---
-    // نستخدم window.stadiumData للتأكد من الوصول للبيانات التي جلبها fetch
-    let startHour = 8; 
-    let endHour = 23;
-
-    if (window.stadiumData) {
-        if (window.stadiumData.openHour !== undefined && window.stadiumData.openHour !== "") {
-            startHour = parseInt(window.stadiumData.openHour);
-        }
-        if (window.stadiumData.closeHour !== undefined && window.stadiumData.closeHour !== "") {
-            endHour = parseInt(window.stadiumData.closeHour);
-        }
-    }
-
+    // --- 2. بناء الصفوف بناءً على الساعات المحددة أعلاه ---
     for (let hour = startHour; hour <= endHour; hour++) {
         let hLabel24 = `${hour}:00`; 
         let currentH = hour > 12 ? hour - 12 : hour;
@@ -271,6 +286,7 @@ function initTable() {
     tableBody.innerHTML = allRowsHtml;
     loadExistingBookings(); 
 }
+
 function getFormattedDate(date) {
     let day = String(date.getDate()).padStart(2, '0');
     let month = String(date.getMonth() + 1).padStart(2, '0');
@@ -322,7 +338,7 @@ function handleSlotSelection(element) {
         // --- إضافة التحديث هنا لضمان ظهور النص فوراً عند فتح النافذة ---
         updateModalDetails(); 
         
-        document.getElementById('bookingModal').style.display = "block";
+        document.getElementById('bookingModal').style.display = "flex";
         
         // --- منطق ذكاء زر الساعة الإضافية ---
         const extraBtn = document.getElementById('extraSlotContainer');
@@ -526,7 +542,16 @@ function toggleSubmitButton() {
 
 function toggleRules() {
     const modal = document.getElementById('rulesModal');
-    if(modal) modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+    if (modal) {
+        // إذا كانت مخفية، نفتحها بوضع flex لضمان التوسيط
+        if (modal.style.display === 'none' || modal.style.display === '') {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // منع التمرير خلف النافذة
+        } else {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
 }
 
 function changeWeek(direction) {
@@ -1466,5 +1491,13 @@ function closePrivacy() {
     const privacyModal = document.getElementById('privacyModal');
     if (privacyModal) {
         privacyModal.style.display = 'none';
+    }
+}
+// دالة إغلاق أي نافذة منبثقة (عامة)
+function closeAnyModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 }
