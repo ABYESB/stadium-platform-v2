@@ -823,3 +823,18 @@ font-size: 1.2rem;
 
 
 
+/* حل سحري لتوسيط أي نافذة في الهاتف */
+.modal-content, .custom-modal-content {
+    position: relative !important;
+    margin: auto !important; /* يلغي أي انزياح من الأعلى أو الأجناب */
+    top: 50% !important;
+    transform: translateY(-50%) !important; /* يرفع النافذة لمنتصف الشاشة تماماً */
+    left: 0 !important;
+    right: 0 !important;
+}
+
+.modal, .modal-overlay {
+    display: flex !important; /* تأكد أن الأب يستخدم flex */
+    align-items: center !important;
+    justify-content: center !important;
+}
