@@ -1,49 +1,29 @@
   "short_name": "ملاعب NET",
-
-  "name": "ملاعب NET - منصة حجز الملاعب",
-
+"name": "ملاعب NET - منصة حجز الملاعب",
   "icons": [
-
     {
-
       "src": "logo_no_background.png",
-
       "sizes": "192x192",
-
       "type": "image/png",
-
       "purpose": "any maskable"
-
     },
 
     {
 
       "src": "logo_no_background.png",
-
       "sizes": "512x512",
-
       "type": "image/png",
-
       "purpose": "any maskable"
-
     }
 
   ],
 
   "start_url": "/stadium-platform-v2/index.html",
-
   "background_color": "#ffffff",
-
   "theme_color": "#2e7d32",
-
   "display": "standalone",
-
   "orientation": "portrait",
-
   "scope": "/stadium-platform-v2/",
-
   "lang": "ar",
-
   "dir": "rtl"
-
 }
