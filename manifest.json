@@ -15,12 +15,12 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/stadium-platform-v2/index.html",
+  "start_url": "./index.html",
   "background_color": "#ffffff",
-  "theme_color": "#2e7d32",
+  "theme_color": "#1e3a8a",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/stadium-platform-v2/",
+  "scope": "./",
   "lang": "ar",
   "dir": "rtl"
 }
