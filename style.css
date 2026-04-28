@@ -812,23 +812,41 @@ font-size: 1.2rem;
 
 
 /* 3. لوحة تحكم المسؤول (ملء الشاشة - لا تُلمس) */
+/* --- تعديل لوحة المسؤول لضمان ملء الشاشة والتوسيط --- */
+
 #adminPanel {
-    position: fixed;
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-    background: #ffffff;
-    z-index: 99999; 
-    overflow: hidden;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important; /* إجبار اللوحة على البدء من أقصى اليسار */
+    right: 0 !important; /* وإجبارها على الوصول لأقصى اليمين */
+    width: 100vw !important; /* ملء عرض الشاشة بالكامل */
+    height: 100vh !important; /* ملء طول الشاشة بالكامل */
+    background: #ffffff !important;
+    z-index: 99999 !important; /* لتكون تحت النوافذ وفوق الموقع */
+    display: none; /* يتم التحكم به عبر JS */
+    overflow: hidden; /* لمنع التمرير المزدوج */
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .admin-full-container {
     display: flex;
     flex-direction: column;
-    height: 100%; width: 100%;
-    max-width: 900px; 
-    margin: 0 auto;
+    height: 100%;
+    width: 100%;
+    max-width: 900px; /* العرض الأقصى للوحة كما طلبت سابقاً */
+    margin: 0 auto !important; /* توسيط الحاوية الداخلية في منتصف الشاشة */
     background: #fff;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    position: relative;
+    box-shadow: 0 0 40px rgba(0,0,0,0.1);
+}
+
+/* لضمان التوسيط في الشاشات الكبيرة */
+@media (min-width: 900px) {
+    .admin-full-container {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
 }
 
 /* حركات الظهور وأزرار الإغلاق */
