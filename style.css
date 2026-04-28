@@ -764,43 +764,40 @@ font-size: 1.2rem;
 
 /* --- النظام الموحد والنهائي لتوسيط النوافذ --- */
 
-/* 1. الحاوية الكبرى: تفرض التوسيط القسري مهما كانت لغة الصفحة */
+/* 1. الخلفية المظلمة */
 .modal, .modal-overlay, #pricingModal, #adminAuthModal {
-    display: none; /* يتم تغييره لـ flex بواسطة JS */
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
     background: rgba(0, 0, 0, 0.8) !important;
-    backdrop-filter: blur(4px);
     z-index: 1000000 !important;
-    
-    /* سر التوسيط الحقيقي */
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: none; /* سيتم تفعيله عبر JS */
 }
 
-/* 2. الصندوق الأبيض: نلغي المارجن والتموضع القديم */
+/* 2. التوسيط المطلق (هذا الكود يتجاهل الـ RTL تماماً) */
 .modal-content, .pricing-container, .custom-modal-content {
+    position: absolute !important;
+    top: 50% !important;
+    /* نستخدم left دائماً بنسبة 50% لكسر انحياز اليمين */
+    left: 50% !important; 
+    /* هذه الحركة هي السحر: تعيد النافذة لنصف عرضها ونصف طولها للخلف */
+    transform: translate(-50%, -50%) !important;
+    
     background: white !important;
     width: 90% !important;
     max-width: 450px;
     border-radius: 20px !important;
-    position: relative !important;
-    margin: 0 !important; /* هذا أهم سطر لمنع الانحياز لليمين */
-    transform: none !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    animation: modalZoom 0.3s ease-out;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    direction: rtl; /* لضمان بقاء المحتوى الداخلي عربي */
 }
 
-/* استثناء لنافذة الأسعار لتكون أعرض قليلاً */
+/* استثناء لنافذة الأسعار */
 @media (min-width: 768px) {
     #pricingModal .pricing-container { 
         max-width: 850px !important; 
