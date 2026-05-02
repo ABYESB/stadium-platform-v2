@@ -1,25 +1,63 @@
-// --- 1. الإعدادات والروابط الأساسية ---
-
-// الرابط الأول: المسؤول عن جلب (اسم الملعب، اللوغو، الأسعار، الموقع)
 const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbxudDouDrk_TqPDin77jOQX44c5J3W4VNC3pHI9YRTa8q8X_N8i3he_zvO0yGFIHtlr/exec';
-
-// الرابط الثاني: المسؤول عن (جلب الحجوزات القديمة، تلوين المربعات بالأحمر، تسجيل حجز جديد)
 const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbxudDouDrk_TqPDin77jOQX44c5J3W4VNC3pHI9YRTa8q8X_N8i3he_zvO0yGFIHtlr/exec';
 
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
 
-// --- نظام حفظ الجلسة (الذاكرة) ---
+// --- نظام حفظ الجلسة الذكي (معدل) ---
 if (stadiumId) {
-    // حفظ المعرف فور الدخول لكي يتذكره تطبيق PWA في المرات القادمة
-    localStorage.setItem('savedStadiumId', stadiumId);
+    // نحفظ المعرف الحالي كـ "آخر ملعب تمت زيارته" لاستخدامه عند فتح التطبيق لاحقاً
+    localStorage.setItem('lastVisitedStadiumId', stadiumId);
 } else {
-    // إذا دخل المستخدم بدون ID، نحاول جلب آخر ملعب زاره من الذاكرة
-    const savedId = localStorage.getItem('savedStadiumId');
+    const savedId = localStorage.getItem('lastVisitedStadiumId');
     if (savedId) {
+        // إذا لم يوجد ID في الرابط، نوجهه لآخر ملعب زاره بدلاً من صفحة التسجيل مباشرة
         window.location.replace("booking.html?id=" + savedId);
     }
 }
+
+// --- وظيفة المانيفست الديناميكي (إضافة جديدة) ---
+// استدعِ هذه الدالة فور نجاح جلب بيانات الملعب من Google Script
+function setupDynamicManifest(stadiumName) {
+    const myDynamicManifest = {
+        "short_name": stadiumName, // هذا الاسم الذي سيظهر تحت الأيقونة
+        "name": stadiumName + " - منصة ملاعب NET",
+        "id": "/?stadium=" + stadiumId, // لضمان جعل كل تثبيت فريد عن غيره
+        "start_url": "./index.html?id=" + stadiumId, 
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": "#1e3a8a",
+        "icons": [
+            {
+                "src": "logo_no_background.png",
+                "sizes": "192x192",
+                "type": "image/png"
+            },
+            {
+                "src": "logo_no_background.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    };
+
+    const stringManifest = JSON.stringify(myDynamicManifest);
+    const blob = new Blob([stringManifest], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(blob);
+    
+    // البحث عن أي مانيفست قديم وحذفه ثم إضافة الجديد
+    const oldManifest = document.querySelector('link[rel="manifest"]');
+    if (oldManifest) oldManifest.remove();
+
+    let link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = manifestURL;
+    document.head.appendChild(link);
+}
+
+// مثال لكيفية الاستخدام: 
+// عند استلامك لبيانات الملعب (window.stadiumData)، قم بتشغيل:
+// setupDynamicManifest(window.stadiumData.stadium_name);
 
 let selectedSlots = [];
 let currentStartDate = getMonday(new Date());
