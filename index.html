@@ -8,20 +8,21 @@
         const urlParams = new URLSearchParams(window.location.search);
         let stadiumId = urlParams.get('id');
 
-        // 1. إذا كان المستخدم داخل برابط يحتوي على ID، نحفظه فوراً في ذاكرة الهاتف
+        // 1. الأولوية دائماً للرابط (URL)
         if (stadiumId) {
-            localStorage.setItem('savedStadiumId', stadiumId);
+            // حفظ المعرف الحالي ليكون هو المرجع عند فتح التطبيق لاحقاً
+            localStorage.setItem('lastVisitedStadiumId', stadiumId);
         } else {
-            // 2. إذا دخل بدون ID (مثل فتح التطبيق من الأيقونة)، نبحث عنه في الذاكرة
-            stadiumId = localStorage.getItem('savedStadiumId');
+            // 2. إذا دخل بدون معرف (فتح الأيقونة)، نبحث عن آخر ملعب زاره
+            stadiumId = localStorage.getItem('lastVisitedStadiumId');
         }
 
         // 3. منطق التوجيه النهائي
         if (stadiumId) {
-            // وجدنا معرفاً (سواء من الرابط أو الذاكرة) اذهب للحجز
+            // توجه إلى صفحة الحجز مع المعرف الصحيح
             window.location.replace("booking.html?id=" + stadiumId);
         } else {
-            // لا يوجد أي أثر لمعرف ملعب؟ اذهب للتسجيل
+            // إذا لم يسبق له زيارة أي ملعب، توجه لصفحة التعريف/التسجيل
             window.location.replace("register.html");
         }
     </script>
