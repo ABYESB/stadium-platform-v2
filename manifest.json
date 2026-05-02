@@ -1,6 +1,7 @@
 {
   "short_name": "ملاعب NET",
   "name": "ملاعب NET - منصة حجز الملاعب",
+  "id": "/?main_app=true",
   "icons": [
     {
       "src": "logo_no_background.png",
