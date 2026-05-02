@@ -1,4 +1,4 @@
-const cacheName = 'malaeb-net-v1.11'; // تم رفع النسخة وتغيير الاسم
+const cacheName = 'malaeb-net-v1.12'; // تم تحديث النسخة
 const assets = [
   './',
   './index.html',
@@ -8,7 +8,7 @@ const assets = [
   './logo_no_background.png'
 ];
 
-// 1. التثبيت وتحميل الملفات الجديدة
+// 1. التثبيت وتحميل الملفات الأساسية
 self.addEventListener('install', e => {
   self.skipWaiting(); 
   e.waitUntil(
@@ -18,7 +18,7 @@ self.addEventListener('install', e => {
   );
 });
 
-// 2. تفعيل النسخة الجديدة وحذف القديمة تماماً
+// 2. تفعيل النسخة الجديدة وحذف القديمة
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => {
@@ -31,9 +31,16 @@ self.addEventListener('activate', e => {
   return self.clients.claim(); 
 });
 
-// 3. استراتيجية "الشبكة أولاً" مع حل مشكلة تداخل صفحة التسجيل
+// 3. استراتيجية جلب البيانات (Fetch)
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
+
+  // تحديث هام: إذا كان الطلب موجهاً لـ Google Apps Script (جلب بيانات الملاعب والحجوزات)
+  // نستخدم الشبكة دائماً لضمان عدم تداخل بيانات ملعب مع آخر بسبب الكاش
+  if (url.href.includes('script.google.com')) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
 
   // إذا كان الرابط يخص صفحة التسجيل، نطلبها مباشرة من الشبكة
   if (url.pathname.includes('register.html')) {
@@ -43,6 +50,7 @@ self.addEventListener('fetch', e => {
     return;
   }
 
+  // للملفات الثابتة (CSS, JS, Images) نستخدم الكاش إذا لم تتوفر الشبكة
   e.respondWith(
     fetch(e.request).catch(() => {
       return caches.match(e.request);
@@ -50,21 +58,22 @@ self.addEventListener('fetch', e => {
   );
 });
 
-// --- الجزء الخاص بالتعامل مع الإشعارات ---
+// --- الجزء الخاص بالإشعارات ---
 
-// 1. الاستماع لحدث الضغط على التنبيه
 self.addEventListener('notificationclick', function(event) {
     event.notification.close(); 
 
     event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(windowClients => {
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+            // محاولة إيجاد نافذة مفتوحة للموقع
             for (var i = 0; i < windowClients.length; i++) {
                 var client = windowClients[i];
-                // تم تعديل الرابط ليتوافق مع ملاعب net
-                if (client.url.includes('malaeb-net') && 'focus' in client) {
+                // إذا كانت هناك نافذة مفتوحة، نركز عليها
+                if (client.url.includes('id=') && 'focus' in client) {
                     return client.focus();
                 }
             }
+            // إذا لم تكن هناك نافذة، نفتح الموقع (الرابط الرئيسي سيتولى التوجيه بناءً على الذاكرة)
             if (clients.openWindow) {
                 return clients.openWindow('./'); 
             }
@@ -72,7 +81,6 @@ self.addEventListener('notificationclick', function(event) {
     );
 });
 
-// 2. تحديث الكاش تلقائياً عند وجود نسخة جديدة
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
