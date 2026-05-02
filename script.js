@@ -19,22 +19,26 @@ if (stadiumId) {
 // --- وظيفة المانيفست الديناميكي (إضافة جديدة) ---
 // استدعِ هذه الدالة فور نجاح جلب بيانات الملعب من Google Script
 function setupDynamicManifest(stadiumName) {
+    // 1. تحديد رابط الموقع الأساسي ديناميكياً لحل مشكلة "Invalid URL"
+    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+
     const myDynamicManifest = {
-        "short_name": stadiumName, // هذا الاسم الذي سيظهر تحت الأيقونة
+        "short_name": stadiumName,
         "name": stadiumName + " - منصة ملاعب NET",
-        "id": "/?stadium=" + stadiumId, // لضمان جعل كل تثبيت فريد عن غيره
-        "start_url": "./index.html?id=" + stadiumId, 
+        "id": "/?stadium=" + stadiumId, 
+        // 2. استخدام روابط كاملة (Absolute URLs)
+        "start_url": baseUrl + "index.html?id=" + stadiumId, 
         "display": "standalone",
         "background_color": "#ffffff",
         "theme_color": "#1e3a8a",
         "icons": [
             {
-                "src": "logo_no_background.png",
+                "src": baseUrl + "logo_no_background.png", // رابط كامل
                 "sizes": "192x192",
                 "type": "image/png"
             },
             {
-                "src": "logo_no_background.png",
+                "src": baseUrl + "logo_no_background.png", // رابط كامل
                 "sizes": "512x512",
                 "type": "image/png"
             }
@@ -45,7 +49,6 @@ function setupDynamicManifest(stadiumName) {
     const blob = new Blob([stringManifest], {type: 'application/json'});
     const manifestURL = URL.createObjectURL(blob);
     
-    // البحث عن أي مانيفست قديم وحذفه ثم إضافة الجديد
     const oldManifest = document.querySelector('link[rel="manifest"]');
     if (oldManifest) oldManifest.remove();
 
