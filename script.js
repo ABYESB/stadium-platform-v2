@@ -81,6 +81,10 @@ async function loadStadiumDynamicDetails() {
             window.stadiumData = data; 
             window.stadiumStatus = data.status;
 
+            if (data.stadium_name) {
+                setupDynamicManifest(data.stadium_name); // استدعاء الدالة التي برمجناها سابقاً
+            }
+
             // بقية الكود الخاص بالاسم واللوغو والأسعار يظل كما هو...
             if (data.stadium_name) {
                 document.getElementById('displayStadiumName').innerText = data.stadium_name;
