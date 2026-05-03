@@ -28,21 +28,15 @@ if (stadiumId) {
 // --- وظيفة المانيفست الديناميكي (إضافة جديدة) ---
 // استدعِ هذه الدالة فور نجاح جلب بيانات الملعب من Google Script
 function setupDynamicManifest(stadiumName) {
-    // 1. تحديد رابط الموقع الأساسي ديناميكياً لضمان عمل الروابط بشكل صحيح
+    // 1. تحديد رابط الموقع الأساسي ديناميكياً
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 
     const myDynamicManifest = {
         "short_name": stadiumName,
         "name": stadiumName + " - ملاعب NET",
-        
-        // التعديل 1: ID فريد تماماً لكل ملعب لتمييزه عند التثبيت
         "id": "stadium-app-" + stadiumId, 
-        
         "start_url": baseUrl + "index.html?id=" + stadiumId,
-        
-        // التعديل 2: جعل الـ scope هو المسار الأساسي لضمان قبول المتصفح له وتفعيل ميزة الـ PWA
         "scope": baseUrl, 
-        
         "display": "standalone",
         "background_color": "#ffffff",
         "theme_color": "#1e3a8a",
@@ -62,20 +56,22 @@ function setupDynamicManifest(stadiumName) {
         ]
     };
 
-    // تحويل الكائن إلى نص JSON ثم إلى Blob لإنشاء رابط مؤقت للمانيفست
+    // التعديل الجوهري: تحويل المانيفست إلى Base64 لضمان عمله على جميع المتصفحات
     const stringManifest = JSON.stringify(myDynamicManifest);
-    const blob = new Blob([stringManifest], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(blob);
+    const base64Manifest = btoa(unescape(encodeURIComponent(stringManifest)));
+    const manifestURL = 'data:application/json;base64,' + base64Manifest;
     
-    // استبدال المانيفست القديم (الاحتياطي) بالمانيفست الديناميكي الجديد
+    // استبدال المانيفست القديم
     const oldManifest = document.querySelector('link[rel="manifest"]');
     if (oldManifest) oldManifest.remove();
 
     let link = document.createElement('link');
-    link.id = 'dynamic-manifest'; // معرف إضافي للتحكم
+    link.id = 'dynamic-manifest';
     link.rel = 'manifest';
     link.href = manifestURL;
     document.head.appendChild(link);
+    
+    console.log("تم تفعيل المانيفست الديناميكي لـ: " + stadiumName);
 }
 // مثال لكيفية الاستخدام: 
 // عند استلامك لبيانات الملعب (window.stadiumData)، قم بتشغيل:
