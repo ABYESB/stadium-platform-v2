@@ -4,18 +4,27 @@ const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbxudDouDrk_TqP
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
 
-// --- نظام حفظ الجلسة الذكي (معدل) ---
+// فحص ما إذا كان المستخدم يفتح الموقع كـ "تطبيق مثبت" أم متصفح عادي
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+// --- نظام حفظ الجلسة الذكي (المطور لمنع التداخل) ---
 if (stadiumId) {
-    // نحفظ المعرف الحالي كـ "آخر ملعب تمت زيارته" لاستخدامه عند فتح التطبيق لاحقاً
+    // 1. إذا دخل عبر رابط صريح (مع ID)، نحفظه ليكون المرجع لهذا الملعب
     localStorage.setItem('lastVisitedStadiumId', stadiumId);
-} else {
+} else if (isStandalone) {
+    // 2. إذا فتح "الأيقونة المثبتة" من شاشة الهاتف (بدون ID في الرابط)
     const savedId = localStorage.getItem('lastVisitedStadiumId');
     if (savedId) {
-        // إذا لم يوجد ID في الرابط، نوجهه لآخر ملعب زاره بدلاً من صفحة التسجيل مباشرة
+        // نوجهه للملعب الذي قام بزيارته/تثبيته سابقاً
         window.location.replace("booking.html?id=" + savedId);
+    } else {
+        // إذا لم يسبق له زيارة أي ملعب، نفتح صفحة التسجيل
+        window.location.replace("register.html");
     }
+} else {
+    // 3. إذا دخل من المتصفح العادي للرابط الرئيسي (بدون ID)
+    // لا نقوم بالتوجيه التلقائي، لكي نترك له فرصة فتح صفحة التسجيل أو اختيار ملعب آخر
 }
-
 // --- وظيفة المانيفست الديناميكي (إضافة جديدة) ---
 // استدعِ هذه الدالة فور نجاح جلب بيانات الملعب من Google Script
 function setupDynamicManifest(stadiumName) {
