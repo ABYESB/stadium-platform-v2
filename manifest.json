@@ -1,19 +1,19 @@
 {
   "short_name": "ملاعب NET",
   "name": "ملاعب NET - منصة حجز الملاعب",
-  "id": "/?main_app=true",
+  "id": "stadium-platform-main",
   "icons": [
     {
       "src": "logo_no_background.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "logo_no_background.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
   "start_url": "./index.html",
