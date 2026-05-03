@@ -28,20 +28,20 @@ if (stadiumId) {
 // --- وظيفة المانيفست الديناميكي (إضافة جديدة) ---
 // استدعِ هذه الدالة فور نجاح جلب بيانات الملعب من Google Script
 function setupDynamicManifest(stadiumName) {
-    // 1. تحديد رابط الموقع الأساسي ديناميكياً
+    // 1. تحديد رابط الموقع الأساسي ديناميكياً لضمان عمل الروابط بشكل صحيح
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 
     const myDynamicManifest = {
         "short_name": stadiumName,
         "name": stadiumName + " - ملاعب NET",
         
-        // التعديل 1: إزالة "/" من البداية وجعل الـ ID فريداً تماماً لهذا الملعب
-        "id": "stadium-" + stadiumId, 
+        // التعديل 1: ID فريد تماماً لكل ملعب لتمييزه عند التثبيت
+        "id": "stadium-app-" + stadiumId, 
         
         "start_url": baseUrl + "index.html?id=" + stadiumId,
         
-        // التعديل 2: إضافة الـ scope ليقتصر على رابط الملعب فقط (هذا هو سر التثبيت المستقل)
-        "scope": baseUrl + "index.html?id=" + stadiumId, 
+        // التعديل 2: جعل الـ scope هو المسار الأساسي لضمان قبول المتصفح له وتفعيل ميزة الـ PWA
+        "scope": baseUrl, 
         
         "display": "standalone",
         "background_color": "#ffffff",
@@ -62,15 +62,17 @@ function setupDynamicManifest(stadiumName) {
         ]
     };
 
+    // تحويل الكائن إلى نص JSON ثم إلى Blob لإنشاء رابط مؤقت للمانيفست
     const stringManifest = JSON.stringify(myDynamicManifest);
     const blob = new Blob([stringManifest], {type: 'application/json'});
     const manifestURL = URL.createObjectURL(blob);
     
-    // استبدال المانيفست القديم بالجديد
+    // استبدال المانيفست القديم (الاحتياطي) بالمانيفست الديناميكي الجديد
     const oldManifest = document.querySelector('link[rel="manifest"]');
     if (oldManifest) oldManifest.remove();
 
     let link = document.createElement('link');
+    link.id = 'dynamic-manifest'; // معرف إضافي للتحكم
     link.rel = 'manifest';
     link.href = manifestURL;
     document.head.appendChild(link);
