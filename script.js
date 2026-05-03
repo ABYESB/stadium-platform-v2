@@ -1226,7 +1226,7 @@ async function handleAdminAuth(btn) {
 
         console.log("استجابة السيرفر:", result);
 
-  if (result.trim() === "Success") {
+        if (result.trim() === "Success") {
             // 1. إغلاق نافذة طلب الكود الصغيرة
             closeAdminAuth(); 
             
@@ -1236,23 +1236,39 @@ async function handleAdminAuth(btn) {
                 panel.style.setProperty('display', 'flex', 'important'); 
                 
                 // السطر الجديد لحل مشكلة الشاشة البيضاء:
-                // هذا السطر يجبر المتصفح على الصعود للأعلى فور فتح اللوحة
                 panel.scrollTop = 0; 
                 
                 console.log("اللوحة ظهرت وتم الصعود للأعلى");
             }
 
-            checkSubscriptionStatus();
+            if (typeof checkSubscriptionStatus === "function") checkSubscriptionStatus();
+
             // 3. إظهار أي أيقونات إدارية متفرقة
             document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
                 el.style.setProperty('display', 'block', 'important');
             });
             
             // 4. تحميل البيانات داخل اللوحة فوراً
-            showSettings(); 
+            if (typeof showSettings === "function") showSettings(); 
 
+        } else {
+            alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
+            if(passwordInput) {
+                passwordInput.value = "";
+                passwordInput.focus();
+            }
         }
-
+    } catch (e) {
+        console.error("Auth Error:", e);
+        alert("⚠️ خطأ في الاتصال بالسيرفر.");
+    } finally {
+        // إعادة الزر لحالته الطبيعية
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+} // <--- هذا القوس يغلق الدالة بالكامل
 
 // --- 4. دالة نسيت كلمة المرور ---
 async function handleForgotPassword() {
