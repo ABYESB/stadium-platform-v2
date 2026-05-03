@@ -1,4 +1,4 @@
-const cacheName = 'malaeb-net-v1.23'; // تم تحديث النسخة لضمان تفعيل التعديلات البرمجية
+const cacheName = 'malaeb-net-v1.24'; // تم تحديث النسخة لضمان تفعيل التعديلات البرمجية
 const assets = [
   './',
   './index.html',
