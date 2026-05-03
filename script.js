@@ -1207,130 +1207,80 @@ function closeAdminAuth() {
 
 // --- 3. دالة تسجيل الدخول ومعالجة كلمة السر ---
 
+// --- 3. دالة تسجيل الدخول ومعالجة كلمة السر ---
 async function handleAdminAuth(btn) {
-
     const passwordInput = document.getElementById('adminPassInput');
-
     const password = passwordInput ? passwordInput.value.trim() : "";
-
     
-
     if (!password) {
-
         alert("⚠️ من فضلك أدخل الكود أولاً");
-
         if(passwordInput) passwordInput.focus();
-
         return;
-
     }
 
-
-
     // إشارة الانتظار على الزر
-
     const originalText = btn.innerText;
-
     btn.disabled = true;
-
     btn.innerText = "جاري التحقق... ⏳";
 
-
-
     try {
-
         // الاتصال بجوجل سكريبت
-
         const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
-
         const result = await response.text();
-
-
 
         console.log("استجابة السيرفر:", result);
 
-
-
-   if (result.trim() === "Success") {
-
+        if (result.trim() === "Success") {
             // 1. إغلاق نافذة طلب الكود الصغيرة
-
             closeAdminAuth(); 
-
             
-
             // 2. إظهار لوحة تحكم المسؤول الكبيرة (adminPanel)
-
             const panel = document.getElementById('adminPanel');
-
             if (panel) {
-
                 // نستخدم 'flex' لتتوافق مع تصميمك في CSS (مركزية الشاشة)
-
                 panel.style.setProperty('display', 'flex', 'important'); 
-
-                console.log("اللوحة يجب أن تظهر الآن");
-
+                
+                // --- التعديل المطلوب لظهور الأيقونات وحل مشكلة الشاشة البيضاء ---
+                // هذا السطر يضمن أن اللوحة ستبدأ من الأعلى تماماً حيث توجد الأيقونات
+                panel.scrollTop = 0; 
+                
+                console.log("اللوحة ظهرت وتم ضبط التمرير للأعلى");
             }
 
-
-
-               checkSubscriptionStatus();
+            // التحقق من حالة الاشتراك
+            if (typeof checkSubscriptionStatus === "function") {
+                checkSubscriptionStatus();
+            }
 
             // 3. إظهار أي أيقونات إدارية متفرقة في الصفحة (إن وجدت)
-
             document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
-
                 el.style.setProperty('display', 'block', 'important');
-
             });
-
             
-
             // 4. تشغيل دالة عرض الإعدادات (لتحميل البيانات داخل اللوحة فوراً)
-
-            showSettings(); 
-
-
-
-        } else {
-
-            // في حال فشل كلمة المرور
-
-            alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
-
-            if(passwordInput) {
-
-                passwordInput.value = "";
-
-                passwordInput.focus();
-
+            if (typeof showSettings === "function") {
+                showSettings(); 
             }
 
+        } else {
+            // في حال فشل كلمة المرور
+            alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
+            if(passwordInput) {
+                passwordInput.value = "";
+                passwordInput.focus();
+            }
         }
-
     } catch (e) {
-
         console.error("Auth Error:", e);
-
         alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
-
     } finally {
-
         // إعادة الزر لحالته الطبيعية في كل الأحوال
-
         if (btn) {
-
             btn.disabled = false;
-
             btn.innerText = originalText;
-
         }
-
     }
-
 }
-
 
 
 // --- 4. دالة نسيت كلمة المرور ---
