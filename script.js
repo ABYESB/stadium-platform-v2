@@ -28,28 +28,36 @@ if (stadiumId) {
 // --- وظيفة المانيفست الديناميكي (إضافة جديدة) ---
 // استدعِ هذه الدالة فور نجاح جلب بيانات الملعب من Google Script
 function setupDynamicManifest(stadiumName) {
-    // 1. تحديد رابط الموقع الأساسي ديناميكياً لحل مشكلة "Invalid URL"
+    // 1. تحديد رابط الموقع الأساسي ديناميكياً
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 
     const myDynamicManifest = {
         "short_name": stadiumName,
-        "name": stadiumName + " - منصة ملاعب NET",
-        "id": "/?stadium=" + stadiumId, 
-        // 2. استخدام روابط كاملة (Absolute URLs)
-        "start_url": baseUrl + "index.html?id=" + stadiumId, 
+        "name": stadiumName + " - ملاعب NET",
+        
+        // التعديل 1: إزالة "/" من البداية وجعل الـ ID فريداً تماماً لهذا الملعب
+        "id": "stadium-" + stadiumId, 
+        
+        "start_url": baseUrl + "index.html?id=" + stadiumId,
+        
+        // التعديل 2: إضافة الـ scope ليقتصر على رابط الملعب فقط (هذا هو سر التثبيت المستقل)
+        "scope": baseUrl + "index.html?id=" + stadiumId, 
+        
         "display": "standalone",
         "background_color": "#ffffff",
         "theme_color": "#1e3a8a",
         "icons": [
             {
-                "src": baseUrl + "logo_no_background.png", // رابط كامل
+                "src": baseUrl + "logo_no_background.png",
                 "sizes": "192x192",
-                "type": "image/png"
+                "type": "image/png",
+                "purpose": "any"
             },
             {
-                "src": baseUrl + "logo_no_background.png", // رابط كامل
+                "src": baseUrl + "logo_no_background.png",
                 "sizes": "512x512",
-                "type": "image/png"
+                "type": "image/png",
+                "purpose": "maskable"
             }
         ]
     };
@@ -58,6 +66,7 @@ function setupDynamicManifest(stadiumName) {
     const blob = new Blob([stringManifest], {type: 'application/json'});
     const manifestURL = URL.createObjectURL(blob);
     
+    // استبدال المانيفست القديم بالجديد
     const oldManifest = document.querySelector('link[rel="manifest"]');
     if (oldManifest) oldManifest.remove();
 
@@ -66,7 +75,6 @@ function setupDynamicManifest(stadiumName) {
     link.href = manifestURL;
     document.head.appendChild(link);
 }
-
 // مثال لكيفية الاستخدام: 
 // عند استلامك لبيانات الملعب (window.stadiumData)، قم بتشغيل:
 // setupDynamicManifest(window.stadiumData.stadium_name);
