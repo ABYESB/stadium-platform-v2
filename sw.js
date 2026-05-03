@@ -1,8 +1,9 @@
-const cacheName = 'malaeb-net-v1.14'; // تم تحديث النسخة
+const cacheName = 'malaeb-net-v1.15'; // تم تحديث النسخة لضمان تفعيل التعديلات
 const assets = [
   './',
   './index.html',
   './register.html',
+  './booking.html', // تأكد من إضافة صفحة الحجز للكاش
   './style.css',
   './script.js',
   './logo_no_background.png'
@@ -31,49 +32,51 @@ self.addEventListener('activate', e => {
   return self.clients.claim(); 
 });
 
-// 3. استراتيجية جلب البيانات (Fetch)
+// 3. استراتيجية جلب البيانات (Fetch) - النسخة المحدثة لحل تداخل الروابط
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // تحديث هام: إذا كان الطلب موجهاً لـ Google Apps Script (جلب بيانات الملاعب والحجوزات)
-  // نستخدم الشبكة دائماً لضمان عدم تداخل بيانات ملعب مع آخر بسبب الكاش
+  // أ- استثناء بيانات جوجل (الشبكة دائماً) لضمان بيانات ملاعب وحجوزات حية
   if (url.href.includes('script.google.com')) {
     e.respondWith(fetch(e.request));
     return;
   }
 
-  // إذا كان الرابط يخص صفحة التسجيل، نطلبها مباشرة من الشبكة
-  if (url.pathname.includes('register.html')) {
+  // ب- معالجة طلبات التنقل (Navigate) لمنع تداخل الصفحات
+  if (e.request.mode === 'navigate') {
+    // إذا كان الرابط هو الجذر أو index.html وبدون معطيات ID، فهو حتماً صفحة التسجيل
+    if ((url.pathname.endsWith('/') || url.pathname.includes('index.html')) && !url.searchParams.has('id')) {
+        e.respondWith(fetch(e.request).catch(() => caches.match('./index.html')));
+        return;
+    }
+    
+    // إذا كان الرابط يحتوي على ID، نتركه يذهب لصفحة الحجز الخاصة به من الشبكة أولاً
     e.respondWith(
-      fetch(e.request).catch(() => caches.match('./register.html'))
+      fetch(e.request).catch(() => caches.match(e.request) || caches.match('./booking.html'))
     );
     return;
   }
 
-  // للملفات الثابتة (CSS, JS, Images) نستخدم الكاش إذا لم تتوفر الشبكة
+  // ج- للملفات الثابتة الأخرى (CSS, JS, الصور)
   e.respondWith(
-    fetch(e.request).catch(() => {
-      return caches.match(e.request);
+    caches.match(e.request).then(response => {
+      return response || fetch(e.request);
     })
   );
 });
 
 // --- الجزء الخاص بالإشعارات ---
-
 self.addEventListener('notificationclick', function(event) {
     event.notification.close(); 
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-            // محاولة إيجاد نافذة مفتوحة للموقع
             for (var i = 0; i < windowClients.length; i++) {
                 var client = windowClients[i];
-                // إذا كانت هناك نافذة مفتوحة، نركز عليها
                 if (client.url.includes('id=') && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // إذا لم تكن هناك نافذة، نفتح الموقع (الرابط الرئيسي سيتولى التوجيه بناءً على الذاكرة)
             if (clients.openWindow) {
                 return clients.openWindow('./'); 
             }
