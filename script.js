@@ -1226,46 +1226,32 @@ async function handleAdminAuth(btn) {
 
         console.log("استجابة السيرفر:", result);
 
-   if (result.trim() === "Success") {
+  if (result.trim() === "Success") {
             // 1. إغلاق نافذة طلب الكود الصغيرة
             closeAdminAuth(); 
             
             // 2. إظهار لوحة تحكم المسؤول الكبيرة (adminPanel)
             const panel = document.getElementById('adminPanel');
             if (panel) {
-                // نستخدم 'flex' لتتوافق مع تصميمك في CSS (مركزية الشاشة)
                 panel.style.setProperty('display', 'flex', 'important'); 
-                console.log("اللوحة يجب أن تظهر الآن");
+                
+                // السطر الجديد لحل مشكلة الشاشة البيضاء:
+                // هذا السطر يجبر المتصفح على الصعود للأعلى فور فتح اللوحة
+                panel.scrollTop = 0; 
+                
+                console.log("اللوحة ظهرت وتم الصعود للأعلى");
             }
 
-               checkSubscriptionStatus();
-            // 3. إظهار أي أيقونات إدارية متفرقة في الصفحة (إن وجدت)
+            checkSubscriptionStatus();
+            // 3. إظهار أي أيقونات إدارية متفرقة
             document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
                 el.style.setProperty('display', 'block', 'important');
             });
             
-            // 4. تشغيل دالة عرض الإعدادات (لتحميل البيانات داخل اللوحة فوراً)
+            // 4. تحميل البيانات داخل اللوحة فوراً
             showSettings(); 
 
-        } else {
-            // في حال فشل كلمة المرور
-            alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
-            if(passwordInput) {
-                passwordInput.value = "";
-                passwordInput.focus();
-            }
         }
-    } catch (e) {
-        console.error("Auth Error:", e);
-        alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
-    } finally {
-        // إعادة الزر لحالته الطبيعية في كل الأحوال
-        if (btn) {
-            btn.disabled = false;
-            btn.innerText = originalText;
-        }
-    }
-}
 
 
 // --- 4. دالة نسيت كلمة المرور ---
