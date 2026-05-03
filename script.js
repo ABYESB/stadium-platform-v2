@@ -1,81 +1,74 @@
+// 1. الإعدادات والروابط الأساسية
 const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbxudDouDrk_TqPDin77jOQX44c5J3W4VNC3pHI9YRTa8q8X_N8i3he_zvO0yGFIHtlr/exec';
 const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbxudDouDrk_TqPDin77jOQX44c5J3W4VNC3pHI9YRTa8q8X_N8i3he_zvO0yGFIHtlr/exec';
 
+// 2. استخراج الـ ID من الرابط (مرة واحدة في البداية)
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
 
-// فحص ما إذا كان المستخدم يفتح الموقع كـ "تطبيق مثبت" أم متصفح عادي
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-// --- نظام حفظ الجلسة الذكي (المطور لمنع التداخل) ---
-if (stadiumId) {
-    // 1. إذا دخل عبر رابط صريح (مع ID)، نحفظه ليكون المرجع لهذا الملعب
-    localStorage.setItem('lastVisitedStadiumId', stadiumId);
-} else if (isStandalone) {
-    // 2. إذا فتح "الأيقونة المثبتة" من شاشة الهاتف (بدون ID في الرابط)
-    const savedId = localStorage.getItem('lastVisitedStadiumId');
-    if (savedId) {
-        // نوجهه للملعب الذي قام بزيارته/تثبيته سابقاً
-        window.location.replace("booking.html?id=" + savedId);
-    } else {
-        // إذا لم يسبق له زيارة أي ملعب، نفتح صفحة التسجيل
-        window.location.replace("register.html");
-    }
-} else {
-    // 3. إذا دخل من المتصفح العادي للرابط الرئيسي (بدون ID)
-    // لا نقوم بالتوجيه التلقائي، لكي نترك له فرصة فتح صفحة التسجيل أو اختيار ملعب آخر
-}
-// --- وظيفة المانيفست الديناميكي (إضافة جديدة) ---
-// استدعِ هذه الدالة فور نجاح جلب بيانات الملعب من Google Script
+// --- دالة المانيفست المطورة (تعريف الدالة قبل استخدامها) ---
 function setupDynamicManifest(stadiumName) {
-    // 1. تحديد رابط الموقع الأساسي ديناميكياً
-    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+    if (!stadiumId) return;
 
+    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+    
     const myDynamicManifest = {
         "short_name": stadiumName,
         "name": stadiumName + " - ملاعب NET",
-        "id": "stadium-app-" + stadiumId, 
+        "id": "st-app-" + stadiumId, 
         "start_url": baseUrl + "index.html?id=" + stadiumId,
         "scope": baseUrl, 
         "display": "standalone",
         "background_color": "#ffffff",
         "theme_color": "#1e3a8a",
         "icons": [
-            {
-                "src": baseUrl + "logo_no_background.png",
-                "sizes": "192x192",
-                "type": "image/png",
-                "purpose": "any"
-            },
-            {
-                "src": baseUrl + "logo_no_background.png",
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "maskable"
-            }
+            { "src": baseUrl + "logo_no_background.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+            { "src": baseUrl + "logo_no_background.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
         ]
     };
 
-    // التعديل الجوهري: تحويل المانيفست إلى Base64 لضمان عمله على جميع المتصفحات
-    const stringManifest = JSON.stringify(myDynamicManifest);
-    const base64Manifest = btoa(unescape(encodeURIComponent(stringManifest)));
-    const manifestURL = 'data:application/json;base64,' + base64Manifest;
-    
-    // استبدال المانيفست القديم
-    const oldManifest = document.querySelector('link[rel="manifest"]');
-    if (oldManifest) oldManifest.remove();
+    try {
+        const stringManifest = JSON.stringify(myDynamicManifest);
+        const base64Manifest = btoa(unescape(encodeURIComponent(stringManifest)));
+        const manifestURL = 'data:application/json;base64,' + base64Manifest;
+        
+        const oldManifest = document.querySelector('link[rel="manifest"]');
+        if (oldManifest) oldManifest.remove();
 
-    let link = document.createElement('link');
-    link.id = 'dynamic-manifest';
-    link.rel = 'manifest';
-    link.href = manifestURL;
-    document.head.appendChild(link);
-    
-    console.log("تم تفعيل المانيفست الديناميكي لـ: " + stadiumName);
+        let link = document.createElement('link');
+        link.id = 'dynamic-manifest';
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+        console.log("Manifest Dynamic Active: " + stadiumName);
+    } catch (e) {
+        console.error("Manifest Error: ", e);
+    }
 }
-// مثال لكيفية الاستخدام: 
-// عند استلامك لبيانات الملعب (window.stadiumData)، قم بتشغيل:
-// setupDynamicManifest(window.stadiumData.stadium_name);
+
+// 3. استدعاء فوري للمانيفست لضمان ظهور زر التثبيت فوراً (باسم مؤقت)
+if (stadiumId) {
+    setupDynamicManifest("ملعب " + stadiumId); 
+}
+
+// 4. فحص بيئة التشغيل (تطبيق أم متصفح)
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+// --- 5. نظام حفظ الجلسة ومنع التداخل ---
+if (stadiumId) {
+    localStorage.setItem('lastVisitedStadiumId', stadiumId);
+} else if (isStandalone) {
+    const savedId = localStorage.getItem('lastVisitedStadiumId');
+    if (savedId) {
+        window.location.replace("booking.html?id=" + savedId);
+    } else {
+        window.location.replace("register.html");
+    }
+}
+
+// 6. بقية الكود الخاص بك (دوال جلب البيانات من السيرفر)
+// تذكر: عند نجاح Fetch وجلب اسم الملعب الحقيقي، قم باستدعاء setupDynamicManifest(stadiumName) مرة أخرى لتحديث الاسم.
+
 
 let selectedSlots = [];
 let currentStartDate = getMonday(new Date());
