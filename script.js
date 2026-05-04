@@ -1206,7 +1206,13 @@ function closeAdminAuth() {
 // --- 3. دالة تسجيل الدخول ومعالجة كلمة السر ---
 
 // --- 3. دالة تسجيل الدخول ومعالجة كلمة السر ---
-
+async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 // --- 3. دالة تسجيل الدخول ومعالجة كلمة السر ---
 async function handleAdminAuth(btn) {
     const passwordInput = document.getElementById('adminPassInput');
@@ -1224,8 +1230,12 @@ async function handleAdminAuth(btn) {
     btn.innerText = "جاري التحقق... ⏳";
 
     try {
-        // الاتصال بجوجل سكريبت
-        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(password)}`);
+        // --- التعديل الأمني الجديد هنا ---
+        // نقوم بتشفير كلمة المرور قبل إرسالها للسيرفر
+        const hashedPassword = await hashString(password);
+        
+        // نرسل hashedPassword بدلاً من password
+        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(hashedPassword)}`);
         const result = await response.text();
 
         console.log("استجابة السيرفر:", result);
@@ -1237,13 +1247,8 @@ async function handleAdminAuth(btn) {
             // 2. إظهار لوحة تحكم المسؤول الكبيرة (adminPanel)
             const panel = document.getElementById('adminPanel');
             if (panel) {
-                // نستخدم 'flex' لتتوافق مع تصميمك في CSS (مركزية الشاشة)
                 panel.style.setProperty('display', 'flex', 'important'); 
-                
-                // --- التعديل المطلوب لظهور الأيقونات وحل مشكلة الشاشة البيضاء ---
-                // هذا السطر يضمن أن اللوحة ستبدأ من الأعلى تماماً حيث توجد الأيقونات
                 panel.scrollTop = 0; 
-                
                 console.log("اللوحة ظهرت وتم ضبط التمرير للأعلى");
             }
 
@@ -1252,18 +1257,17 @@ async function handleAdminAuth(btn) {
                 checkSubscriptionStatus();
             }
 
-            // 3. إظهار أي أيقونات إدارية متفرقة في الصفحة (إن وجدت)
+            // 3. إظهار أي أيقونات إدارية متفرقة في الصفحة
             document.querySelectorAll('.admin-only, .admin-icon').forEach(el => {
                 el.style.setProperty('display', 'block', 'important');
             });
             
-            // 4. تشغيل دالة عرض الإعدادات (لتحميل البيانات داخل اللوحة فوراً)
+            // 4. تشغيل دالة عرض الإعدادات
             if (typeof showSettings === "function") {
                 showSettings(); 
             }
 
         } else {
-            // في حال فشل كلمة المرور
             alert("❌ كلمة السر غير صحيحة، حاول مرة أخرى.");
             if(passwordInput) {
                 passwordInput.value = "";
@@ -1272,9 +1276,8 @@ async function handleAdminAuth(btn) {
         }
     } catch (e) {
         console.error("Auth Error:", e);
-        alert("⚠️ خطأ في الاتصال بالسيرفر. تأكد من نشر السكريبت كـ Web App.");
+        alert("⚠️ خطأ في الاتصال بالسيرفر.");
     } finally {
-        // إعادة الزر لحالته الطبيعية في كل الأحوال
         if (btn) {
             btn.disabled = false;
             btn.innerText = originalText;
