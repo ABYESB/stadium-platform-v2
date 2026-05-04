@@ -791,7 +791,6 @@ window.addEventListener('appinstalled', () => {
 });
 // --- 1. إعدادات المسؤول وحفظ التغييرات ---
 async function saveAdminSettings(event) {
-    // 1. إدارة حالة الزر (تعطيل وتغيير النص)
     const btn = event ? (event.target || event.currentTarget) : null;
     if (btn) {
         btn.disabled = true;
@@ -799,11 +798,20 @@ async function saveAdminSettings(event) {
     }
 
     try {
-        // 2. تجميع البيانات (تنظيف الكود من التكرار وضمان عدم وجود أخطاء null)
+        // 1. جلب كلمة المرور وتشفيرها (التعديل الأهم)
+        const rawPass = document.getElementById('upd_pass')?.value || "";
+        let finalPass = "";
+        
+        if (rawPass) {
+            // نقوم بتشفير الكلمة الجديدة قبل إرسالها لتخزن مشفرة في الشيت
+            finalPass = await hashString(rawPass);
+        }
+
+        // 2. تجميع البيانات مع استخدام الاسم الصحيح 'pass'
         const params = new URLSearchParams({
             action: "adminUpdateSettings",
             id: stadiumId,
-            newPass: document.getElementById('upd_pass')?.value || "",
+            pass: finalPass, // تم تغيير الاسم من newPass إلى pass ليتطابق مع السكريبت
             stadiumName: document.getElementById('upd_name')?.value || "",
             pDay: document.getElementById('upd_price_day')?.value || "",
             pNight: document.getElementById('upd_price_night')?.value || "",
@@ -815,19 +823,15 @@ async function saveAdminSettings(event) {
             insta: document.getElementById('upd_insta')?.value || "",
             openHour: document.getElementById('openHourInput')?.value || "8",
             closeHour: document.getElementById('closeHourInput')?.value || "23",
-            // صور السلايدر
             img1: document.getElementById('upd_img1')?.value || "",
             img2: document.getElementById('upd_img2')?.value || "",
             img3: document.getElementById('upd_img3')?.value || "",
-            // حالة الصيانة (الربط مع الزر)
             status: document.getElementById('upd_maintenance')?.checked ? "maintenance" : "open"
         });
 
-        // 3. إرسال الطلب إلى Google Apps Script
         const response = await fetch(`${settingsScriptURL}?${params.toString()}`);
         const result = await response.text();
 
-        // 4. معالجة النتيجة
         if (result.trim() === "Success") {
             alert("✅ تم تحديث بيانات الملعب بنجاح! سيتم تحديث الصفحة الآن.");
             location.reload(); 
@@ -836,9 +840,8 @@ async function saveAdminSettings(event) {
         }
     } catch (e) {
         console.error("Save Error:", e);
-        alert("❌ فشل الاتصال بالسيرفر. تأكد من إعدادات النشر (Deployment) في Google Apps Script.");
+        alert("❌ فشل الاتصال بالسيرفر.");
     } finally {
-        // 5. إعادة الزر لحالته الطبيعية
         if (btn) {
             btn.disabled = false;
             btn.innerText = "حفظ التغييرات";
