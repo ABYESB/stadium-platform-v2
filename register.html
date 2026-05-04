@@ -156,8 +156,8 @@
 
         // الخطوة 1: طلب الرمز من جوجل سكريبت دون حفظ البيانات
         try {
-            const response = await fetch(`${scriptURL}?action=sendOTP&email=${encodeURIComponent(email)}`);
-            const result = await response.text();
+            // أضفنا &key=stadium_secret_2026 في نهاية الرابط
+const response = await fetch(`${scriptURL}?action=sendOTP&email=${encodeURIComponent(email)}&key=stadium_secret_2026`);
             
             if (result === "Error") {
                 alert("فشل إرسال الإيميل. تأكد من صحة البريد.");
