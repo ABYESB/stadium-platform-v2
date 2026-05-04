@@ -1,6 +1,6 @@
 // 1. الإعدادات والروابط الأساسية
-const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbzijLBDkZGFe3mXBvZD3kW1oMt0tiKsKwrGJx4YsZ9L0K-Xzq4ccfvLa0XXhyTalbnn/exec';
-const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbzijLBDkZGFe3mXBvZD3kW1oMt0tiKsKwrGJx4YsZ9L0K-Xzq4ccfvLa0XXhyTalbnn/exec';
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbygfdwCWfhKO9I1WraAvjv422FEhSIerssElgFzvDonaRLAscahvrXkKUDWccHGTq1w/exec';
+const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbygfdwCWfhKO9I1WraAvjv422FEhSIerssElgFzvDonaRLAscahvrXkKUDWccHGTq1w/exec';
 
 // 2. استخراج الـ ID من الرابط (مرة واحدة في البداية)
 const urlParams = new URLSearchParams(window.location.search);
