@@ -1068,10 +1068,19 @@ async function loadActualCancellations() {
     }
 }
 
-async function cancelBooking(rowNumber, btn) { // أضفنا btn هنا
+async function cancelBooking(rowNumber, btn) {
     if (!confirm("هل أنت متأكد من إلغاء هذا الحجز نهائياً؟")) return;
 
-    // تحسين تجربة المستخدم: تعطيل الزر مؤقتاً
+    // 1. جلب الكود السري من حقل تسجيل الدخول الموجود في الصفحة
+    const passwordInput = document.getElementById('adminPassInput');
+    const password = passwordInput ? passwordInput.value.trim() : "";
+
+    if (!password) {
+        alert("⚠️ خطأ: لم يتم العثور على كود التحقق. يرجى إعادة تسجيل الدخول.");
+        return;
+    }
+
+    // تعطيل الزر مؤقتاً
     const originalText = btn ? btn.innerText : "إلغاء";
     if (btn) {
         btn.disabled = true;
@@ -1079,12 +1088,24 @@ async function cancelBooking(rowNumber, btn) { // أضفنا btn هنا
     }
 
     try {
-        const response = await fetch(`${settingsScriptURL}?action=cancelBooking&row=${rowNumber}`);
+        // 2. تشفير الكود السري قبل إرساله
+        const hashedPass = await hashString(password);
+
+        // 3. إرسال الطلب مع إضافة id و pass (الهاش)
+        const url = `${settingsScriptURL}?action=cancelBooking&row=${rowNumber}&id=${stadiumId}&pass=${encodeURIComponent(hashedPass)}`;
+        
+        const response = await fetch(url);
         const result = await response.text();
         
         if (result.trim() === "CancelSuccess") {
             alert("✅ تم إلغاء الحجز بنجاح");
             showCancellations(); // تحديث القائمة فوراً
+        } else if (result.trim() === "Unauthorized") {
+            alert("❌ غير مصرح لك: الكود السري غير صحيح.");
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
         } else {
             alert("⚠️ فشل الإلغاء: " + result);
             if (btn) {
@@ -1093,6 +1114,7 @@ async function cancelBooking(rowNumber, btn) { // أضفنا btn هنا
             }
         }
     } catch (e) {
+        console.error("Cancel Error:", e);
         alert("❌ خطأ في الاتصال بالسيرفر");
         if (btn) {
             btn.disabled = false;
@@ -1100,7 +1122,6 @@ async function cancelBooking(rowNumber, btn) { // أضفنا btn هنا
         }
     }
 }
-
 // --- 3. عرض البيانات والإحصائيات ---
 async function loadActualStats() {
     const content = document.getElementById('adminSectionContent');
