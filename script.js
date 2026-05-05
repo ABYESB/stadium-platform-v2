@@ -1093,7 +1093,7 @@ async function cancelBooking(rowNumber, btn) {
 
         // 3. إرسال الطلب مع إضافة id و pass (الهاش)
         // أضفنا Timestamp (&_t=...) لضمان جلب بيانات طازجة
-        const url = `${settingsScriptURL}?action=cancelBooking&row=${rowNumber}&id=${stadiumId}&pass=${encodeURIComponent(hashedPass)}&_t=${new Date().getTime()}`;
+        const url = `${settingsScriptURL}&action=cancelBooking&row=${rowNumber}&id=${stadiumId}&pass=${encodeURIComponent(hashedPass)}&_t=${new Date().getTime()}`;
         
         const response = await fetch(url);
         const result = await response.text();
@@ -1269,7 +1269,7 @@ async function handleAdminAuth(btn) {
         const hashedPassword = await hashString(password);
         
         // نرسل hashedPassword بدلاً من password
-        const response = await fetch(`${settingsScriptURL}?action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(hashedPassword)}`);
+        const response = await fetch(`${settingsScriptURL}&action=adminAuth&id=${stadiumId}&pass=${encodeURIComponent(hashedPassword)}`);
         const result = await response.text();
 
         console.log("استجابة السيرفر:", result);
