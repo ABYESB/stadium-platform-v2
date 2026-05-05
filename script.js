@@ -628,7 +628,7 @@ function loadExistingBookings() {
     script.id = 'dataFetchScript'; 
     
     // 5. ربط المصدر بالرابط الخاص بك مع إضافة بصمة زمنية لمنع التخزين المؤقت (Cache)
-    script.src = `${bookingScriptURL}?action=getBookings&id=${stadiumId}&callback=handleData&t=${new Date().getTime()}`;
+    script.src = `${bookingScriptURL}&action=getBookings&id=${stadiumId}&callback=handleData&t=${new Date().getTime()}`;
     
     // 6. إضافة السكريبت إلى الصفحة لبدء جلب البيانات
     document.body.appendChild(script);
