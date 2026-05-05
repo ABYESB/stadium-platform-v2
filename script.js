@@ -1,6 +1,6 @@
 // 1. الإعدادات والروابط الأساسية
-const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbzTmBDZV-STZgjb8AYRt5eCpcsXy3wR6A9IKay0_ZEUmOHigs8H0x3cien1mz2QxJw/exec?key=B_Assel_Admin_2026_#Sec';
-const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbzTmBDZV-STZgjb8AYRt5eCpcsXy3wR6A9IKay0_ZEUmOHigs8H0x3cien1mz2QxJw/exec?key=B_Assel_Admin_2026_#Sec';
+const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbz_qexgfOADKLFQjMAt1Dqgh8NLcyv_cAWgbhSKWWN35lFMO8pLkebHzX0lzereEHaQ/exec?key=B_Assel_Admin_2026_#Sec';
+const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbz_qexgfOADKLFQjMAt1Dqgh8NLcyv_cAWgbhSKWWN35lFMO8pLkebHzX0lzereEHaQ/exec?key=B_Assel_Admin_2026_#Sec';
 
 // 2. استخراج الـ ID من الرابط (مرة واحدة في البداية)
 const urlParams = new URLSearchParams(window.location.search);
@@ -84,7 +84,7 @@ async function loadStadiumDynamicDetails() {
     if (tableBody) tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">جاري تحميل المواعيد...</td></tr>';
 
     try {
-        const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+        const response = await fetch(`${settingsScriptURL}&action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
 
         if (data !== "NotFound") {
@@ -855,7 +855,7 @@ async function loadActualSettings() {
 
     try {
         // جلب البيانات الحالية للملعب لملء الحقول تلقائياً
-        const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+        const response = await fetch(`${settingsScriptURL}&action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
 
         if (data === "NotFound") {
@@ -999,7 +999,7 @@ async function loadActualCancellations() {
             <div class="loader"></div> </div>`;
 
     try {
-        const response = await fetch(`${settingsScriptURL}?action=getAdminBookings&id=${stadiumId}`);
+        const response = await fetch(`${settingsScriptURL}&action=getAdminBookings&id=${stadiumId}`);
         const bookings = await response.json();
 
         if (bookings.length === 0) {
@@ -1142,7 +1142,7 @@ async function loadActualStats() {
         </div>`;
 
     try {
-        const response = await fetch(`${settingsScriptURL}?action=getStats&id=${stadiumId}`);
+        const response = await fetch(`${settingsScriptURL}&action=getStats&id=${stadiumId}`);
         const data = await response.json();
         
         const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
@@ -1334,7 +1334,7 @@ async function handleForgotPassword() {
     alert("جاري إرسال الكود إلى بريدك... يرجى الانتظار");
 
     try {
-        const response = await fetch(`${settingsScriptURL}?action=forgotPassword&id=${stadiumId}&email=${email}`);
+        const response = await fetch(`${settingsScriptURL}&action=forgotPassword&id=${stadiumId}&email=${email}`);
         const result = await response.text();
 
         if (result.trim() === "Sent") {
@@ -1411,7 +1411,7 @@ async function checkSubscriptionStatus() {
     const upgradeOptions = document.getElementById('upgradeOptions');
 
     try {
-        const response = await fetch(`${settingsScriptURL}?action=getStadiumDetails&id=${stadiumId}`);
+        const response = await fetch(`${settingsScriptURL}&action=getStadiumDetails&id=${stadiumId}`);
         const data = await response.json();
         
         // التعديل هنا: نستخدم accountType بدلاً من status
