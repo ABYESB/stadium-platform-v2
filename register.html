@@ -165,7 +165,7 @@
     // الخطوة 1: طلب الرمز من جوجل سكريبت مع إضافة المفتاح السري
     try {
         // تم إضافة &key لضمان أن الطلب قادم من موقعك فقط
-        const response = await fetch(`${scriptURL}?action=sendOTP&email=${encodeURIComponent(email)}&key=stadium_secret_2026`);
+        const response = await fetch(`${scriptURL}&action=sendOTP&email=${encodeURIComponent(email)}`);
         
         // استخراج النص من الاستجابة (الذي سيكون الهاش المشفر)
         const result = await response.text();
