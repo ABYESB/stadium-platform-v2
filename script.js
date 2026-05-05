@@ -829,7 +829,7 @@ async function saveAdminSettings(event) {
             status: document.getElementById('upd_maintenance')?.checked ? "maintenance" : "open"
         });
 
-        const response = await fetch(`${settingsScriptURL}?${params.toString()}`);
+        const response = await fetch(`${settingsScriptURL}&${params.toString()}`);
         const result = await response.text();
 
         if (result.trim() === "Success") {
