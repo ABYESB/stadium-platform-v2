@@ -1092,14 +1092,24 @@ async function cancelBooking(rowNumber, btn) {
         const hashedPass = await hashString(password);
 
         // 3. إرسال الطلب مع إضافة id و pass (الهاش)
-        const url = `${settingsScriptURL}?action=cancelBooking&row=${rowNumber}&id=${stadiumId}&pass=${encodeURIComponent(hashedPass)}`;
+        // أضفنا Timestamp (&_t=...) لضمان جلب بيانات طازجة
+        const url = `${settingsScriptURL}?action=cancelBooking&row=${rowNumber}&id=${stadiumId}&pass=${encodeURIComponent(hashedPass)}&_t=${new Date().getTime()}`;
         
         const response = await fetch(url);
         const result = await response.text();
         
         if (result.trim() === "CancelSuccess") {
             alert("✅ تم إلغاء الحجز بنجاح");
-            showCancellations(); // تحديث القائمة فوراً
+            
+            // تحديث قائمة الإلغاء في لوحة التحكم
+            showCancellations(); 
+
+            // --- التعديل المطلوب: تحديث المربعات الملونة في الموقع فوراً ---
+            if (typeof loadExistingBookings === "function") {
+                console.log("جاري تحديث مربعات الحجز...");
+                loadExistingBookings(); 
+            }
+
         } else if (result.trim() === "Unauthorized") {
             alert("❌ غير مصرح لك: الكود السري غير صحيح.");
             if (btn) {
