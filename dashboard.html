@@ -106,7 +106,7 @@ function showMapInstructions() {
         }
 
         try {
-            const response = await fetch(`${scriptURL}?action=getStadiumDetails&id=${slug}`);
+            const response = await fetch(`${scriptURL}&action=getStadiumDetails&id=${slug}`);
             const data = await response.json();
 
             if (data !== "NotFound") {
