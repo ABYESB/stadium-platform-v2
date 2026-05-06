@@ -25,12 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- إضافة إصدار (Version) للملفات لضمان تحديث الكاش عند المستخدمين -->
-    <link rel="stylesheet" href="style.css?v=1.163">
+    <link rel="stylesheet" href="style.css?v=1.164">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- تأكد من أن script.js يحتوي على دالة setupDynamicManifest التي برمجناها -->
-    <script src="script.js?v=1.163" defer></script>
+    <script src="script.js?v=1.164" defer></script>
 </head>
 <body>
     <!-- الجزء التابع لـ Google Tag Manager لضمان التتبع في حال تعطل الجافاسكريبت -->
@@ -619,7 +619,27 @@ td {
         <i class="fab fa-whatsapp"></i>
         <span class="tooltip-text">المشرف</span>
     </a>
+<script>
+  // ننتظر حتى يتم تحميل الصفحة بالكامل
+  window.addEventListener('DOMContentLoaded', (event) => {
+    
+    // 1. الكلمات الدلالية لصور الملاعب والرياضة
+    const keywords = 'stadium,soccer,football,arena,grass';
+    
+    // 2. رابط جلب صورة احترافية متغيرة يومياً من Unsplash
+    // تم إضافة الـ "daily" لضمان تغيرها كل 24 ساعة
+    const dailyImageUrl = `https://source.unsplash.com/daily?${keywords}`;
 
+    // 3. تطبيق الخلفية مع الحفاظ على الطبقة الشفافة (Linear Gradient)
+    // لاحظ أننا نستخدم نفس قيم الشفافية التي وضعتها في CSS
+    document.body.style.backgroundImage = `linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9)), url('${dailyImageUrl}')`;
+    
+    // 4. تأكيد التنسيقات لضمان التكيف مع الهاتف والحاسوب
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+  });
+</script>
     
 </body>
 </html>
