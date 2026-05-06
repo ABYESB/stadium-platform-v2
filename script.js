@@ -829,11 +829,16 @@ async function saveAdminSettings(event) {
             status: document.getElementById('upd_maintenance')?.checked ? "maintenance" : "open"
         });
 
-        const response = await fetch(`${settingsScriptURL}&${params.toString()}`);
+      // 3. بناء الرابط بشكل آمن لمنع تكرار علامات الاستفهام
+        const finalUrl = new URL(settingsScriptURL);
+        Object.keys(paramsObj).forEach(key => finalUrl.searchParams.append(key, paramsObj[key]));
+
+        // الطلب الآن سيذهب نظيفاً: الرابط الأصلي + المعلمات مدمجة بـ & بشكل صحيح
+        const response = await fetch(finalUrl.toString());
         const result = await response.text();
 
         if (result.trim() === "Success") {
-            alert("✅ تم تحديث بيانات الملعب بنجاح! سيتم تحديث الصفحة الآن.");
+            alert("✅ تم تحديث بيانات الملعب بنجاح!");
             location.reload(); 
         } else {
             alert("⚠️ حدث خطأ في السكريبت: " + result);
@@ -847,7 +852,7 @@ async function saveAdminSettings(event) {
             btn.innerText = "حفظ التغييرات";
         }
     }
-}
+} 
 // --- دالة عرض واجهة الإعدادات ---
 async function loadActualSettings() {
     const content = document.getElementById('adminSectionContent');
