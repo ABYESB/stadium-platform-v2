@@ -53,7 +53,7 @@ body {
 }
 .shake-animation { animation: shakeMe 0.4s ease-in-out; }
 
-    body {
+   
     /* الطبقة الشفافة فوق الصورة */
     background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9)), 
                       url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1350&q=80');
