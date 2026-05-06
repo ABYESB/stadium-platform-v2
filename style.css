@@ -53,24 +53,22 @@ body {
 }
 .shake-animation { animation: shakeMe 0.4s ease-in-out; }
 
-    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9)), 
-
-                url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-
-    background-size: cover;
-
-    background-attachment: fixed;
-
-    background-position: center;
-
+    body {
+    /* الطبقة الشفافة فوق الصورة */
+    background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9)), 
+                      url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1350&q=80');
+    
+    background-size: cover;        /* تغطية الشاشة بالكامل */
+    background-position: center;  /* توسيط الصورة دائماً */
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* تأثير التثبيت عند التمرير */
+    min-height: 100vh;           /* التأكد من أن الخلفية تغطي طول الشاشة */
+    
     color: #333;
-
     font-family: 'Cairo', sans-serif;
-
     margin: 0;
-
     padding: 0;
-
+    transition: background-image 0.5s ease-in-out; /* انتقال ناعم عند التغيير */
 }
 
 
