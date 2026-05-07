@@ -91,6 +91,14 @@ async function loadStadiumDynamicDetails() {
             // تخزين الحالة في متغير عالمي لاستخدامه عند الضغط على زر الحجز
             window.stadiumData = data; 
             window.stadiumStatus = data.status;
+            if (data.lat) {
+                const latInput = document.getElementById('lat');
+                if (latInput) latInput.value = data.lat;
+            }
+            if (data.lng) {
+                const lngInput = document.getElementById('lng');
+                if (lngInput) lngInput.value = data.lng;
+            }
 
             if (data.stadium_name) {
                 setupDynamicManifest(data.stadium_name); // استدعاء الدالة التي برمجناها سابقاً
@@ -154,13 +162,20 @@ if (logoImg) {
             }
             
             // 5. زر الموقع
-            const locBtn = document.getElementById('btnLocation');
+         const locBtn = document.getElementById('btnLocation');
             if(locBtn) {
                 if (data.location && data.location.trim() !== "" && data.location.startsWith('http')) {
                     locBtn.style.opacity = "1";
                     locBtn.onclick = (e) => {
                         e.preventDefault();
                         window.open(data.location, '_blank');
+                    };
+                } else if (data.lat && data.lng) { 
+                    // إذا لم يوجد رابط ولكن توجد إحداثيات، نفتح الموقع بناءً عليها
+                    locBtn.style.opacity = "1";
+                    locBtn.onclick = (e) => {
+                        e.preventDefault();
+                        window.open(`https://www.google.com/maps?q=${data.lat},${data.lng}`, '_blank');
                     };
                 } else {
                     locBtn.style.opacity = "0.5";
@@ -1609,5 +1624,46 @@ function closeAnyModal(modalId) {
     if (modal) {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
+    }
+}
+
+
+
+// دالة حساب المسافة بين نقطتين بالكيلومتر
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // نصف قطر الأرض بالكيلومتر
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; 
+}
+
+// دالة العثور على ملاعب قريبة (تستدعى عند ضغط الزر)
+function findNearbyStadiums() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async function(position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            // جلب إحداثيات الملعب الحالي من الحقول المخفية
+            const stadiumLat = document.getElementById('lat').value;
+            const stadiumLng = document.getElementById('lng').value;
+
+            if (stadiumLat && stadiumLng) {
+                const distance = calculateDistance(userLat, userLng, stadiumLat, stadiumLng);
+                alert(`هذا الملعب يبعد عنك حوالي ${distance.toFixed(2)} كم`);
+                
+                // يمكنك هنا توجيه المستخدم لخرائط جوجل ليرى الطريق
+                window.open(`https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${stadiumLat},${stadiumLng}&travelmode=driving`, '_blank');
+            } else {
+                alert("عذراً، إحداثيات هذا الملعب غير متوفرة.");
+            }
+        });
+    } else {
+        alert("تحديد الموقع غير مدعوم في متصفحك.");
     }
 }
