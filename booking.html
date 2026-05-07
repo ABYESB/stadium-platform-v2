@@ -25,12 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- إضافة إصدار (Version) للملفات لضمان تحديث الكاش عند المستخدمين -->
-    <link rel="stylesheet" href="style.css?v=1.169">
+    <link rel="stylesheet" href="style.css?v=1.170">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- تأكد من أن script.js يحتوي على دالة setupDynamicManifest التي برمجناها -->
-    <script src="script.js?v=1.169" defer></script>
+    <script src="script.js?v=1.170" defer></script>
 </head>
 <body>
     <!-- الجزء التابع لـ Google Tag Manager لضمان التتبع في حال تعطل الجافاسكريبت -->
@@ -617,6 +617,51 @@ td {
 .upgrade-btn:hover {
     transform: scale(1.05);
     filter: brightness(1.1);
+}
+
+    /* تنسيق موحد للأزرار الثلاثة في صفحة الحجز */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+}
+
+.btn-info, .btn-map, .btn-nearby {
+    flex: 1; /* يجعل الأزرار متساوية العرض */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 15px;
+    border-radius: 12px; /* نفس انحناء الأزرار في صورتك */
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 50px;
+    color: white;
+}
+
+/* الألوان الخاصة بكل زر */
+.btn-info { background-color: #334155; } /* اللون الغامق لقوانين الملعب */
+.btn-map { background-color: #93c5fd; color: #1e3a8a; } /* اللون السماوي لموقع الملعب */
+.btn-nearby { background-color: #059669; } /* اللون الأخضر للملاعب القريبة */
+
+.btn-info:hover, .btn-map:hover, .btn-nearby:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* تحسين المظهر على الهواتف */
+@media (max-width: 480px) {
+    .btn-info, .btn-map, .btn-nearby {
+        font-size: 0.8rem;
+        padding: 10px 5px;
+    }
 }
 </style>
     
