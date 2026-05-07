@@ -123,6 +123,9 @@
   <div class="app-container">
     
   <div class="header-section" style="text-align: center; padding: 20px;">
+      <!-- هذه الخانات لن تظهر للمستخدم، هي فقط لتخزين الأرقام برمجياً -->
+<input type="hidden" id="lat" name="lat">
+<input type="hidden" id="lng" name="lng">
     <img id="displayLogo" 
          src="logo_no_background.png" 
          alt="ملاعب NET" 
@@ -140,6 +143,7 @@
     <button onclick="toggleRules()" class="btn-info">📜 قوانين الملعب</button>
     
     <button type="button" id="btnLocation" class="btn-map">📍 موقع الملعب</button>
+       <button type="button" onclick="findNearbyStadiums()" class="btn-nearby" style="background: #059669; color: white;">⚽ ملاعب قريبة</button>
 </div>
 
 <div id="rulesModal" class="modal">
