@@ -210,7 +210,7 @@
     const stadiumName = document.getElementById('stadiumName').value;
 
     // الرابط النهائي لإرسال البيانات
-    const finalURL = `${scriptURL}?action=saveData&fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}&otp=${userOTP}`;
+    const finalURL = `${scriptURL}&action=saveData&fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&stadiumName=${encodeURIComponent(stadiumName)}&otp=${userOTP}`;
 
     try {
         // نستخدم fetch بدون no-cors لنتمكن من قراءة الـ slug العشوائي الراجع من جوجل
