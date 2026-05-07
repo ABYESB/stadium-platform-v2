@@ -177,7 +177,7 @@ function showMapInstructions() {
         btn.disabled = true;
 
         // بناء الرابط الخاص بالأمر updateSettings مع إضافة lat و lng
-        const finalUpdateURL = `${scriptURL}?action=updateSettings` + 
+        const finalUpdateURL = `${scriptURL}&action=updateSettings` + 
                              `&slug=${slug}` +
                              `&stadiumName=${encodeURIComponent(stadiumName)}` +
                              `&org=${encodeURIComponent(org)}` +
