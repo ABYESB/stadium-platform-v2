@@ -211,6 +211,29 @@ function showMapInstructions() {
             btn.disabled = false;
         }
     }
+function detectCoordinates() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById('lat').value = position.coords.latitude;
+            document.getElementById('lng').value = position.coords.longitude;
+            
+            // إظهار رسالة النجاح
+            document.getElementById('coordSuccess').style.display = 'block';
+            
+            // تغيير لون الزر ليعرف أنه تم بنجاح
+            const btn = document.querySelector('button[onclick="detectCoordinates()"]');
+            btn.style.background = "#059669";
+            btn.innerHTML = "✅";
+            
+            alert("تم تحديد إحداثيات ملعبك بدقة!");
+        }, function(error) {
+            alert("فشل الحصول على الموقع. تأكد من تفعيل الـ GPS في هاتفك.");
+        });
+    } else {
+        alert("متصفحك لا يدعم خاصية تحديد الموقع.");
+    }
+}
+    
 </script>
 
 </body>
