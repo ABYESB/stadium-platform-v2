@@ -25,12 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- إضافة إصدار (Version) للملفات لضمان تحديث الكاش عند المستخدمين -->
-    <link rel="stylesheet" href="style.css?v=1.168">
+    <link rel="stylesheet" href="style.css?v=1.169">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- تأكد من أن script.js يحتوي على دالة setupDynamicManifest التي برمجناها -->
-    <script src="script.js?v=1.168" defer></script>
+    <script src="script.js?v=1.169" defer></script>
 </head>
 <body>
     <!-- الجزء التابع لـ Google Tag Manager لضمان التتبع في حال تعطل الجافاسكريبت -->
@@ -139,11 +139,12 @@
 </div>
         </div>
 
-   <div class="action-buttons">
-    <button onclick="toggleRules()" class="btn-info">📜 قوانين الملعب</button>
+ <div class="action-buttons" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+    <button onclick="toggleRules()" class="btn-info" style="flex: 1; min-width: 120px; white-space: nowrap;">📜 قوانين الملعب</button>
     
-    <button type="button" id="btnLocation" class="btn-map">📍 موقع الملعب</button>
-       <button type="button" onclick="findNearbyStadiums()" class="btn-nearby" style="background: #059669; color: white;">⚽ ملاعب قريبة</button>
+    <button type="button" id="btnLocation" class="btn-map" style="flex: 1; min-width: 120px; white-space: nowrap;">📍 موقع الملعب</button>
+    
+    <button type="button" onclick="findNearbyStadiums()" class="btn-map" style="background: #059669; border-color: #059669; color: white; flex: 1; min-width: 120px; white-space: nowrap;">⚽ ملاعب قريبة</button>
 </div>
 
 <div id="rulesModal" class="modal">
