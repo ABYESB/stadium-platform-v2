@@ -619,48 +619,57 @@ td {
     filter: brightness(1.1);
 }
 
-    /* تنسيق موحد للأزرار الثلاثة في صفحة الحجز */
+ /* تنسيق موحد للأزرار الثلاثة في صفحة الحجز */
 .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 15px; /* زيادة المسافة قليلاً بين الأزرار */
     justify-content: center;
-    padding: 10px;
+    padding: 20px 10px;
     width: 100%;
+    flex-wrap: wrap; /* للسماح بنزول الأزرار في الشاشات الصغيرة جداً */
 }
 
 .btn-info, .btn-map, .btn-nearby {
-    flex: 1; /* يجعل الأزرار متساوية العرض */
+    /* التعديل الجوهري هنا */
+    flex: 0 1 auto; /* تمنع الزر من التمدد إجبارياً */
+    min-width: 120px; /* أقل عرض ممكن للحفاظ على الشكل */
+    max-width: 200px; /* أقصى عرض ممكن لكي لا تصبح طويلة جداً */
+    
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px 15px;
-    border-radius: 12px; /* نفس انحناء الأزرار في صورتك */
+    padding: 8px 16px; /* تقليل الحشو الرأسي */
+    border-radius: 50px; /* جعل الحواف دائرية أكثر (بيضاوي) لتبدو أصغر */
     font-family: 'Cairo', sans-serif;
-    font-size: 0.9rem;
-    font-weight: bold;
+    font-size: 0.85rem;
+    font-weight: 600;
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-height: 50px;
     color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* إضافة ظل خفيف للجمالية */
 }
 
-/* الألوان الخاصة بكل زر */
-.btn-info { background-color: #334155; } /* اللون الغامق لقوانين الملعب */
-.btn-map { background-color: #93c5fd; color: #1e3a8a; } /* اللون السماوي لموقع الملعب */
-.btn-nearby { background-color: #059669; } /* اللون الأخضر للملاعب القريبة */
+/* الألوان الخاصة بكل زر (مع تعديل لون النص في الزر السماوي ليتطابق مع صورتك) */
+.btn-info { background-color: #374151; } 
+.btn-map { background-color: #2563eb; color: white; } /* تم تعديله للأزرق الواضح */
+.btn-nearby { background-color: #059669; } 
 
 .btn-info:hover, .btn-map:hover, .btn-nearby:hover {
     transform: translateY(-2px);
-    filter: brightness(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 /* تحسين المظهر على الهواتف */
 @media (max-width: 480px) {
+    .action-buttons {
+        gap: 8px;
+    }
     .btn-info, .btn-map, .btn-nearby {
-        font-size: 0.8rem;
-        padding: 10px 5px;
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        min-width: 100px;
     }
 }
 </style>
