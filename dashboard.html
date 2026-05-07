@@ -212,6 +212,17 @@ function showMapInstructions() {
     }
 function detectCoordinates() {
     if (navigator.geolocation) {
+        // إعدادات لزيادة الدقة
+        const options = {
+            enableHighAccuracy: true, // تفعيل الدقة العالية (استخدام GPS)
+            timeout: 10000,           // انتظار الإشارة لمدة 10 ثوانٍ كحد أقصى
+            maximumAge: 0             // عدم استخدام موقع قديم مخزن في الذاكرة
+        };
+
+        // إظهار رسالة انتظار للمستخدم (اختياري)
+        const btn = document.querySelector('button[onclick="detectCoordinates()"]');
+        btn.innerText = "⏳";
+
         navigator.geolocation.getCurrentPosition(function(position) {
             document.getElementById('lat').value = position.coords.latitude;
             document.getElementById('lng').value = position.coords.longitude;
@@ -220,14 +231,20 @@ function detectCoordinates() {
             document.getElementById('coordSuccess').style.display = 'block';
             
             // تغيير لون الزر ليعرف أنه تم بنجاح
-            const btn = document.querySelector('button[onclick="detectCoordinates()"]');
             btn.style.background = "#059669";
             btn.innerHTML = "✅";
             
-            alert("تم تحديد إحداثيات ملعبك بدقة!");
+            alert("تم تحديد إحداثيات ملعبك بدقة عالية!");
         }, function(error) {
-            alert("فشل الحصول على الموقع. تأكد من تفعيل الـ GPS في هاتفك.");
-        });
+            // إعادة شكل الزر الأصلي في حال الفشل
+            btn.innerHTML = "📍";
+            
+            let msg = "فشل الحصول على الموقع.";
+            if(error.code === 1) msg = "يرجى السماح للمتصفح بالوصول للموقع (Permission Denied).";
+            else if(error.code === 3) msg = "استغرق الهاتف وقتاً طويلاً لتحديد الموقع، حاول مرة أخرى في مكان مفتوح.";
+            
+            alert(msg);
+        }, options); // تمرير الإعدادات هنا
     } else {
         alert("متصفحك لا يدعم خاصية تحديد الموقع.");
     }
