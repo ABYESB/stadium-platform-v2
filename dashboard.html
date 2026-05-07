@@ -73,21 +73,7 @@
         💡 <strong>هام:</strong> ضع الرابط أولاً، ثم اضغط على 📍 وأنت <b>داخل الملعب</b> ليتمكن اللاعبون من العثور عليك عبر خاصية المسافة.
     </small>
 </div>
-
-<script>
-// دالة تعليمات الرابط (القديمة كما هي)
-function showMapInstructions() {
-    alert(
-      "كيفية الحصول على الرابط الصحيح:\n" +
-      "1. افتح تطبيق Google Maps وابحث عن ملعبك.\n" +
-      "2. اضغط على زر 'مشاركة' (Share).\n" +
-      "3. اختر 'نسخ الرابط' (Copy link).\n" +
-      "4. قم بلصق الرابط هنا.\n\n" +
-      "شكل الرابط يجب أن يبدأ بـ https://maps.app.goo.gl/... أو https://goo.gl/maps/..."
-    );
-}
-
-       <div class="section">
+           <div class="section">
     <label style="display: block; font-weight: bold; margin-bottom: 8px;">روابط التواصل الاجتماعي</label>
     <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div>
@@ -109,6 +95,19 @@ function showMapInstructions() {
 </div>
 
 <script>
+// دالة تعليمات الرابط (القديمة كما هي)
+function showMapInstructions() {
+    alert(
+      "كيفية الحصول على الرابط الصحيح:\n" +
+      "1. افتح تطبيق Google Maps وابحث عن ملعبك.\n" +
+      "2. اضغط على زر 'مشاركة' (Share).\n" +
+      "3. اختر 'نسخ الرابط' (Copy link).\n" +
+      "4. قم بلصق الرابط هنا.\n\n" +
+      "شكل الرابط يجب أن يبدأ بـ https://maps.app.goo.gl/... أو https://goo.gl/maps/..."
+    );
+}
+
+
   // 1. إعداد المتغيرات الأساسية
     const scriptURL = 'https://script.google.com/macros/s/AKfycbx9UKD0zHrFGcO6wsenx8-nbR74G-qpQIMJm4yRwiUpQdQJYnDLlaNJTf0fU9FQQ63H/exec?key=B_Assel_Admin_2026_Sec'; // استبدل هذا بالرابط الذي حصلت عليه بعد آخر Deployment
     const urlParams = new URLSearchParams(window.location.search);
