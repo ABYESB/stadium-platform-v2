@@ -1642,28 +1642,79 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c; 
 }
 
-// دالة العثور على ملاعب قريبة (تستدعى عند ضغط الزر)
-function findNearbyStadiums() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async function(position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
+async function findNearbyStadiums() {
+    const listContainer = document.getElementById('stadiumsList');
+    
+    // استخدام الدقة العالية لضمان أفضل نتيجة على الهاتف
+    const geoOptions = {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 0
+    };
 
-            // جلب إحداثيات الملعب الحالي من الحقول المخفية
-            const stadiumLat = document.getElementById('lat').value;
-            const stadiumLng = document.getElementById('lng').value;
+    navigator.geolocation.getCurrentPosition(async function(position) {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
 
-            if (stadiumLat && stadiumLng) {
-                const distance = calculateDistance(userLat, userLng, stadiumLat, stadiumLng);
-                alert(`هذا الملعب يبعد عنك حوالي ${distance.toFixed(2)} كم`);
-                
-                // يمكنك هنا توجيه المستخدم لخرائط جوجل ليرى الطريق
-                window.open(`https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${stadiumLat},${stadiumLng}&travelmode=driving`, '_blank');
-            } else {
-                alert("عذراً، إحداثيات هذا الملعب غير متوفرة.");
+        try {
+            // جلب البيانات من السيرفر
+            const response = await fetch(`${scriptURL}&action=getAllStadiums`);
+            const allStadiums = await response.json();
+
+            // 1. حساب المسافة لكل ملعب وتخزينها في المصفوفة
+            const processedStadiums = allStadiums
+                .filter(s => s.lat && s.lng) // استبعاد الملاعب بدون إحداثيات
+                .map(stadium => {
+                    return {
+                        ...stadium,
+                        distance: calculateDistance(userLat, userLng, stadium.lat, stadium.lng)
+                    };
+                })
+                .filter(stadium => stadium.distance <= 20) // تصفية الملاعب (أقل من 20 كلم)
+                .sort((a, b) => a.distance - b.distance); // 2. الترتيب من الأقرب للأبعد
+
+            listContainer.innerHTML = ""; 
+
+            if (processedStadiums.length === 0) {
+                listContainer.innerHTML = `
+                    <div style="text-align:center; padding:30px;">
+                        <p style="font-size:3rem;">📍</p>
+                        <p>لا توجد ملاعب في محيط 20 كلم حالياً.</p>
+                    </div>`;
+                return;
             }
-        });
-    } else {
-        alert("تحديد الموقع غير مدعوم في متصفحك.");
-    }
+
+            // 3. عرض الملاعب المرتبة في النافذة
+            processedStadiums.forEach(stadium => {
+                const card = `
+                    <div class="stadium-card">
+                        <div class="stadium-info">
+                            <h4 style="margin-bottom:2px;">${stadium.stadium_name}</h4>
+                            <span class="distance-tag" style="background:#e0f2fe; color:#0369a1;">
+                                🚗 يبعد ${stadium.distance.toFixed(1)} كلم عنك
+                            </span>
+                        </div>
+                        <div class="btn-group" style="margin-top:12px; display:flex; gap:8px;">
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${stadium.lat},${stadium.lng}" 
+                               target="_blank" class="btn-action btn-map" style="background:#10b981; flex:1; text-align:center; padding:10px; border-radius:8px; color:white; text-decoration:none; font-size:0.85rem;">
+                               🗺️ الخريطة
+                            </a>
+                            <a href="booking.html?id=${stadium.slug}" 
+                               class="btn-action btn-book" style="background:#2563eb; flex:1; text-align:center; padding:10px; border-radius:8px; color:white; text-decoration:none; font-size:0.85rem;">
+                               📅 حجز الآن
+                            </a>
+                        </div>
+                    </div>
+                `;
+                listContainer.innerHTML += card;
+            });
+
+        } catch (error) {
+            listContainer.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>❌ فشل في جلب الملاعب، تأكد من اتصال الإنترنت.</p>";
+        }
+    }, function(error) {
+        let errorMsg = "يرجى تفعيل الموقع (GPS) للبحث عن الملاعب.";
+        if(error.code === 1) errorMsg = "يجب السماح للمتصفح بالوصول لموقعك لرؤية الملاعب القريبة.";
+        listContainer.innerHTML = `<p style='text-align:center; padding:20px;'>❌ ${errorMsg}</p>`;
+    }, geoOptions);
 }
