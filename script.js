@@ -813,20 +813,19 @@ async function saveAdminSettings(event) {
     }
 
     try {
-        // 1. جلب كلمة المرور وتشفيرها (التعديل الأهم)
+        // 1. جلب كلمة المرور وتشفيرها
         const rawPass = document.getElementById('upd_pass')?.value || "";
         let finalPass = "";
         
         if (rawPass) {
-            // نقوم بتشفير الكلمة الجديدة قبل إرسالها لتخزن مشفرة في الشيت
             finalPass = await hashString(rawPass);
         }
 
-        // 2. تجميع البيانات مع استخدام الاسم الصحيح 'pass'
-        const params = new URLSearchParams({
+        // 2. تجميع البيانات في كائن (Object) عادي أولاً لسهولة المعالجة
+        const dataToSave = {
             action: "adminUpdateSettings",
             id: stadiumId,
-            pass: finalPass, // تم تغيير الاسم من newPass إلى pass ليتطابق مع السكريبت
+            pass: finalPass,
             stadiumName: document.getElementById('upd_name')?.value || "",
             pDay: document.getElementById('upd_price_day')?.value || "",
             pNight: document.getElementById('upd_price_night')?.value || "",
@@ -842,13 +841,18 @@ async function saveAdminSettings(event) {
             img2: document.getElementById('upd_img2')?.value || "",
             img3: document.getElementById('upd_img3')?.value || "",
             status: document.getElementById('upd_maintenance')?.checked ? "maintenance" : "open"
+        };
+
+        // 3. بناء الرابط النهائي بذكاء
+        // نأخذ الرابط الأساسي (الذي يحتوي أصلاً على المفتاح السري)
+        const finalUrl = new URL(settingsScriptURL);
+        
+        // إضافة كل البيانات من dataToSave إلى المعلمات الموجودة في الرابط
+        Object.keys(dataToSave).forEach(key => {
+            finalUrl.searchParams.set(key, dataToSave[key]);
         });
 
-      // 3. بناء الرابط بشكل آمن لمنع تكرار علامات الاستفهام
-        const finalUrl = new URL(settingsScriptURL);
-        Object.keys(paramsObj).forEach(key => finalUrl.searchParams.append(key, paramsObj[key]));
-
-        // الطلب الآن سيذهب نظيفاً: الرابط الأصلي + المعلمات مدمجة بـ & بشكل صحيح
+        // 4. إرسال الطلب
         const response = await fetch(finalUrl.toString());
         const result = await response.text();
 
@@ -867,7 +871,7 @@ async function saveAdminSettings(event) {
             btn.innerText = "حفظ التغييرات";
         }
     }
-} 
+}
 // --- دالة عرض واجهة الإعدادات ---
 async function loadActualSettings() {
     const content = document.getElementById('adminSectionContent');
