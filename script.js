@@ -1695,7 +1695,7 @@ async function findNearbyStadiums() {
                             </span>
                         </div>
                         <div class="btn-group" style="margin-top:12px; display:flex; gap:8px;">
-                            <a href="https://www.google.com/maps/dir/?api=1&destination=${stadium.lat},${stadium.lng}" 
+                            <a href="https://www.google.com/maps?q=${stadium.lat},${stadium.lng}"
                                target="_blank" class="btn-action btn-map" style="background:#10b981; flex:1; text-align:center; padding:10px; border-radius:8px; color:white; text-decoration:none; font-size:0.85rem;">
                                🗺️ الخريطة
                             </a>
@@ -1718,9 +1718,18 @@ async function findNearbyStadiums() {
         listContainer.innerHTML = `<p style='text-align:center; padding:20px;'>❌ ${errorMsg}</p>`;
     }, geoOptions);
 }
+function closeNearbyModal() {
+    document.getElementById('nearbyModal').style.display = 'none';
+}
+
+// دالة الفتح (تأكد من تنظيف القائمة عند كل فتح جديد)
 function openNearbyModal() {
     document.getElementById('nearbyModal').style.display = 'block';
-    // تنظيف القائمة وإظهار مؤشر تحميل
-    document.getElementById('stadiumsList').innerHTML = '<p style="text-align:center;">جاري البحث...</p>';
+    // إعادة وضع الهيكل الأصلي للتحميل
+    document.getElementById('stadiumsList').innerHTML = `
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>جاري تحديد موقعك وجلب الملاعب...</p>
+        </div>`;
     findNearbyStadiums();
 }
