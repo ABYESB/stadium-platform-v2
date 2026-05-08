@@ -1658,7 +1658,7 @@ async function findNearbyStadiums() {
 
         try {
             // جلب البيانات من السيرفر
-            const response = await fetch(`${scriptURL}&action=getAllStadiums`);
+           const response = await fetch(`${bookingScriptURL}&action=getAllStadiums`);
             const allStadiums = await response.json();
 
             // 1. حساب المسافة لكل ملعب وتخزينها في المصفوفة
@@ -1717,4 +1717,10 @@ async function findNearbyStadiums() {
         if(error.code === 1) errorMsg = "يجب السماح للمتصفح بالوصول لموقعك لرؤية الملاعب القريبة.";
         listContainer.innerHTML = `<p style='text-align:center; padding:20px;'>❌ ${errorMsg}</p>`;
     }, geoOptions);
+}
+function openNearbyModal() {
+    document.getElementById('nearbyModal').style.display = 'block';
+    // تنظيف القائمة وإظهار مؤشر تحميل
+    document.getElementById('stadiumsList').innerHTML = '<p style="text-align:center;">جاري البحث...</p>';
+    findNearbyStadiums();
 }
