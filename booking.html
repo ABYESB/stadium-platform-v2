@@ -144,7 +144,8 @@
     
     <button type="button" id="btnLocation" class="btn-map" style="flex: 1; min-width: 120px; white-space: nowrap;">📍 موقع الملعب</button>
     
-    <button type="button" onclick="findNearbyStadiums()" class="btn-map" style="background: #059669; border-color: #059669; color: white; flex: 1; min-width: 120px; white-space: nowrap;">⚽ ملاعب قريبة</button>
+    <button onclick="openNearbyModal()" class="btn-nearby" style="width: 100%; background: #10b981; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer;">
+    ⚽ ملاعب قريبة
 </div>
 
 <div id="rulesModal" class="modal">
@@ -718,6 +719,132 @@ td {
     setDailyBackground();
   }
 </script>
+
+
+<div id="nearbyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); z-index:9999; backdrop-filter: blur(4px); font-family:'Cairo', sans-serif;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin:0; color:#1e40af; font-size:1.2rem;">⚽ ملاعب في محيط 20 كلم</h3>
+            <span onclick="closeNearbyModal()" class="close-btn">&times;</span>
+        </div>
+        
+        <div id="stadiumsList" class="modal-body">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>جاري تحديد موقعك وجلب الملاعب...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* تحسينات النافذة لتناسب كل الشاشات */
+    .modal-content {
+        background: white;
+        width: 95%;
+        max-width: 450px;
+        margin: 20px auto;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    .modal-header {
+        padding: 20px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .close-btn {
+        cursor: pointer;
+        font-size: 28px;
+        color: #64748b;
+        line-height: 1;
+    }
+
+    .modal-body {
+        padding: 15px;
+        max-height: 70vh;
+        overflow-y: auto;
+        background: #ffffff;
+    }
+
+    /* تصميم بطاقة الملعب */
+    .stadium-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 12px;
+        transition: transform 0.2s;
+    }
+
+    .stadium-card:active { transform: scale(0.98); }
+
+    .stadium-info h4 { margin: 0 0 5px 0; color: #0f172a; font-size: 1.1rem; }
+    .stadium-info .distance-tag {
+        display: inline-block;
+        background: #dcfce7;
+        color: #166534;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    /* أزرار التحكم - ذكية للموبايل */
+    .btn-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-action {
+        flex: 1;
+        border: none;
+        padding: 12px 5px;
+        border-radius: 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.85rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .btn-map { background: #10b981; color: white; }
+    .btn-book { background: #2563eb; color: white; }
+
+    /* أنيميشن وحالة التحميل */
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .loading-state { text-align: center; padding: 40px 20px; color: #64748b; }
+    .spinner {
+        width: 30px; height: 30px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #2563eb;
+        border-radius: 50%;
+        margin: 0 auto 15px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* تعديلات للموبايل الصغير جداً */
+    @media (max-width: 350px) {
+        .btn-group { flex-direction: column; }
+    }
+</style>
     
 </body>
 </html>
