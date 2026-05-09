@@ -1,7 +1,7 @@
 {
   "short_name": "ملاعب NET",
   "name": "ملاعب NET - منصة حجز الملاعب",
-  "id": "stadium-platform-main",
+  "id": "stadium-platform-main-fixed",
   "icons": [
     {
       "src": "logo_no_background.png",
