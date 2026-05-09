@@ -2,21 +2,20 @@
 const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbwvFXgo9I5-9GKvNeywtW7h3DLeKQxzJiqxO935n7xaNTiJA-afFbUxTePhgdS4_Q8Z/exec?key=B_Assel_Admin_2026_Sec';
 const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbwvFXgo9I5-9GKvNeywtW7h3DLeKQxzJiqxO935n7xaNTiJA-afFbUxTePhgdS4_Q8Z/exec?key=B_Assel_Admin_2026_Sec';
 
-// 2. استخراج الـ ID من الرابط (مرة واحدة في البداية)
+
+// 2. استخراج الـ ID من الرابط
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
 
-// --- دالة المانيفست المطورة (تعريف الدالة قبل استخدامها) ---
-function setupDynamicManifest(stadiumName) {
-    if (!stadiumId) return;
-
+// --- دالة المانيفست الموحدة (تم إلغاء الاسم المتغير بناءً على طلبك) ---
+function setupFixedManifest() {
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
     
-    const myDynamicManifest = {
-        "short_name": stadiumName,
-        "name": stadiumName + " - ملاعب NET",
-        "id": "st-app-" + stadiumId, 
-        "start_url": baseUrl + "index.html?id=" + stadiumId,
+    const myFixedManifest = {
+        "short_name": "ملاعب NET", // تم التثبيت بناءً على طلبك
+        "name": "ملاعب NET - منصة حجز الملاعب",
+        "id": "stadium-platform-main-fixed", // ID موحد لجميع الملاعب لمنع التداخل
+        "start_url": baseUrl + "index.html", // نقطة البداية الموحدة
         "scope": baseUrl, 
         "display": "standalone",
         "background_color": "#ffffff",
@@ -28,7 +27,7 @@ function setupDynamicManifest(stadiumName) {
     };
 
     try {
-        const stringManifest = JSON.stringify(myDynamicManifest);
+        const stringManifest = JSON.stringify(myFixedManifest);
         const base64Manifest = btoa(unescape(encodeURIComponent(stringManifest)));
         const manifestURL = 'data:application/json;base64,' + base64Manifest;
         
@@ -40,19 +39,32 @@ function setupDynamicManifest(stadiumName) {
         link.rel = 'manifest';
         link.href = manifestURL;
         document.head.appendChild(link);
-        console.log("Manifest Dynamic Active: " + stadiumName);
     } catch (e) {
         console.error("Manifest Error: ", e);
     }
 }
 
-// 3. استدعاء فوري للمانيفست لضمان ظهور زر التثبيت فوراً (باسم مؤقت)
-if (stadiumId) {
-    setupDynamicManifest("ملعب " + stadiumId); 
-}
+// استدعاء المانيفست الموحد
+setupFixedManifest();
 
-// 4. فحص بيئة التشغيل (تطبيق أم متصفح)
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+// --- نظام حفظ الجلسة الذكي (حل مشكلة التذكر والتسجيل) ---
+(function handleNavigation() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    const currentPath = window.location.pathname;
+
+    if (stadiumId) {
+        // إذا زار ملعباً، نحفظ الرابط بالكامل مع الـ ID
+        localStorage.setItem('last_visited_full_url', window.location.href);
+    } else if (isStandalone || currentPath.endsWith('index.html') || currentPath.endsWith('/')) {
+        // إذا كان يفتح التطبيق أو الصفحة الرئيسية
+        const savedUrl = localStorage.getItem('last_visited_full_url');
+        
+        // إذا وجدنا رابطاً محفوظاً، نوجهه إليه بشرط ألا نكون في صفحة تسجيل قاصدة
+        if (savedUrl && !window.location.search.includes('registration_process=true')) {
+            window.location.replace(savedUrl);
+        }
+    }
+})();
 
 // --- 5. نظام حفظ الجلسة ومنع التداخل ---
 if (stadiumId) {
