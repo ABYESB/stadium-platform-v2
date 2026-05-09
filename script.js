@@ -87,6 +87,12 @@ let currentStartDate = getMonday(new Date());
 
 window.stadiumData = null;
 
+
+
+
+
+
+
 // 2. جلب تفاصيل الملعب وتحديث الواجهة
 async function loadStadiumDynamicDetails() {
     if (!stadiumId) return;
@@ -112,9 +118,14 @@ async function loadStadiumDynamicDetails() {
                 if (lngInput) lngInput.value = data.lng;
             }
 
-            if (data.stadium_name) {
-                setupDynamicManifest(data.stadium_name); // استدعاء الدالة التي برمجناها سابقاً
-            }
+           // 1. النصوص الأساسية 
+if (data.stadium_name) {
+    // تحديث عنوان المتصفح فقط دون المساس بهوية التطبيق المثبت
+    document.title = data.stadium_name + " - ملاعب NET"; 
+    
+    const nameEl = document.getElementById('displayStadiumName');
+    if (nameEl) nameEl.innerText = data.stadium_name;
+}
 
             // بقية الكود الخاص بالاسم واللوغو والأسعار يظل كما هو...
             if (data.stadium_name) {
@@ -276,6 +287,11 @@ if (logoImg) {
         }
     }
 } // نهاية الدالة loadStadiumDynamicDetails
+
+
+
+
+
 
 function initTable(dataFromFetch) {
     const tableBody = document.getElementById('tableBody');
