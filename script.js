@@ -1,3 +1,36 @@
+// --- نظام مراقبة حالة الشبكة ---
+
+// إنشاء عنصر التنبيه برمجياً وإضافته للصفحة
+const offlineBanner = document.createElement('div');
+offlineBanner.id = 'offline-banner';
+offlineBanner.innerHTML = '⚠️ أنت غير متصل بالإنترنت. لا يمكنك الحجز الآن.';
+offlineBanner.style.display = 'none'; // أضف هذا السطر هنا ليكون مخفياً في البداية
+document.body.prepend(offlineBanner);
+
+function updateOnlineStatus() {
+    const confirmBtn = document.getElementById('confirmBookingBtn'); // تأكد أن هذا هو ID زر الحجز لديك
+
+    if (navigator.onLine) {
+        // إذا عاد الإنترنت
+        offlineBanner.style.display = 'none';
+        if (confirmBtn) confirmBtn.classList.remove('btn-disabled');
+    } else {
+        // إذا انقطع الإنترنت
+        offlineBanner.style.display = 'block';
+        if (confirmBtn) confirmBtn.classList.add('btn-disabled');
+        
+        // تنبيه إضافي للمستخدم
+        alert("انقطع الاتصال بالإنترنت. يرجى التحقق من الشبكة لتتمكن من إتمام الحجز.");
+    }
+}
+
+// الاستماع لتغيرات الشبكة
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// الفحص فور تحميل الصفحة
+updateOnlineStatus();
+
 // 1. الإعدادات والروابط الأساسية
 const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbwvFXgo9I5-9GKvNeywtW7h3DLeKQxzJiqxO935n7xaNTiJA-afFbUxTePhgdS4_Q8Z/exec?key=B_Assel_Admin_2026_Sec';
 const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbwvFXgo9I5-9GKvNeywtW7h3DLeKQxzJiqxO935n7xaNTiJA-afFbUxTePhgdS4_Q8Z/exec?key=B_Assel_Admin_2026_Sec';
