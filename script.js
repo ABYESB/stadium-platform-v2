@@ -8,7 +8,7 @@ offlineBanner.style.display = 'none'; // أضف هذا السطر هنا ليك�
 document.body.prepend(offlineBanner);
 
 function updateOnlineStatus() {
-    const confirmBtn = document.getElementById('confirmBookingBtn'); // تأكد أن هذا هو ID زر الحجز لديك
+    const confirmBtn = document.getElementById('submitFinalBooking'); // تأكد أن هذا هو ID زر الحجز لديك
 
     if (navigator.onLine) {
         // إذا عاد الإنترنت
