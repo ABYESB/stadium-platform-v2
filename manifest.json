@@ -21,7 +21,7 @@
   "theme_color": "#1e3a8a",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "./",
+  "scope": "/stadium-platform-v2/",
   "lang": "ar",
   "dir": "rtl"
 }
