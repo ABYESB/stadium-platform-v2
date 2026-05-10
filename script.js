@@ -3,19 +3,23 @@ const settingsScriptURL = 'https://script.google.com/macros/s/AKfycbwvFXgo9I5-9G
 const bookingScriptURL = 'https://script.google.com/macros/s/AKfycbwvFXgo9I5-9GKvNeywtW7h3DLeKQxzJiqxO935n7xaNTiJA-afFbUxTePhgdS4_Q8Z/exec?key=B_Assel_Admin_2026_Sec';
 
 
-// 2. استخراج الـ ID من الرابط
 const urlParams = new URLSearchParams(window.location.search);
 const stadiumId = urlParams.get('id'); 
 
-// --- دالة المانيفست الموحدة (تم إلغاء الاسم المتغير بناءً على طلبك) ---
+// تحديث الـ ID في التخزين المحلي فوراً بمجرد الدخول من رابط يحتوي عليه
+if (stadiumId) {
+    localStorage.setItem('lastVisitedStadiumId', stadiumId);
+}
+
+// --- دالة المانيفست الموحدة ---
 function setupFixedManifest() {
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
     
     const myFixedManifest = {
-        "short_name": "ملاعب NET", // تم التثبيت بناءً على طلبك
+        "short_name": "ملاعب NET",
         "name": "ملاعب NET - منصة حجز الملاعب",
-        "id": "stadium-platform-main-fixed", // ID موحد لجميع الملاعب لمنع التداخل
-        "start_url": baseUrl + "index.html", // نقطة البداية الموحدة
+        "id": "stadium-platform-main-fixed", 
+        "start_url": baseUrl + "index.html", // العودة دائماً للرابط الرئيسي ليقرر التوجيه
         "scope": baseUrl, 
         "display": "standalone",
         "background_color": "#ffffff",
@@ -44,39 +48,22 @@ function setupFixedManifest() {
     }
 }
 
-// استدعاء المانيفست الموحد
+// استدعاء المانيفست
 setupFixedManifest();
 
-// --- نظام حفظ الجلسة الذكي (حل مشكلة التذكر والتسجيل) ---
-(function handleNavigation() {
+// --- نظام تحديث الحالة (بدون توجيه قسري) ---
+(function syncAppState() {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    const currentPath = window.location.pathname;
-
+    
+    // إذا دخل المستخدم لملعب، نتأكد أن النظام "يتذكر" هذا الملعب كآخر زيارة
     if (stadiumId) {
-        // إذا زار ملعباً، نحفظ الرابط بالكامل مع الـ ID
-        localStorage.setItem('last_visited_full_url', window.location.href);
-    } else if (isStandalone || currentPath.endsWith('index.html') || currentPath.endsWith('/')) {
-        // إذا كان يفتح التطبيق أو الصفحة الرئيسية
-        const savedUrl = localStorage.getItem('last_visited_full_url');
-        
-        // إذا وجدنا رابطاً محفوظاً، نوجهه إليه بشرط ألا نكون في صفحة تسجيل قاصدة
-        if (savedUrl && !window.location.search.includes('registration_process=true')) {
-            window.location.replace(savedUrl);
-        }
+        localStorage.setItem('lastVisitedStadiumId', stadiumId);
     }
+    
+    // ملاحظة: قمنا بإزالة window.location.replace من هنا 
+    // لأن ملف index.html أصبح هو المسؤول عن التوجيه عند بداية التشغيل.
 })();
 
-// --- 5. نظام حفظ الجلسة ومنع التداخل ---
-if (stadiumId) {
-    localStorage.setItem('lastVisitedStadiumId', stadiumId);
-} else if (isStandalone) {
-    const savedId = localStorage.getItem('lastVisitedStadiumId');
-    if (savedId) {
-        window.location.replace("booking.html?id=" + savedId);
-    } else {
-        window.location.replace("register.html");
-    }
-}
 
 // 6. بقية الكود الخاص بك (دوال جلب البيانات من السيرفر)
 // تذكر: عند نجاح Fetch وجلب اسم الملعب الحقيقي، قم باستدعاء setupDynamicManifest(stadiumName) مرة أخرى لتحديث الاسم.
