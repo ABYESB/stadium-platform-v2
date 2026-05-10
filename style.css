@@ -867,4 +867,25 @@ font-size: 1.2rem;
 
 .close:hover, .close-pricing:hover, .admin-close-btn:hover { color: #ef4444; }
 
+/* شريط تنبيه انقطاع الإنترنت */
+#offline-banner {
+    display: none;
+    background-color: #ef4444; /* لون أحمر */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
+/* حالة تعطيل الزر */
+.btn-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    filter: grayscale(1);
+}
