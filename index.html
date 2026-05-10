@@ -1,40 +1,38 @@
+<!-- استبدل الكود الموجود في ملف index.html بهذا الكود المطور -->
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const stadiumIdFromUrl = urlParams.get('id');
-    // التحقق مما إذا كان المستخدم يطلب صفحة التسجيل بشكل صريح
-    const isRegisterAction = urlParams.get('action') === 'register';
+    const isRegisterMode = urlParams.get('mode') === 'register' || urlParams.get('action') === 'register';
     const isFromApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-    // 1. إذا دخل المستخدم عبر رابط ملعب معين (يحتوي على ID)
-    if (stadiumIdFromUrl) {
-        localStorage.setItem('lastVisitedStadiumId', stadiumIdFromUrl);
-        // التوجيه لصفحة الحجز مع المعرف
-        window.location.replace("booking.html?id=" + stadiumIdFromUrl);
-    } 
-    
-    // 2. إذا دخل المستخدم لرابط التسجيل الصريح (منع التوجيه التلقائي للملعب القديم)
-    else if (isRegisterAction) {
-        window.location.replace("register.html");
+    // الدالة المسؤولة عن التوجيه
+    function handleRouting() {
+        // 1. حالة الدخول لرابط ملعب محدد (سواء من المتصفح أو التطبيق)
+        if (stadiumIdFromUrl) {
+            localStorage.setItem('lastVisitedStadiumId', stadiumIdFromUrl);
+            window.location.replace("booking.html?id=" + stadiumIdFromUrl);
+            return;
+        }
+
+        // 2. حالة طلب صفحة التسجيل بشكل صريح (عبر رابط خاص)
+        if (isRegisterMode) {
+            // نمسح المعرف القديم إذا كان الهدف هو تسجيل جديد تماماً للمنصة
+            // أو نتركه إذا كنت تريد العودة للملعب لاحقاً. هنا سنتركه لضمان المرونة.
+            window.location.replace("register.html");
+            return;
+        }
+
+        // 3. حالة فتح التطبيق من الأيقونة أو الدخول للرابط الرئيسي بدون إضافات
+        const lastId = localStorage.getItem('lastVisitedStadiumId');
+        if (lastId) {
+            // التوجيه لآخر ملعب زاره فعلياً
+            window.location.replace("booking.html?id=" + lastId);
+        } else {
+            // إذا لم يسبق له زيارة أي ملعب، يذهب للتسجيل
+            window.location.replace("register.html");
+        }
     }
 
-    // 3. إذا فتح المستخدم "أيقونة التطبيق" المثبتة
-    else if (isFromApp) {
-        const lastId = localStorage.getItem('lastVisitedStadiumId');
-        if (lastId) {
-            window.location.replace("booking.html?id=" + lastId);
-        } else {
-            window.location.replace("register.html");
-        }
-    } 
-    
-    // 4. الدخول العادي عبر المتصفح للرابط الرئيسي
-    else {
-        // نتحقق أولاً إذا كان هناك ملعب محفوظ لنقله إليه، وإلا فصفحة التسجيل
-        const lastId = localStorage.getItem('lastVisitedStadiumId');
-        if (lastId) {
-            window.location.replace("booking.html?id=" + lastId);
-        } else {
-            window.location.replace("register.html");
-        }
-    }
+    // تنفيذ التوجيه فوراً
+    handleRouting();
 </script>
