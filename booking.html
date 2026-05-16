@@ -25,12 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- إضافة إصدار (Version) للملفات لضمان تحديث الكاش عند المستخدمين -->
-    <link rel="stylesheet" href="style.css?v=1.182">
+    <link rel="stylesheet" href="style.css?v=1.183">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- تأكد من أن script.js يحتوي على دالة setupDynamicManifest التي برمجناها -->
-    <script src="script.js?v=1.182" defer></script>
+    <script src="script.js?v=1.183" defer></script>
 </head>
 <body>
     <!-- الجزء التابع لـ Google Tag Manager لضمان التتبع في حال تعطل الجافاسكريبت -->
@@ -680,43 +680,30 @@ td {
         <span class="tooltip-text">المشرف</span>
     </a>
 <script>
-  function setDailyBackground() {
-   const images = [
-      // 1. كرة قدم - لحظة تمرير حماسية
-      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1920',
-      // 2. كرة سلة - ملعب احترافي
-      'https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=1920',
-      // 3. تنس - لقطة قريبة للمضرب والكرة
-      'https://images.unsplash.com/photo-1622279457486-62dcc4a4d13b?q=80&w=1920',
-      // 4. كرة قدم - شخص يركض بالكرة
-      'https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=1920',
-      // 5. ملعب كرة سلة خارجي (أجواء شبابية)
-      'https://images.unsplash.com/photo-1544919982-b61976f0ba43?q=80&w=1920',
-      // 6. لقطة فنية لكرة القدم على العشب
-      'https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=1920',
-      // 7. ملعب تنس واسع
-      'https://images.unsplash.com/photo-1595435064212-c4818824421d?q=80&w=1920'
-    ];
+  function setFootballBackground() {
+    // صورة احترافية ومثالية لكرة القدم (لقطة زاوية واسعة لملعب وعشب أخضر ناصع)
+    const footballImg = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1920';
 
-    // اختيار صورة بناءً على اليوم
-    const date = new Date();
-    const index = date.getDate() % images.length;
-    const selectedImg = images[index];
-
-    // الطبقة الشفافة التي تريدها
+    // الطبقة الشفافة البيضاء المريحة للعين للحفاظ على وضوح نصوص المنصة
     const overlay = "linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9))";
     
-    // تطبيق الخلفية مباشرة على عنصر body
-    document.body.style.setProperty('background-image', `${overlay}, url('${selectedImg}')`, 'important');
+    // تطبيق الخلفية المركبة مباشرة على الـ body
+    document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
     
-    console.log("تم تحميل الخلفية بنجاح: ", selectedImg);
+    // --- ضبط التجاوب التام لتبدو رائعة على الهاتف والحاسوب ---
+    document.body.style.backgroundSize = "cover";       // تغطية كامل الشاشة دون تشويه أبعاد الصورة
+    document.body.style.backgroundPosition = "center";   // تركيز وسط الملعب في منتصف الشاشة دائماً
+    document.body.style.backgroundRepeat = "no-repeat"; // منع تكرار الصورة نهائياً
+    document.body.style.backgroundAttachment = "fixed"; // تأثير تثبيت الخلفية أثناء تمرير الصفحة (Parallax)
+
+    console.log("تم تطبيق خلفية كرة القدم المتجاوبة بنجاح.");
   }
 
-  // تشغيل الدالة فور تحميل الصفحة
+  // تشغيل الدالة فور تحميل بنية الصفحة
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setDailyBackground);
+    document.addEventListener('DOMContentLoaded', setFootballBackground);
   } else {
-    setDailyBackground();
+    setFootballBackground();
   }
 </script>
 
