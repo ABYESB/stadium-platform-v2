@@ -25,12 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- إضافة إصدار (Version) للملفات لضمان تحديث الكاش عند المستخدمين -->
-    <link rel="stylesheet" href="style.css?v=1.184">
+    <link rel="stylesheet" href="style.css?v=1.185">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- تأكد من أن script.js يحتوي على دالة setupDynamicManifest التي برمجناها -->
-    <script src="script.js?v=1.184" defer></script>
+    <script src="script.js?v=1.185" defer></script>
 </head>
 <body>
     <!-- الجزء التابع لـ Google Tag Manager لضمان التتبع في حال تعطل الجافاسكريبت -->
@@ -680,33 +680,26 @@ td {
         <span class="tooltip-text">المشرف</span>
     </a>
 <script>
-  function setFootballBackground() {
-    // صورة احترافية ومثالية لكرة القدم (لقطة زاوية واسعة لملعب وعشب أخضر ناصع)
-    const footballImg = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1920';
+      function setFootballBackground() {
+        const footballImg = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1920';
+        const overlay = "linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4))";
+        
+        // إجبار المتصفح بـ !important على كل عناصر الخلفية لمنع ملف style.css من الكتابة فوقها
+        document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
+        document.body.style.setProperty('background-size', 'cover', 'important');
+        document.body.style.setProperty('background-position', 'center', 'important');
+        document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
+        document.body.style.setProperty('background-attachment', 'fixed', 'important');
 
-    // الطبقة الشفافة البيضاء المريحة للعين للحفاظ على وضوح نصوص المنصة
- const overlay = "linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4))";
-    
-    // تطبيق الخلفية المركبة مباشرة على الـ body
-    document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
-    
-    // --- ضبط التجاوب التام لتبدو رائعة على الهاتف والحاسوب ---
-    document.body.style.backgroundSize = "cover";       // تغطية كامل الشاشة دون تشويه أبعاد الصورة
-    document.body.style.backgroundPosition = "center";   // تركيز وسط الملعب في منتصف الشاشة دائماً
-    document.body.style.backgroundRepeat = "no-repeat"; // منع تكرار الصورة نهائياً
-    document.body.style.backgroundAttachment = "fixed"; // تأثير تثبيت الخلفية أثناء تمرير الصفحة (Parallax)
+        console.log("تم حل التعارض وتطبيق خلفية كرة القدم بنجاح قاطع.");
+      }
 
-    console.log("تم تطبيق خلفية كرة القدم المتجاوبة بنجاح.");
-  }
-
-  // تشغيل الدالة فور تحميل بنية الصفحة
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setFootballBackground);
-  } else {
-    setFootballBackground();
-  }
-</script>
-
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setFootballBackground);
+      } else {
+        setFootballBackground();
+      }
+    </script>
 
 <div id="nearbyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); z-index:9999; backdrop-filter: blur(4px); font-family:'Cairo', sans-serif;">
     <div class="modal-content" style="position: relative; top: 50%; transform: translateY(-50%);"> 
