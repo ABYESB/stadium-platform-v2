@@ -25,12 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- إضافة إصدار (Version) للملفات لضمان تحديث الكاش عند المستخدمين -->
-    <link rel="stylesheet" href="style.css?v=1.192">
+    <link rel="stylesheet" href="style.css?v=1.193">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- تأكد من أن script.js يحتوي على دالة setupDynamicManifest التي برمجناها -->
-    <script src="script.js?v=1.192" defer></script>
+    <script src="script.js?v=1.193" defer></script>
 </head>
 <body>
     <!-- الجزء التابع لـ Google Tag Manager لضمان التتبع في حال تعطل الجافاسكريبت -->
@@ -825,20 +825,44 @@ td {
     }
 </style>
 
-    <style>
-    body {
-        background-color: #15803d !important;
-        /* استخدام رابط مباشر ومستقر لصورة العشب */
-        background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3)), 
-                          url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1920') !important;
-        background-size: cover !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-        background-attachment: fixed !important;
-        margin: 0;
-        padding: 0;
-    }
-</style>
-    
+     <script>
+
+function setFootballBackground() {
+
+  document.body.style.setProperty('background-color', '#15803d', 'important');
+
+  
+
+  const footballImg = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1920'; 
+
+  const overlay = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3))";
+
+  
+
+  document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
+
+  document.body.style.setProperty('background-size', 'cover', 'important');
+
+  document.body.style.setProperty('background-position', 'center', 'important');
+
+  document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
+
+  document.body.style.setProperty('background-attachment', 'fixed', 'important');
+
+}
+
+
+
+if (document.readyState === 'loading') {
+
+  document.addEventListener('DOMContentLoaded', setFootballBackground);
+
+} else {
+
+  setFootballBackground();
+
+}
+
+</script> 
 </body>
 </html>
