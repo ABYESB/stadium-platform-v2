@@ -388,9 +388,28 @@
             </div>
     </div>
 </div>
-    
+
+
+                                                         
+<div id="nearbyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); z-index:9999; backdrop-filter: blur(4px); font-family:'Cairo', sans-serif;">
+    <div class="modal-content" style="position: relative; top: 50%; transform: translateY(-50%);"> 
+        <div class="modal-header">
+            <h3 style="margin:0; color:#1e40af; font-size:1.2rem;">⚽ ملاعب في محيط 20 كلم</h3>
+            <span onclick="closeNearbyModal()" class="close-btn">&times;</span>
+        </div>
+        
+        <div id="stadiumsList" class="modal-body">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>جاري تحديد موقعك وجلب الملاعب...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-    /* تأثير الاهتزاز */
+
+        /* تأثير الاهتزاز */
 @keyframes shakeMe {
   0% { transform: translateX(0); }
   25% { transform: translateX(5px); }
@@ -674,25 +693,10 @@ td {
     }
 }
 
+</style>
 
-                                                         
-<div id="nearbyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); z-index:9999; backdrop-filter: blur(4px); font-family:'Cairo', sans-serif;">
-    <div class="modal-content" style="position: relative; top: 50%; transform: translateY(-50%);"> 
-        <div class="modal-header">
-            <h3 style="margin:0; color:#1e40af; font-size:1.2rem;">⚽ ملاعب في محيط 20 كلم</h3>
-            <span onclick="closeNearbyModal()" class="close-btn">&times;</span>
-        </div>
-        
-        <div id="stadiumsList" class="modal-body">
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>جاري تحديد موقعك وجلب الملاعب...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
+    <style>
+    
     /* تحسينات النافذة لتناسب كل الشاشات */
     .modal-content {
         background: white;
