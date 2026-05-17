@@ -1788,12 +1788,29 @@ function closeNearbyModal() {
 
 // دالة الفتح (تأكد من تنظيف القائمة عند كل فتح جديد)
 function openNearbyModal() {
-    document.getElementById('nearbyModal').style.display = 'block';
-    // إعادة وضع الهيكل الأصلي للتحميل
-    document.getElementById('stadiumsList').innerHTML = `
-        <div class="loading-state">
-            <div class="spinner"></div>
-            <p>جاري تحديد موقعك وجلب الملاعب...</p>
-        </div>`;
-    findNearbyStadiums();
+    const modal = document.getElementById('nearbyModal');
+    const stadiumsList = document.getElementById('stadiumsList');
+
+    // 1. التحقق من وجود النافذة المنبثقة أولاً لمنع توقف السكريبت
+    if (!modal) {
+        console.warn("تنبيه: عنصر 'nearbyModal' غير موجود في هذه الصفحة.");
+        return; // الخروج من الدالة بأمان
+    }
+
+    // 2. إظهار النافذة
+    modal.style.display = 'block';
+
+    // 3. التحقق من وجود حاوية القائمة قبل كتابة هيكل التحميل بداخلها
+    if (stadiumsList) {
+        stadiumsList.innerHTML = `
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>جاري تحديد موقعك وجلب الملاعب...</p>
+            </div>`;
+    }
+
+    // 4. استدعاء دالة جلب الملاعب الخاصة بك
+    if (typeof findNearbyStadiums === "function") {
+        findNearbyStadiums();
+    }
 }
