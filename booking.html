@@ -25,12 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- إضافة إصدار (Version) للملفات لضمان تحديث الكاش عند المستخدمين -->
-    <link rel="stylesheet" href="style.css?v=1.187">
+    <link rel="stylesheet" href="style.css?v=1.188">
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- تأكد من أن script.js يحتوي على دالة setupDynamicManifest التي برمجناها -->
-    <script src="script.js?v=1.187" defer></script>
+    <script src="script.js?v=1.188" defer></script>
 </head>
 <body>
     <!-- الجزء التابع لـ Google Tag Manager لضمان التتبع في حال تعطل الجافاسكريبت -->
@@ -673,27 +673,7 @@ td {
         min-width: 100px;
     }
 }
-<script>
-function setFootballBackground() {
-  // وضعنا هنا لوناً أخضر كخلفية احتياطية فورية لحين تحميل الصورة
-  document.body.style.setProperty('background-color', '#15803d', 'important');
-  
-  const footballImg = 'https://i.ibb.co/606vGZ7D/stadium-grass.jpg'; // يمكنك استبدال هذا برابط صورتك الخاصة لاحقاً
-  const overlay = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3))";
-  
-  document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
-  document.body.style.setProperty('background-size', 'cover', 'important');
-  document.body.style.setProperty('background-position', 'center', 'important');
-  document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
-  document.body.style.setProperty('background-attachment', 'fixed', 'important');
-}
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', setFootballBackground);
-} else {
-  setFootballBackground();
-}
-</script> 
 
                                                          
 <div id="nearbyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); z-index:9999; backdrop-filter: blur(4px); font-family:'Cairo', sans-serif;">
@@ -820,6 +800,27 @@ if (document.readyState === 'loading') {
         .btn-group { flex-direction: column; }
     }
 </style>
+
+ <script>
+function setFootballBackground() {
+  document.body.style.setProperty('background-color', '#15803d', 'important');
+  
+  const footballImg = 'https://i.ibb.co/606vGZ7D/stadium-grass.jpg'; 
+  const overlay = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3))";
+  
+  document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
+  document.body.style.setProperty('background-size', 'cover', 'important');
+  document.body.style.setProperty('background-position', 'center', 'important');
+  document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
+  document.body.style.setProperty('background-attachment', 'fixed', 'important');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setFootballBackground);
+} else {
+  setFootballBackground();
+}
+</script>   
     
 </body>
 </html>
