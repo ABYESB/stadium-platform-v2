@@ -1782,11 +1782,16 @@ async function findNearbyStadiums() {
         listContainer.innerHTML = `<p style='text-align:center; padding:20px;'>❌ ${errorMsg}</p>`;
     }, geoOptions);
 }
+
+// دالة الإغلاق الآمنة
 function closeNearbyModal() {
-    document.getElementById('nearbyModal').style.display = 'none';
+    const modal = document.getElementById('nearbyModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
-// دالة الفتح (تأكد من تنظيف القائمة عند كل فتح جديد)
+// دالة الفتح الذكية المتوافقة مع التوسيط العالمي الـ Flex
 function openNearbyModal() {
     const modal = document.getElementById('nearbyModal');
     const stadiumsList = document.getElementById('stadiumsList');
@@ -1794,11 +1799,11 @@ function openNearbyModal() {
     // 1. التحقق من وجود النافذة المنبثقة أولاً لمنع توقف السكريبت
     if (!modal) {
         console.warn("تنبيه: عنصر 'nearbyModal' غير موجود في هذه الصفحة.");
-        return; // الخروج من الدالة بأمان
+        return; // الخروج من الدالة بأمان دون إفساد بقية العمليات
     }
 
-    // 2. إظهار النافذة
-    modal.style.display = 'block';
+    // 2. إظهار النافذة بنظام flex لضمان التوسيط المطلق على الموبايل والكمبيوتر
+    modal.style.display = 'flex';
 
     // 3. التحقق من وجود حاوية القائمة قبل كتابة هيكل التحميل بداخلها
     if (stadiumsList) {
@@ -1813,4 +1818,23 @@ function openNearbyModal() {
     if (typeof findNearbyStadiums === "function") {
         findNearbyStadiums();
     }
+}
+
+// كود الخلفية الرياضية الخاص بك
+function setFootballBackground() {
+    document.body.style.setProperty('background-color', '#15803d', 'important');
+    const footballImg = 'https://i.ibb.co/606vGZ7D/stadium-grass.jpg'; 
+    const overlay = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3))";
+    
+    document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
+    document.body.style.setProperty('background-size', 'cover', 'important');
+    document.body.style.setProperty('background-position', 'center', 'important');
+    document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
+    document.body.style.setProperty('background-attachment', 'fixed', 'important');
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setFootballBackground);
+} else {
+    setFootballBackground();
 }
