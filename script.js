@@ -1819,22 +1819,3 @@ function openNearbyModal() {
         findNearbyStadiums();
     }
 }
-
-// كود الخلفية الرياضية الخاص بك
-function setFootballBackground() {
-    document.body.style.setProperty('background-color', '#15803d', 'important');
-    const footballImg = 'https://i.ibb.co/606vGZ7D/stadium-grass.jpg'; 
-    const overlay = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3))";
-    
-    document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
-    document.body.style.setProperty('background-size', 'cover', 'important');
-    document.body.style.setProperty('background-position', 'center', 'important');
-    document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
-    document.body.style.setProperty('background-attachment', 'fixed', 'important');
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setFootballBackground);
-} else {
-    setFootballBackground();
-}
