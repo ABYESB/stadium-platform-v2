@@ -389,24 +389,6 @@
     </div>
 </div>
 
-
-                                                         
-<div id="nearbyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); z-index:9999; backdrop-filter: blur(4px); font-family:'Cairo', sans-serif;">
-    <div class="modal-content" style="position: relative; top: 50%; transform: translateY(-50%);"> 
-        <div class="modal-header">
-            <h3 style="margin:0; color:#1e40af; font-size:1.2rem;">⚽ ملاعب في محيط 20 كلم</h3>
-            <span onclick="closeNearbyModal()" class="close-btn">&times;</span>
-        </div>
-        
-        <div id="stadiumsList" class="modal-body">
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>جاري تحديد موقعك وجلب الملاعب...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
 
         /* تأثير الاهتزاز */
@@ -694,19 +676,57 @@ td {
 }
 
 </style>
-
-    <style>
     
-    /* تحسينات النافذة لتناسب كل الشاشات */
+                                                         
+  <!-- ======================================================== -->
+<!-- 1. بنية نافذة الملاعب القريبة (HTML) المحدثة بدون تعارضات -->
+<!-- ======================================================== -->
+<div id="nearbyModal" class="modal">
+    <div class="modal-content"> 
+        <div class="modal-header">
+            <h3 style="margin:0; color:#1e40af; font-family:'Cairo', sans-serif; font-size:1.2rem;">⚽ ملاعب في محيط 20 كلم</h3>
+            <span onclick="closeNearbyModal()" class="close-btn">&times;</span>
+        </div>
+        
+        <div id="stadiumsList" class="modal-body">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>جاري تحديد موقعك وجلب الملاعب...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- 2. التنسيقات الموحدة (CSS) لتوسيط مرن متوافق مع الموبايل -->
+<!-- ======================================================== -->
+<style>
+    /* النظام العالمي الذكي لتوسيط النوافذ عبر Flexbox لمنع التضارب */
+    .modal {
+        display: none; /* يتم تحويله إلى flex عبر الجافاسكريبت عند الفتح */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(4px); 
+        align-items: center;     /* التوسيط الرأسي المطلق الآمن */
+        justify-content: center;   /* التوسيط الأفقي المطلق الآمن */
+        z-index: 999999 !important; 
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* تحسينات محتوى النافذة لتناسب كل الشاشات بدون استخدام transform يدوي مسبب للمشاكل */
     .modal-content {
         background: white;
         width: 95%;
         max-width: 450px;
-        margin: 20px auto;
+        margin: auto !important; /* يضمن التمركز الفليكسي */
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        animation: slideUp 0.3s ease-out;
+        animation: slideUp 0.3s ease-out; /* حركتك المفضلة للظهور السلس */
     }
 
     .modal-header {
@@ -756,7 +776,7 @@ td {
         margin-bottom: 10px;
     }
 
-    /* أزرار التحكم - ذكية للموبايل */
+    /* أزرار التحكم داخل بطاقة الملعب */
     .btn-group {
         display: flex;
         gap: 10px;
@@ -782,7 +802,7 @@ td {
     .btn-map { background: #10b981; color: white; }
     .btn-book { background: #2563eb; color: white; }
 
-    /* أنيميشن وحالة التحميل */
+    /* أنيميشن الظهور وحالة التحميل */
     @keyframes slideUp {
         from { transform: translateY(20px); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
@@ -804,27 +824,6 @@ td {
         .btn-group { flex-direction: column; }
     }
 </style>
-
- <script>
-function setFootballBackground() {
-  document.body.style.setProperty('background-color', '#15803d', 'important');
-  
-  const footballImg = 'https://i.ibb.co/606vGZ7D/stadium-grass.jpg'; 
-  const overlay = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3))";
-  
-  document.body.style.setProperty('background-image', `${overlay}, url('${footballImg}')`, 'important');
-  document.body.style.setProperty('background-size', 'cover', 'important');
-  document.body.style.setProperty('background-position', 'center', 'important');
-  document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
-  document.body.style.setProperty('background-attachment', 'fixed', 'important');
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', setFootballBackground);
-} else {
-  setFootballBackground();
-}
-</script>   
     
 </body>
 </html>
